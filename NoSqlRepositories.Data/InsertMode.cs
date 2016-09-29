@@ -3,7 +3,7 @@
     public enum InsertMode
     {
         /// <summary>
-        /// A DupplicateKeyException.cs will be raised
+        /// A DuplicateKeyException.cs will be raised
         /// </summary>
         error_if_key_exists = 0,
 
@@ -18,7 +18,7 @@
         erase_existing = 2,
 
         /// <summary>
-        /// A DupplicateKeyException.cs will be raised
+        /// A DuplicateKeyException.cs will be raised
         /// </summary>
         db_implementation = 3
     }

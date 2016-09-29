@@ -24,6 +24,11 @@ namespace NoSqlRepositories.Data
         /// <returns>True if the collection has been initialized</returns>
         void InitCollection();
 
-        bool CollectionExists();
+        /// <summary>
+        /// Check if the collection exists.
+        /// </summary>
+        /// <param name="createIfNotExists">If true, the collection will be created if it not already exists</param>
+        /// <returns>True if the collection exists, else false</returns>
+        bool CollectionExists(bool createIfNotExists);
     }
 }

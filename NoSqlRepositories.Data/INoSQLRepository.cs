@@ -133,12 +133,12 @@ namespace NoSqlRepositories.Data
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        IList<string> GetAttachmentNames(string id);
+        IEnumerable<string> GetAttachmentNames(string id);
 
         /// <summary>
         /// Return all entities of the repository
         /// </summary>
         /// <returns></returns>
-        IList<T> GetAll();
+        IEnumerable<T> GetAll();
     }
 }
