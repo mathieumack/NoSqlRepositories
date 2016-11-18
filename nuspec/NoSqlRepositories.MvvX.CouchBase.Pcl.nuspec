@@ -4,8 +4,8 @@
         <id>NoSqlRepositories.MvvX.CouchBase.Pcl</id>
         <version>{BuildNumber}</version>
         <title>NoSqlRepository for MvvmCross using CouchBase (MvvmCross plugin)</title>
-        <authors>MACK Mathieu</authors>
-        <owners>MACK Mathieu</owners>
+        <authors>MACK Mathieu,alexandrebalan</authors>
+        <owners>MACK Mathieu,alexandrebalan</owners>
         <licenseUrl>https://github.com/mathieumack/MvvX.CouchBaseLite</licenseUrl>
         <projectUrl>https://github.com/mathieumack/MvvX.CouchBaseLite</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>

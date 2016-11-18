@@ -18,8 +18,6 @@ before_build:
     nuget sources update -Name nuget.org -Source https://api.nuget.org/v3/index.json
     
     nuget restore NoSqlRepositories.sln -verbosity detailed
-    
-    xamarin-component.exe restore NoSqlRepositories.sln
 build:
   verbosity: minimal
 on_success:
