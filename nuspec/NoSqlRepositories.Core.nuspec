@@ -3,14 +3,14 @@
     <metadata>
         <id>NoSqlRepositories.Core</id>
         <version>{BuildNumberVersion}</version>
-        <title>NoSqlRepository for MvvmCross</title>
+        <title>NoSqlRepository</title>
         <authors>MACK Mathieu,alexandrebalan</authors>
         <owners>MACK Mathieu,alexandrebalan</owners>
-        <licenseUrl>https://github.com/mathieumack/MvvX.CouchBaseLite</licenseUrl>
-        <projectUrl>https://github.com/mathieumack/MvvX.CouchBaseLite</projectUrl>
+        <licenseUrl>https://github.com/mathieumack/NoSqlRepositories</licenseUrl>
+        <projectUrl>https://github.com/mathieumack/NoSqlRepositories</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>This package contains the core content of NoSqlRepository</description>
-        <tags>mvvm mvvmcross couchbase</tags>
+        <tags>nosql repository</tags>
         <dependencies>
           <group>
         </group>
