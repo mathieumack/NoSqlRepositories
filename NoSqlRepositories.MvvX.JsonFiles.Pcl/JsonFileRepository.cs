@@ -2,7 +2,6 @@
 using NoSqlRepositories.Core;
 using NoSqlRepositories.Core.Helpers;
 using NoSqlRepositories.Core.NoSQLException;
-using NoSqlRepositories.Json.Net.Helpers;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -423,6 +422,21 @@ namespace NoSqlRepositories.MvvX.JsonFiles.Pcl
                 return Directory.EnumerateFiles(entityAttachmentDir);
 
             return new List<string>();
+        }
+
+        public byte[] GetByteAttachment(string id, string attachmentName)
+        {
+            throw new NotImplementedException();
+        }
+
+        IList<string> INoSQLRepository<T>.GetAttachmentNames(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        IList<T> INoSQLRepository<T>.GetAll()
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

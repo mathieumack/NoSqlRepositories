@@ -425,6 +425,21 @@ namespace NoSqlRepositories.Json.Net
             return new List<string>();
         }
 
+        public byte[] GetByteAttachment(string id, string attachmentName)
+        {
+            throw new NotImplementedException();
+        }
+
+        IList<string> INoSQLRepository<T>.GetAttachmentNames(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        IList<T> INoSQLRepository<T>.GetAll()
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }

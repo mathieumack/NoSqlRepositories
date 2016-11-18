@@ -129,16 +129,23 @@ namespace NoSqlRepositories.Core
         Stream GetAttachment(string id, string attachmentName);
 
         /// <summary>
+        /// Get one attachment of a document
+        /// </summary>
+        /// <param name="id">Id of entity</param>
+        /// <param name="attachmentName">Name of the file to attach. Unique identier of a file inside an entity.</param>
+        Byte[] GetByteAttachment(string id, string attachmentName);
+
+        /// <summary>
         /// Get attachmentName of a given entity
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        IEnumerable<string> GetAttachmentNames(string id);
+        IList<string> GetAttachmentNames(string id);
 
         /// <summary>
         /// Return all entities of the repository
         /// </summary>
         /// <returns></returns>
-        IEnumerable<T> GetAll();
+        IList<T> GetAll();
     }
 }
