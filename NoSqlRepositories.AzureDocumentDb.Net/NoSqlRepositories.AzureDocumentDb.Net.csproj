@@ -2,19 +2,15 @@
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{49A4AB0F-5E00-46A4-8436-9FAA3C5D87DE}</ProjectGuid>
+    <ProjectGuid>{D6795C6C-30CB-4653-91C1-8FC33E3C1A16}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NoSqlRepositories.Core</RootNamespace>
-    <AssemblyName>NoSqlRepositories.Core</AssemblyName>
-    <DefaultLanguage>fr-FR</DefaultLanguage>
+    <RootNamespace>NoSqlRepositories.AzureDocumentDb.Net</RootNamespace>
+    <AssemblyName>NoSqlRepositories.AzureDocumentDb.Net</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <TargetFrameworkProfile>Profile111</TargetFrameworkProfile>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -32,29 +28,28 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\NoSqlRepositories.Core.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <!-- A reference to the entire .NET Framework is automatically included -->
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BulkInsertResult.cs" />
-    <Compile Include="Helpers\NoSQLRepoHelper.cs" />
-    <Compile Include="IBaseEntity.cs" />
-    <Compile Include="INoSQLDB.cs" />
-    <Compile Include="INoSQLRepository.cs" />
-    <Compile Include="InsertMode.cs" />
-    <Compile Include="InsertResult.cs" />
-    <Compile Include="NoSQLException\AttachmentNotFoundNoSQLException.cs" />
-    <Compile Include="NoSQLException\DupplicateKeyNoSQLException.cs" />
-    <Compile Include="NoSQLException\EntityConcurrentUpdateException.cs" />
-    <Compile Include="NoSQLException\KeyNotFoundNoSQLException.cs" />
-    <Compile Include="NoSQLException\QueryNotAcknowledgedException.cs" />
+    <Compile Include="AzureDocumentDbRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UpdateMode.cs" />
-    <Compile Include="UpdateResult.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\NoSqlRepositories.Core\NoSqlRepositories.Core.csproj">
+      <Project>{49A4AB0F-5E00-46A4-8436-9FAA3C5D87DE}</Project>
+      <Name>NoSqlRepositories.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

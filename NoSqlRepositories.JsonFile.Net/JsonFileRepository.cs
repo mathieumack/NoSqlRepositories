@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 using NoSqlRepositories.Core;
-using NoSqlRepositories.Data;
-using NoSqlRepositories.Data.Helpers;
-using NoSqlRepositories.Data.NoSQLException;
+using NoSqlRepositories.Core;
+using NoSqlRepositories.Core.Helpers;
+using NoSqlRepositories.Core.NoSQLException;
 using NoSqlRepositories.Json.Net.Helpers;
 using System;
 using System.Collections.Concurrent;

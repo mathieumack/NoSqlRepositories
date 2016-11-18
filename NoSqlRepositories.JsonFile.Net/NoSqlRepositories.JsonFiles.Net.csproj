@@ -56,10 +56,6 @@
       <Project>{49A4AB0F-5E00-46A4-8436-9FAA3C5D87DE}</Project>
       <Name>NoSqlRepositories.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\NoSqlRepositories.Data\NoSqlRepositories.Data.csproj">
-      <Project>{A482C1F8-8CF2-47DA-A1E5-C5378D988BAD}</Project>
-      <Name>NoSqlRepositories.Data</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
