@@ -2,7 +2,7 @@
  <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>NoSqlRepositories.Core</id>
-        <version>{BuildNumber}</version>
+        <version>{BuildNumberVersion}</version>
         <title>NoSqlRepository for MvvmCross</title>
         <authors>MACK Mathieu,alexandrebalan</authors>
         <owners>MACK Mathieu,alexandrebalan</owners>
