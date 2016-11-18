@@ -1,8 +1,8 @@
-﻿using MvvmCross.Plugins.File;
-using MvvX.Plugins.CouchBaseLite;
+﻿using MvvX.Plugins.CouchBaseLite;
 using MvvX.Plugins.CouchBaseLite.Database;
 using MvvX.Plugins.CouchBaseLite.Documents;
 using MvvX.Plugins.CouchBaseLite.Queries;
+using MvvX.Plugins.CouchBaseLite.Views;
 using Newtonsoft.Json.Linq;
 using NoSqlRepositories.Core;
 using NoSqlRepositories.Core.Helpers;
@@ -13,6 +13,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using MvvX.Plugins.CouchBaseLite.Storages;
 using System.Threading.Tasks;
 
 namespace NoSqlRepositories.MvvX.CouchBase.Pcl
@@ -28,43 +29,61 @@ namespace NoSqlRepositories.MvvX.CouchBase.Pcl
         /// <summary>
         /// Contains list of subclasses of the class T to handle polymorphism during deserialization
         /// </summary>
-        public IDictionary<string, Type> PolymorphicTypes { get; set; } = new Dictionary<string, Type>();
-        private readonly ICouchBaseLite couchBaseLite;
-        private readonly IMvxFileStore fileStore;
+        public IDictionary<string, Type> PolymorphicTypes { get; } = new Dictionary<string, Type>();
 
-        private IDatabase database;
-        public string ConnectionStr { get; set; }
+        protected ICouchBaseLite couchBaseLite;
+        protected IDatabase database;
 
-        public CouchBaseRepository(ICouchBaseLite couchBaseLite, IMvxFileStore fileStore)
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="couchBaseLite"></param>
+        /// <param name="fileStore"></param>
+        public CouchBaseRepository(ICouchBaseLite couchBaseLite, string dbName)
         {
-            Contract.Requires<ArgumentNullException>(couchBaseLite != null);
-            Contract.Requires<ArgumentNullException>(fileStore != null);
-
-            this.couchBaseLite = couchBaseLite;
-            this.fileStore = fileStore;
-            this.ConnectionStr = "SKM/Viewer/Couchbase";
-            this.TypeName = typeof(T).Name;
-
-            ConnectToDatabase();
+            Construct(couchBaseLite, StorageTypes.Sqlite, dbName);
         }
 
-        private void ConnectToDatabase()
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="couchBaseLite"></param>
+        /// <param name="fileStore"></param>
+        public CouchBaseRepository(ICouchBaseLite couchBaseLite, StorageTypes storage, string dbName)
+        {
+            Construct(couchBaseLite, storage, dbName);
+        }
+
+
+        private void Construct(ICouchBaseLite couchBaseLite, StorageTypes storage, string dbName)
+        {
+            Contract.Requires<ArgumentNullException>(couchBaseLite != null);
+            
+            this.couchBaseLite = couchBaseLite;
+            this.CollectionName = typeof(T).Name;
+
+            ConnectToDatabase(storage, dbName);
+
+            CreateAllDocView();
+        }
+
+        private void ConnectToDatabase(StorageTypes storage, string dbName)
         {
             var databaseOptions = this.couchBaseLite.CreateDatabaseOptions();
             databaseOptions.Create = true;
-            databaseOptions.StorageType = MvvX.Plugins.CouchBaseLite.Storages.StorageTypes.Sqlite;
-            fileStore.EnsureFolderExists(ConnectionStr);
+            databaseOptions.StorageType = storage;
 
-            this.database = this.couchBaseLite.CreateConnection(fileStore.NativePath(ConnectionStr), TypeName, databaseOptions);
+            this.database = this.couchBaseLite.CreateConnection(dbName, databaseOptions);
 
             if (this.database == null)
                 throw new NullReferenceException("CreateConnection returned no connection");
         }
 
+
         public override T GetById(string id)
         {
             //JsonConvert.DeserializeObject
-            var documentObjet = this.database.GetDocument(id);
+            var documentObjet = this.database.GetDocument(getInternalCBLId(id));
             if (documentObjet == null || string.IsNullOrEmpty(documentObjet.CurrentRevisionId) || documentObjet.Deleted)
             {
                 throw new KeyNotFoundNoSQLException();
@@ -81,19 +100,23 @@ namespace NoSqlRepositories.MvvX.CouchBase.Pcl
         /// <returns></returns>
         private T getEntityFromDocument(IDocument documentObjet)
         {
+            return getEntityFromDocument(documentObjet.GetProperty("members"), (string)documentObjet.GetProperty("entityType"));
+        }
+
+        private T getEntityFromDocument(object memberField, string originalEntityType)
+        {
 
             T entity = null;
 
             // Comprendre pourquoi T ou Jobject sont retournés alternativement
-            if (documentObjet.GetProperty("members").GetType() == typeof(JObject))
+            if (memberField is JObject)
             {
 
-                JObject testobject = (JObject)documentObjet.GetProperty("members");
+                JObject testobject = (JObject)memberField;
 
                 // Determine the destination type to handle polymorphism
                 Type destinationType = typeof(T);
 
-                string originalEntityType = (string)documentObjet.GetProperty("entityType");
                 if (!string.IsNullOrEmpty(originalEntityType))
                 {
                     // We stored the original entity type
@@ -110,7 +133,7 @@ namespace NoSqlRepositories.MvvX.CouchBase.Pcl
             }
             else
             {
-                entity = (T)documentObjet.GetProperty("members");
+                entity = (T)memberField;
 
             }
 
@@ -119,6 +142,7 @@ namespace NoSqlRepositories.MvvX.CouchBase.Pcl
 
         public override T TryGetById(string id)
         {
+            // Refactor to optimize this implementation
             try
             {
                 return GetById(id);
@@ -131,7 +155,7 @@ namespace NoSqlRepositories.MvvX.CouchBase.Pcl
 
         public override bool Exist(string id)
         {
-            var documentObjet = this.database.GetDocument(id);
+            var documentObjet = this.database.GetDocument(getInternalCBLId(id));
             return documentObjet != null;
         }
 
@@ -139,14 +163,16 @@ namespace NoSqlRepositories.MvvX.CouchBase.Pcl
         {
             var insertResult = new BulkInsertResult<string>();
 
-            Parallel.ForEach(entities, (entity) =>
+            //TODO : restore Parralel.ForEach
+            foreach(var entity in entities)
             {
                 // Create the document
                 InsertOne(entity, insertMode);
                 insertResult[entity.Id] = InsertResult.unknown;
-            });
+            };
             return insertResult;
         }
+
 
         public override InsertResult InsertOne(T entity, InsertMode insertMode)
         {
@@ -161,11 +187,11 @@ namespace NoSqlRepositories.MvvX.CouchBase.Pcl
             {
                 // No id specified, let couchbase generate the id and affect it to the entity
                 documentObjet = database.CreateDocument();
-                entity.Id = documentObjet.Id;
+                entity.Id = cblGeneratedIdPrefix + documentObjet.Id; // NB: prefix the Id generated by couchbase to be able to distinguish it with a user provided id
             }
             else
             {
-                documentObjet = database.GetDocument(entity.Id);
+                documentObjet = database.GetDocument(getInternalCBLId(entity.Id));
 
                 if (documentObjet.CurrentRevisionId != null)
                 {
@@ -195,6 +221,7 @@ namespace NoSqlRepositories.MvvX.CouchBase.Pcl
                 {
                     {"creat date", date},
                     {"update date", date},
+                    {"collection", this.CollectionName},
                     {"members", entity},
                     {"entityType", entity.GetType().Name} // Store the original actual object class to handle polymorphism 
                 };
@@ -225,7 +252,7 @@ namespace NoSqlRepositories.MvvX.CouchBase.Pcl
 
             if (updateMode == UpdateMode.db_implementation)
             {
-                var idDocument = entity.Id;
+                var idDocument = getInternalCBLId(entity.Id);
                 var updateDate = NoSQLRepoHelper.DateTimeUtcNow();
 
                 var documentObjet = database.GetDocument(idDocument);
@@ -270,12 +297,12 @@ namespace NoSqlRepositories.MvvX.CouchBase.Pcl
 
         public override void SetCollectionName(string typeName)
         {
-            this.TypeName = typeName;
+            this.CollectionName = typeName;
         }
 
         public override void InitCollection()
         {
-            throw new NotImplementedException();
+            // Nothing to do to initialize the collection
         }
 
         public override bool CollectionExists(bool createIfNotExists)
@@ -289,7 +316,7 @@ namespace NoSqlRepositories.MvvX.CouchBase.Pcl
                 throw new NotImplementedException();
 
             long result = 0;
-            var documentObjet = this.database.GetDocument(id);
+            var documentObjet = this.database.GetDocument(getInternalCBLId(id));
             // Document found
             if (documentObjet != null && !documentObjet.Deleted)
             {
@@ -308,19 +335,15 @@ namespace NoSqlRepositories.MvvX.CouchBase.Pcl
         /// <param name="filePathAttachment">file path of the file to attach</param>
         /// <param name="contentType">type of the file to attach</param>
         /// <param name="attachmentName">identify of the file to attach</param>
-        public override void AddAttachment(string id, string filePathAttachment, string contentType, string attachmentName)
+        public override void AddAttachment(string id, Stream fileStream, string contentType, string attachmentName)
         {
-            var existingEntity = this.database.GetDocument(id);
+            var existingEntity = this.database.GetDocument(getInternalCBLId(id));
             if (existingEntity == null)
                 throw new KeyNotFoundNoSQLException();
 
             IUnsavedRevision newRevision = existingEntity.CurrentRevision.CreateRevision();
-
-            using (var fileStream = fileStore.OpenRead(filePathAttachment))
-            {
-                newRevision.SetAttachment(attachmentName, contentType, fileStream);
-                newRevision.Save();
-            }
+            newRevision.SetAttachment(attachmentName, contentType, fileStream);
+            newRevision.Save();
         }
 
         /// <summary>
@@ -330,7 +353,7 @@ namespace NoSqlRepositories.MvvX.CouchBase.Pcl
         /// <param name="attachmentName">name of attachment to remove</param>
         public override void RemoveAttachment(string id, string attachmentName)
         {
-            var existingEntity = this.database.GetDocument(id);
+            var existingEntity = this.database.GetDocument(getInternalCBLId(id));
             if (existingEntity == null)
                 throw new KeyNotFoundNoSQLException(string.Format("Entity '{0}' not found", id));
 
@@ -383,7 +406,7 @@ namespace NoSqlRepositories.MvvX.CouchBase.Pcl
 
         private IAttachment GetAttachmentCore(string id, string attachmentName)
         {
-            var documentAttachment = this.database.GetDocument(id);
+            var documentAttachment = this.database.GetDocument(getInternalCBLId(id));
             if (documentAttachment == null)
                 throw new KeyNotFoundNoSQLException();
 
@@ -407,28 +430,25 @@ namespace NoSqlRepositories.MvvX.CouchBase.Pcl
 
         public override IList<T> GetAll()
         {
-            List<T> listDocumentsOfCouchBase = new List<T>();
-            var query = database.CreateAllDocumentsQuery();
-            query.AllDocsMode = QueryAllDocsMode.AllDocs;
-            var rows = query.Run();
 
-            foreach (var row in rows)
+            IView view = database.GetView(CollectionName);
+            using (IQuery query = view.CreateQuery())
             {
-                var doc = row.Document;
+                query.Prefetch = true;
+                query.AllDocsMode = QueryAllDocsMode.AllDocs;
+                query.IndexUpdateMode = IndexUpdateMode.Before;
 
-                if (doc != null && !doc.Deleted)
+                using (var queryEnum = query.Run())
                 {
-                    T entity = getEntityFromDocument(doc);
-                    listDocumentsOfCouchBase.Add(entity);
+                    return queryEnum.Where(row => !row.Document.Deleted)
+                        .Select(row => getEntityFromDocument(row.Document)).ToList();
                 }
             }
-
-            return listDocumentsOfCouchBase;
         }
 
         public override IList<string> GetAttachmentNames(string id)
         {
-            var documentAttachment = this.database.GetDocument(id);
+            var documentAttachment = this.database.GetDocument(getInternalCBLId(id));
             if (documentAttachment == null)
                 throw new KeyNotFoundNoSQLException();
 
@@ -436,5 +456,181 @@ namespace NoSqlRepositories.MvvX.CouchBase.Pcl
 
             return revision.AttachmentNames.ToList();
         }
+
+
+        #region Views
+
+        public override List<T> GetByField<TField>(string fieldName, TField value)
+        {
+            IView view = database.GetExistingView(CollectionName + "-" + fieldName);
+
+            if (view == null)
+                throw new IndexNotFoundNoSQLException(string.Format("An index must be created on the fieldName '{0}' before calling GetByField", fieldName));
+
+            using (IQuery query = view.CreateQuery())
+            {
+                query.Prefetch = true;
+                query.StartKey = value;
+                query.EndKey = value;
+                query.IndexUpdateMode = IndexUpdateMode.Before;
+
+                using (var queryEnum = query.Run())
+                {
+                    return queryEnum.Where(row => !row.Document.Deleted)
+                        .Select(doc => getEntityFromDocument(doc.Document)).ToList();
+                }
+            }
+        }
+
+        public override List<T> GetByField<TField>(string fieldName, List<TField> values)
+        {
+            return values.SelectMany(v => GetByField(fieldName, v))
+                .GroupBy(e => e.Id)
+                .Select(g => g.First()) // Remove duplicates entities
+                .ToList();
+        }
+
+        public override List<string> GetKeyByField<TField>(string fieldName, TField value)
+        {
+            IView view = database.GetExistingView(CollectionName + "-" + fieldName);
+
+            if (view == null)
+                throw new IndexNotFoundNoSQLException(string.Format("An index must be created on the fieldName '{0}' before calling GetByField", fieldName));
+
+            using (IQuery query = view.CreateQuery())
+            {
+                query.Prefetch = false;
+                query.StartKey = value;
+                query.EndKey = value;
+
+                using (var queryEnum = query.Run())
+                {
+                    return queryEnum.Select(doc => getIdFromInternalCBLId(doc.DocumentId)).ToList();
+                }
+            }
+        }
+
+        public override List<string> GetKeyByField<TField>(string fieldName, List<TField> values)
+        {
+            return values.SelectMany(v => GetKeyByField(fieldName, v)).Distinct().ToList();
+        }
+
+        /// <summary>
+        /// Create a view to get All document of the collection without scranning the whole database
+        /// Reminder : in couchbase, there is no "collection", all objects belong to the same storage
+        /// </summary>
+        private void CreateAllDocView()
+        {
+            IView view = database.GetExistingView(CollectionName);
+
+            if (view == null)
+            {
+                view = database.GetView(CollectionName);
+                view.SetMap(
+                (doc, emit) =>
+                {
+                    if (!doc.Keys.Contains("collection") || !doc.Keys.Contains("members"))
+                        return; // bad doc format, ignore it
+
+                    var collection = (string)doc["collection"];
+                    if (collection == null | !collection.Equals(CollectionName))
+                        return; // doc type is not the one of the current collection
+
+                    emit(doc["_id"], doc["_id"]);
+                }
+            , "1");
+            }
+            else
+            {
+                // View already exists, nothing to do
+            }
+        }
+
+        public void CreateView<TField>(string fieldName, string version)
+        {
+            var viewName = CollectionName + "-" + fieldName; // view name = collectionName-fieldName
+            IView view = database.GetExistingView(viewName);
+
+            if (view == null)
+            {
+                view = database.GetView(viewName);
+                view.SetMap(
+                    (doc, emit) =>
+                    {
+                        if (!doc.Keys.Contains("collection") || !doc.Keys.Contains("members"))
+                            return; // bad doc format, ignore it
+
+                        var collection = (string)doc["collection"];
+                        if (collection == null | !collection.Equals(CollectionName))
+                            return; // doc type is not the one of the current collection
+
+                        JObject jObj = (JObject)doc["members"];
+
+                        string id = jObj.GetValue("Id").Value<string>();
+
+                        JToken jToken = jObj.GetValue(fieldName);
+                        if (jToken is JArray)
+                        {
+                            foreach (var arrayToken in (JArray)jToken)
+                            {
+                                TField fieldValue = arrayToken.Value<TField>();
+                                emit(fieldValue, id);
+                            }
+                        }
+                        else
+                        {
+                            TField fieldValue = jToken.Value<TField>();
+                            emit(fieldValue, id);
+                        }
+                    }
+                , version);
+
+            }
+            else
+            {
+                // View already exists, nothing to do
+            }
+        }
+
+        #endregion
+
+        #region Private
+
+        /// <summary>
+        /// Return the internal Id used in couchbase lite to uniquely identity in the database objects of all collections
+        /// Reminder : CBL id's must be unique for all objects (whatever their collection/type)
+        /// </summary>
+        /// <param name="entityId"></param>
+        /// <returns></returns>
+        private string getInternalCBLId(string entityId)
+        {
+            string cblId;
+            if (entityId.StartsWith(cblGeneratedIdPrefix))
+                // Entity Id has been generated by Couchbase, entityId = couchbaseliteId
+                cblId = entityId.Substring(cblGeneratedIdPrefix.Length);
+            else
+                // Entity Id is user provided, add the suffix to the entityId to ensure Ic
+                cblId = string.Concat(CollectionName, "-", entityId);
+            return cblId;
+        }
+
+
+        private string getIdFromInternalCBLId(string cblId)
+        {
+            string id;
+
+            if (cblId.StartsWith(CollectionName + "-"))
+                // Entity Id has been generated by Couchbase, entityId = couchbaseliteId
+                id = cblId.Substring(CollectionName.Length + 1);
+            else
+                // Entity Id is user provided, add the suffix to the entityId to ensure Ic
+                id = cblGeneratedIdPrefix + cblId;
+            return id;
+        }
+
+
+        private const string cblGeneratedIdPrefix = "$$CBL$$";
+
+        #endregion
     }
 }

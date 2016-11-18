@@ -1,5 +1,4 @@
-﻿using NoSqlRepositories.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq.Expressions;
@@ -112,7 +111,7 @@ namespace NoSqlRepositories.Core
         /// <param name="filePathAttachment">file path of the file to attach</param>
         /// <param name="contentType">type of the file to attach</param>
         /// <param name="attachmentName">Name of the file to attach. Unique identier of a file inside an entity.</param>
-        void AddAttachment(string id, string filePathAttachment, string contentType, string attachmentName);
+        void AddAttachment(string id, Stream fileStream, string contentType, string attachmentName);
 
         /// <summary>
         /// Remove an attachment of a document
@@ -147,5 +146,42 @@ namespace NoSqlRepositories.Core
         /// </summary>
         /// <returns></returns>
         IList<T> GetAll();
+
+        /// <summary>
+        /// Get entities that match de field = List of Value condition
+        /// </summary>
+        /// <typeparam name="TField"></typeparam>
+        /// <param name="fieldName"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        List<T> GetByField<TField>(string fieldName, List<TField> values);
+
+        /// <summary>
+        /// Get entities that match de field = Value condition
+        /// </summary>
+        /// <typeparam name="TField"></typeparam>
+        /// <param name="fieldName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        List<T> GetByField<TField>(string fieldName, TField value);
+
+        /// <summary>
+        /// Get entities Ids that match de field = List of Value condition
+        /// </summary>
+        /// <typeparam name="TField"></typeparam>
+        /// <param name="fieldName"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        List<string> GetKeyByField<TField>(string fieldName, List<TField> values);
+
+        /// <summary>
+        /// Get entities Ids that match de field = Value condition
+        /// </summary>
+        /// <typeparam name="TField"></typeparam>
+        /// <param name="fieldName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        List<string> GetKeyByField<TField>(string fieldName, TField value);
+
     }
 }

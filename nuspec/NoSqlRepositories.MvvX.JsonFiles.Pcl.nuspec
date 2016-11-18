@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>NoSqlRepositories.MvvX.JsonFiles.Pcl</id>
+        <version>{BuildNumber}</version>
+        <title>NoSqlRepository for MvvmCross using json files (MvvmCross plugin)</title>
+        <authors>MACK Mathieu</authors>
+        <owners>MACK Mathieu</owners>
+        <licenseUrl>https://github.com/mathieumack/MvvX.CouchBaseLite</licenseUrl>
+        <projectUrl>https://github.com/mathieumack/MvvX.CouchBaseLite</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>This package contains a NoSqlRepository for MvvmCross using json files.</description>
+        <tags>mvvm mvvmcross couchbase</tags>
+        <dependencies>
+          <group>
+            <!-- Always include regardless of target framework -->
+            <dependency id="NoSqlRepositories.Core" version="{BuildNumber}" />
+            <dependency id="MvvmCross.Platform" version="4.2.2" />
+            <dependency id="Newtonsoft.Json" version="9.0.1" />
+        </group>
+        </dependencies>  
+    </metadata>
+    <files>     
+        <!-- ALL -->
+        <file src="..\NoSqlRepositories.MvvX.JsonFiles.Pcl\bin\Release\NoSqlRepositories.MvvX.JsonFiles.Pcl.dll" target="lib\portable-net45+sl5+wp8+wpa81+win8+monoandroid+monotouch" />
+    </files>
+</package>
+
