@@ -10,7 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace NoSqlRepositories.Json.Net
+namespace NoSqlRepositories.MvvX.JsonFiles.Pcl
 {
     public class JsonFileRepository<T> : INoSQLRepository<T> where T : class, IBaseEntity
     {
