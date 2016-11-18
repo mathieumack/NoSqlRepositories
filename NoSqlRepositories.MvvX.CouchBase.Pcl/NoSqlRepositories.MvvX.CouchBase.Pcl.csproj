@@ -58,8 +58,8 @@
       <HintPath>..\packages\MvvmCross.Plugin.File.4.2.2\lib\portable-net45+win+wpa81+wp80\MvvmCross.Plugins.File.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MvvX.Plugins.CouchBaseLite, Version=2.4.1.32055, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MvvX.Plugins.CouchBaseLite.2.4.1.0\lib\portable-net45+sl5+wp8+wpa81+win8+monoandroid+monotouch\MvvX.Plugins.CouchBaseLite.dll</HintPath>
+    <Reference Include="MvvX.Plugins.CouchBaseLite, Version=2.7.68.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvX.Plugins.CouchBaseLite.2.7.68.0\lib\portable-net45+sl5+wp8+wpa81+win8+monoandroid+monotouch\MvvX.Plugins.CouchBaseLite.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -68,7 +68,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NoSqlRepositories.Core\NoSqlRepositories.Core.csproj">
