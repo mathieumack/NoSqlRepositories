@@ -9,7 +9,6 @@ using NoSqlRepositories.Core.Helpers;
 using NoSqlRepositories.Core.NoSQLException;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -57,7 +56,8 @@ namespace NoSqlRepositories.MvvX.CouchBase.Pcl
 
         private void Construct(ICouchBaseLite couchBaseLite, StorageTypes storage, string dbName)
         {
-            Contract.Requires<ArgumentNullException>(couchBaseLite != null);
+            if (couchBaseLite == null)
+                throw new ArgumentNullException("couchBaseLite");
             
             this.couchBaseLite = couchBaseLite;
             this.CollectionName = typeof(T).Name;
@@ -382,8 +382,11 @@ namespace NoSqlRepositories.MvvX.CouchBase.Pcl
 
         public IEnumerable<byte> GetAttachmentInMemory(string id, string attachmentName)
         {
-            Contract.Requires<ArgumentException>(!string.IsNullOrWhiteSpace(id));
-            Contract.Requires<ArgumentException>(!string.IsNullOrWhiteSpace(attachmentName));
+            if (string.IsNullOrWhiteSpace(id))
+                throw new ArgumentNullException("id");
+
+            if (string.IsNullOrWhiteSpace(attachmentName))
+                throw new ArgumentNullException("attachmentName");
 
             var attachement = GetAttachmentCore(id, attachmentName);
             if (attachement != null)
