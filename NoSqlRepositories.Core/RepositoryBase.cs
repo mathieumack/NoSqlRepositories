@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 
 namespace NoSqlRepositories.Core
@@ -43,18 +42,12 @@ namespace NoSqlRepositories.Core
         public byte[] GetByteAttachment(string id, string attachmentName)
         {
             var reuslt = new Byte[0];
-            try
+
+            using (MemoryStream memoryStream = new MemoryStream())
             {
-                using (MemoryStream memoryStream = new MemoryStream())
-                {
-                    var attachmentStream = GetAttachment(id, attachmentName);
-                    attachmentStream.CopyTo(memoryStream);
-                    reuslt = memoryStream.ToArray();
-                }
-            }
-            catch
-            {
-                Debug.WriteLine("An error occured while getting the attachement");
+                var attachmentStream = GetAttachment(id, attachmentName);
+                attachmentStream.CopyTo(memoryStream);
+                reuslt = memoryStream.ToArray();
             }
 
             return reuslt;
