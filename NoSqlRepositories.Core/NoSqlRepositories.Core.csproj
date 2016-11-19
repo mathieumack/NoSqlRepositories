@@ -45,6 +45,7 @@
     <Compile Include="INoSQLRepository.cs" />
     <Compile Include="InsertMode.cs" />
     <Compile Include="InsertResult.cs" />
+    <Compile Include="NoSQLEngineType.cs" />
     <Compile Include="NoSQLException\AttachmentNotFoundNoSQLException.cs" />
     <Compile Include="NoSQLException\DupplicateKeyNoSQLException.cs" />
     <Compile Include="NoSQLException\EntityConcurrentUpdateException.cs" />

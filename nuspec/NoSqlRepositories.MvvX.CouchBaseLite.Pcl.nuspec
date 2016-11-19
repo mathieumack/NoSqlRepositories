@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
  <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
-        <id>NoSqlRepositories.MvvX.CouchBase.Pcl</id>
+        <id>NoSqlRepositories.MvvX.CouchBaseLite.Pcl</id>
         <version>{BuildNumberVersion}</version>
-        <title>NoSqlRepository for MvvmCross using CouchBase (MvvmCross plugin)</title>
+        <title>NoSqlRepository for MvvmCross using CouchBaseLite (MvvmCross plugin)</title>
         <authors>MACK Mathieu,alexandrebalan</authors>
         <owners>MACK Mathieu,alexandrebalan</owners>
         <licenseUrl>https://github.com/mathieumack/NoSqlRepositories</licenseUrl>
         <projectUrl>https://github.com/mathieumack/NoSqlRepositories</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>This package contains a NoSqlRepository for MvvmCross using CouchBase.</description>
-        <tags>mvvm mvvmcross couchbase</tags>
+        <description>This package contains a NoSqlRepository for MvvmCross using CouchBaseLite.</description>
+        <tags>mvvm mvvmcross couchbase lite</tags>
         <dependencies>
           <group>
             <!-- Always include regardless of target framework -->
@@ -23,7 +23,7 @@
     </metadata>
     <files>     
         <!-- ALL -->
-        <file src="..\NoSqlRepositories.MvvX.CouchBase.Pcl\bin\Release\NoSqlRepositories.MvvX.CouchBase.Pcl.dll" target="lib\portable-net45+sl5+wp8+wpa81+win8+monoandroid+monotouch" />
+        <file src="..\NoSqlRepositories.MvvX.CouchBaseLite.Pcl\bin\Release\NoSqlRepositories.MvvX.CouchBaseLite.Pcl.dll" target="lib\portable-net45+sl5+wp8+wpa81+win8+monoandroid+monotouch" />
     </files>
 </package>
 

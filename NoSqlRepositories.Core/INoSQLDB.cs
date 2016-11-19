@@ -5,6 +5,11 @@ namespace NoSqlRepositories.Core
     public interface INoSQLDB<T> where T : IBaseEntity
     {
         /// <summary>
+        /// Type of the current engine
+        /// </summary>
+        NoSQLEngineType EngineType { get; }
+
+        /// <summary>
         /// Change the active database
         /// </summary>
         /// <param name="dbName"></param>

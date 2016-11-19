@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // Les informations générales relatives à un assembly dépendent de 
 // l'ensemble d'attributs suivant. Changez les valeurs de ces attributs pour modifier les informations
 // associées à un assembly.
-[assembly: AssemblyTitle("NoSqlRepositories.MvvX.CouchBase.Pcl")]
+[assembly: AssemblyTitle("NoSqlRepositories.MvvX.CouchBaseLite.Pcl")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("NoSqlRepositories.MvvX.CouchBase.Pcl")]
+[assembly: AssemblyProduct("NoSqlRepositories.MvvX.CouchBaseLite.Pcl")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

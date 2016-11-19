@@ -25,13 +25,13 @@ Set-Content $nuSpecFile
 .\NuGet.exe pack NoSqlRepositories.Core.nuspec
 
 "Update nuspec versions ..."
-$nuSpecFile =  $locationNuspec + '\NoSqlRepositories.MvvX.CouchBase.Pcl.nuspec'
+$nuSpecFile =  $locationNuspec + '\NoSqlRepositories.MvvX.CouchBaseLite.Pcl.nuspec'
 (Get-Content $nuSpecFile) | 
 Foreach-Object {$_ -replace "{BuildNumberVersion}", "$ProductVersion" } | 
 Set-Content $nuSpecFile
 
 "Generate nuget package ..."
-.\NuGet.exe pack NoSqlRepositories.MvvX.CouchBase.Pcl.nuspec
+.\NuGet.exe pack NoSqlRepositories.MvvX.CouchBaseLite.Pcl.nuspec
 
 "Update nuspec versions ..."
 $nuSpecFile =  $locationNuspec + '\NoSqlRepositories.MvvX.JsonFiles.Pcl.nuspec'
@@ -46,5 +46,5 @@ $apiKey = $env:NuGetApiKey
 	
 #"Publish packages ..."	
 .\NuGet push NoSqlRepositories.Core.$ProductVersion.nupkg -Source https://www.nuget.org/api/v2/package -ApiKey $apiKey
-.\NuGet push NoSqlRepositories.MvvX.CouchBase.Pcl.$ProductVersion.nupkg -Source https://www.nuget.org/api/v2/package -ApiKey $apiKey
+.\NuGet push NoSqlRepositories.MvvX.CouchBaseLite.Pcl.$ProductVersion.nupkg -Source https://www.nuget.org/api/v2/package -ApiKey $apiKey
 .\NuGet push NoSqlRepositories.MvvX.JsonFiles.Pcl.$ProductVersion.nupkg -Source https://www.nuget.org/api/v2/package -ApiKey $apiKey

@@ -10,12 +10,12 @@
 //namespace NoSqlRepositories.Tests.MvvX
 //{
 //    [TestClass]
-//    public class CouchbaseRepUnitTest : MvvXNoSQLCoreUnitTest
+//    public class CouchBaseLiteRepUnitTest : MvvXNoSQLCoreUnitTest
 //    {
 
 //        #region Members
 
-//        public static ICouchBaseLite couchBaseLiteManager;
+//        public static ICouchBaseLiteLite CouchBaseLiteLiteManager;
 
 //        #endregion
 
@@ -33,22 +33,22 @@
 //            base.Setup();
 
 //            // Instanciate the manager only 1 time
-//            if(couchBaseLiteManager == null)
+//            if(CouchBaseLiteLiteManager == null)
 //            {
-//                couchBaseLiteManager = Mvx.Resolve<ICouchBaseLite>();
+//                CouchBaseLiteLiteManager = Mvx.Resolve<ICouchBaseLiteLite>();
 //            }
 
-//            // Add Sqlite plugin register. Do it only for unit tests (https://github.com/couchbase/couchbase-lite-net/wiki/Error-Dictionary#cblcs0001)
-//            //Couchbase.Lite.Storage.SystemSQLite.Plugin.Register();
+//            // Add Sqlite plugin register. Do it only for unit tests (https://github.com/CouchBaseLite/CouchBaseLite-lite-net/wiki/Error-Dictionary#cblcs0001)
+//            //CouchBaseLite.Lite.Storage.SystemSQLite.Plugin.Register();
 
 //            string dbName = "TestDb";
 
-//            var entityRepoCBL = new CouchBaseRepository<TestEntity>(couchBaseLiteManager, dbName);
+//            var entityRepoCBL = new CouchBaseLiteRepository<TestEntity>(CouchBaseLiteLiteManager, dbName);
 //            this.entityRepo = entityRepoCBL;
-//            var entityRepoCBL2 = new CouchBaseRepository<TestEntity>(couchBaseLiteManager, dbName);
+//            var entityRepoCBL2 = new CouchBaseLiteRepository<TestEntity>(CouchBaseLiteLiteManager, dbName);
 //            this.entityRepo2 = entityRepoCBL;
-//            this.collectionEntityRepo = new CouchBaseRepository<CollectionTest>(couchBaseLiteManager, dbName);
-//            this.entityExtraEltRepo = new CouchBaseRepository<TestExtraEltEntity>(couchBaseLiteManager, dbName);
+//            this.collectionEntityRepo = new CouchBaseLiteRepository<CollectionTest>(CouchBaseLiteLiteManager, dbName);
+//            this.entityExtraEltRepo = new CouchBaseLiteRepository<TestExtraEltEntity>(CouchBaseLiteLiteManager, dbName);
 
 //            // Define mapping for polymorphism
 //            entityRepoCBL.PolymorphicTypes["TestExtraEltEntity"] = typeof(TestExtraEltEntity);
@@ -62,10 +62,10 @@
 
 //            var fileStore = getFileStore();
 //            Ioc.RegisterSingleton<IMvxFileStore>(fileStore);
-//            Ioc.RegisterSingleton<ICouchBaseLite>(
+//            Ioc.RegisterSingleton<ICouchBaseLiteLite>(
 //                () =>
 //                {
-//                    var cbl = new CouchBaseLite();
+//                    var cbl = new CouchBaseLiteLite();
 //                    cbl.Initialize(NoSQLCoreUnitTests.testContext.DeploymentDirectory + "\\");
 //                    return cbl;
 //                }
@@ -102,7 +102,7 @@
 //        }
 
 //        //[TestMethod]
-//        // Limitation : couchbase repository doesn't handle polymorphism in attribute's entity of type List, Dictionary...
+//        // Limitation : CouchBaseLite repository doesn't handle polymorphism in attribute's entity of type List, Dictionary...
 //        public override void Polymorphism()
 //        {
 //            base.Polymorphism();
@@ -127,7 +127,7 @@
 //            base.GetTests();
 //        }
 
-//        //[TestMethod, ExpectedException(typeof(CouchbaseLiteConcurrentException), AllowDerivedTypes = true)]
+//        //[TestMethod, ExpectedException(typeof(CouchBaseLiteLiteConcurrentException), AllowDerivedTypes = true)]
 //        [TestMethod]
 //        public void ConcurrentAccess()
 //        {
@@ -138,13 +138,13 @@
 //        [TestMethod]
 //        public override void ViewTests()
 //        {
-//            ((CouchBaseRepository<TestEntity>)entityRepo).CreateView<int>(nameof(TestEntity.NumberOfChildenInt), "1");
-//            ((CouchBaseRepository<TestEntity>)entityRepo).CreateView<string>(nameof(TestEntity.Cities), "1");
+//            ((CouchBaseLiteRepository<TestEntity>)entityRepo).CreateView<int>(nameof(TestEntity.NumberOfChildenInt), "1");
+//            ((CouchBaseLiteRepository<TestEntity>)entityRepo).CreateView<string>(nameof(TestEntity.Cities), "1");
 
 //            // Ensure that if we create a view two time that doen't raise an exception
-//            ((CouchBaseRepository<TestEntity>)entityRepo).CreateView<int>(nameof(TestEntity.NumberOfChildenInt), "1");
+//            ((CouchBaseLiteRepository<TestEntity>)entityRepo).CreateView<int>(nameof(TestEntity.NumberOfChildenInt), "1");
 
-//            //CouchbaseRepUnitTest.entityRepo.CreateView<string>(nameof(TestEntity.Cities), "1", true);
+//            //CouchBaseLiteRepUnitTest.entityRepo.CreateView<string>(nameof(TestEntity.Cities), "1", true);
 //            base.ViewTests();
 
 

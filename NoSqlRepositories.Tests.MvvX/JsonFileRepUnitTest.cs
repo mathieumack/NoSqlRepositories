@@ -28,8 +28,8 @@ namespace NoSqlRepositories.Tests.MvvX
             base.Setup();
             var dbName = "NoSQLTestDb";
 
-            // Add Sqlite plugin register. Do it only for unit tests (https://github.com/couchbase/couchbase-lite-net/wiki/Error-Dictionary#cblcs0001)
-            //Couchbase.Lite.Storage.SystemSQLite.Plugin.Register();
+            // Add Sqlite plugin register. Do it only for unit tests (https://github.com/CouchBaseLite/CouchBaseLite-lite-net/wiki/Error-Dictionary#cblcs0001)
+            //CouchBaseLite.Lite.Storage.SystemSQLite.Plugin.Register();
 
             var entityRepo = new JsonFileRepository<TestEntity>(Ioc.Resolve<IMvxFileStore>(), dbName);
             var entityRepo2 = new JsonFileRepository<TestEntity>(Ioc.Resolve<IMvxFileStore>(), dbName);

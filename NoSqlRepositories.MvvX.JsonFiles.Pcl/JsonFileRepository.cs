@@ -17,6 +17,14 @@ namespace NoSqlRepositories.MvvX.JsonFiles.Pcl
     {
         #region Members
 
+        public override NoSQLEngineType EngineType
+        {
+            get
+            {
+                return NoSQLEngineType.JsonFile;
+            }
+        }
+
         private readonly IMvxFileStore fileStore;
 
         private string dBName { get; set; }
