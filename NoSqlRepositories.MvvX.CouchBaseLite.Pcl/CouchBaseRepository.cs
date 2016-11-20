@@ -91,13 +91,13 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
         public override T GetById(string id)
         {
             //JsonConvert.DeserializeObject
-            var documentObjet = this.database.GetDocument(getInternalCBLId(id));
+            var documentObjet = this.database.GetDocument(GetInternalCBLId(id));
             if (documentObjet == null || string.IsNullOrEmpty(documentObjet.CurrentRevisionId) || documentObjet.Deleted)
             {
                 throw new KeyNotFoundNoSQLException();
             }
 
-            T entity = getEntityFromDocument(documentObjet);
+            T entity = GetEntityFromDocument(documentObjet);
             return entity;
         }
 
@@ -106,12 +106,12 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
         /// </summary>
         /// <param name="documentObjet"></param>
         /// <returns></returns>
-        private T getEntityFromDocument(IDocument documentObjet)
+        private T GetEntityFromDocument(IDocument documentObjet)
         {
-            return getEntityFromDocument(documentObjet.GetProperty("members"), (string)documentObjet.GetProperty("entityType"));
+            return GetEntityFromDocument(documentObjet.GetProperty("members"), (string)documentObjet.GetProperty("entityType"));
         }
 
-        private T getEntityFromDocument(object memberField, string originalEntityType)
+        private T GetEntityFromDocument(object memberField, string originalEntityType)
         {
 
             T entity = null;
@@ -163,7 +163,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
         public override bool Exist(string id)
         {
-            var documentObjet = this.database.GetDocument(getInternalCBLId(id));
+            var documentObjet = this.database.GetDocument(GetInternalCBLId(id));
             return documentObjet != null;
         }
 
@@ -199,7 +199,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
             }
             else
             {
-                documentObjet = database.GetDocument(getInternalCBLId(entity.Id));
+                documentObjet = database.GetDocument(GetInternalCBLId(entity.Id));
 
                 if (documentObjet.CurrentRevisionId != null)
                 {
@@ -260,7 +260,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
             if (updateMode == UpdateMode.db_implementation)
             {
-                var idDocument = getInternalCBLId(entity.Id);
+                var idDocument = GetInternalCBLId(entity.Id);
                 var updateDate = NoSQLRepoHelper.DateTimeUtcNow();
 
                 var documentObjet = database.GetDocument(idDocument);
@@ -324,7 +324,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
                 throw new NotImplementedException();
 
             long result = 0;
-            var documentObjet = this.database.GetDocument(getInternalCBLId(id));
+            var documentObjet = this.database.GetDocument(GetInternalCBLId(id));
             // Document found
             if (documentObjet != null && !documentObjet.Deleted)
             {
@@ -345,7 +345,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
         /// <param name="attachmentName">identify of the file to attach</param>
         public override void AddAttachment(string id, Stream fileStream, string contentType, string attachmentName)
         {
-            var existingEntity = this.database.GetDocument(getInternalCBLId(id));
+            var existingEntity = this.database.GetDocument(GetInternalCBLId(id));
             if (existingEntity == null)
                 throw new KeyNotFoundNoSQLException();
 
@@ -361,7 +361,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
         /// <param name="attachmentName">name of attachment to remove</param>
         public override void RemoveAttachment(string id, string attachmentName)
         {
-            var existingEntity = this.database.GetDocument(getInternalCBLId(id));
+            var existingEntity = this.database.GetDocument(GetInternalCBLId(id));
             if (existingEntity == null)
                 throw new KeyNotFoundNoSQLException(string.Format("Entity '{0}' not found", id));
 
@@ -417,7 +417,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
         private IAttachment GetAttachmentCore(string id, string attachmentName)
         {
-            var documentAttachment = this.database.GetDocument(getInternalCBLId(id));
+            var documentAttachment = this.database.GetDocument(GetInternalCBLId(id));
             if (documentAttachment == null)
                 throw new KeyNotFoundNoSQLException();
 
@@ -452,14 +452,14 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
                 using (var queryEnum = query.Run())
                 {
                     return queryEnum.Where(row => !row.Document.Deleted)
-                        .Select(row => getEntityFromDocument(row.Document)).ToList();
+                        .Select(row => GetEntityFromDocument(row.Document)).ToList();
                 }
             }
         }
 
         public override IList<string> GetAttachmentNames(string id)
         {
-            var documentAttachment = this.database.GetDocument(getInternalCBLId(id));
+            var documentAttachment = this.database.GetDocument(GetInternalCBLId(id));
             if (documentAttachment == null)
                 throw new KeyNotFoundNoSQLException();
 
@@ -488,7 +488,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
                 using (var queryEnum = query.Run())
                 {
                     return queryEnum.Where(row => !row.Document.Deleted)
-                        .Select(doc => getEntityFromDocument(doc.Document)).ToList();
+                        .Select(doc => GetEntityFromDocument(doc.Document)).ToList();
                 }
             }
         }
@@ -516,7 +516,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
                 using (var queryEnum = query.Run())
                 {
-                    return queryEnum.Select(doc => getIdFromInternalCBLId(doc.DocumentId)).ToList();
+                    return queryEnum.Select(doc => GetIdFromInternalCBLId(doc.DocumentId)).ToList();
                 }
             }
         }
@@ -613,7 +613,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
         /// </summary>
         /// <param name="entityId"></param>
         /// <returns></returns>
-        private string getInternalCBLId(string entityId)
+        private string GetInternalCBLId(string entityId)
         {
             string cblId;
             if (entityId.StartsWith(cblGeneratedIdPrefix))
@@ -626,7 +626,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
         }
 
 
-        private string getIdFromInternalCBLId(string cblId)
+        private string GetIdFromInternalCBLId(string cblId)
         {
             string id;
 
