@@ -8,8 +8,8 @@
     <ProjectGuid>{B01E9F47-DAEB-4E66-8335-DEDB515D8028}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NoSqlRepositories.MvvX.CouchBase.Pcl</RootNamespace>
-    <AssemblyName>NoSqlRepositories.MvvX.CouchBase.Pcl</AssemblyName>
+    <RootNamespace>NoSqlRepositories.MvvX.CouchBaseLite.Pcl</RootNamespace>
+    <AssemblyName>NoSqlRepositories.MvvX.CouchBaseLite.Pcl</AssemblyName>
     <DefaultLanguage>fr-FR</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
