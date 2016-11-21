@@ -1,166 +1,181 @@
-﻿//using Microsoft.VisualStudio.TestTools.UnitTesting;
-//using MvvmCross.Platform;
-//using MvvmCross.Plugins.File;
-//using MvvmCross.Plugins.File.Wpf;
-//using NoSqlRepositories.Test.Shared;
-//using NoSqlRepositories.Test.Shared.Entities;
-//using System;
-//using System.Collections.Generic;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MvvmCross.Platform;
+using MvvmCross.Plugins.File;
+using MvvmCross.Plugins.File.Wpf;
+using MvvmCross.Test.Core;
+using MvvX.Plugins.CouchBaseLite;
+using MvvX.Plugins.CouchBaseLite.Platform;
+using NoSqlRepositories.MvvX.CouchBaseLite.Pcl;
+using NoSqlRepositories.Test.Shared;
+using NoSqlRepositories.Test.Shared.Entities;
+using System;
+using System.Collections.Generic;
 
-//namespace NoSqlRepositories.Tests.MvvX
-//{
-//    [TestClass]
-//    public class CouchBaseLiteRepUnitTest : MvvXNoSQLCoreUnitTest
-//    {
+namespace NoSqlRepositories.Tests.MvvX
+{
+    [TestClass]
+    public class CouchBaseLiteRepUnitTest : MvxIoCSupportingTest
+    {
 
-//        #region Members
+        private NoSQLCoreUnitTests test;
 
-//        public static ICouchBaseLiteLite CouchBaseLiteLiteManager;
-
-//        #endregion
-
-//        #region Initialize & Clean
-
-//        [ClassInitialize()]
-//        public static new void ClassInitialize(TestContext testContext)
-//        {
-//            NoSQLCoreUnitTests.ClassInitialize(testContext);
-//        }
-
-//        [TestInitialize]
-//        public void TestInitialize()
-//        {
-//            base.Setup();
-
-//            // Instanciate the manager only 1 time
-//            if(CouchBaseLiteLiteManager == null)
-//            {
-//                CouchBaseLiteLiteManager = Mvx.Resolve<ICouchBaseLiteLite>();
-//            }
-
-//            // Add Sqlite plugin register. Do it only for unit tests (https://github.com/CouchBaseLite/CouchBaseLite-lite-net/wiki/Error-Dictionary#cblcs0001)
-//            //CouchBaseLite.Lite.Storage.SystemSQLite.Plugin.Register();
-
-//            string dbName = "TestDb";
-
-//            var entityRepoCBL = new CouchBaseLiteRepository<TestEntity>(CouchBaseLiteLiteManager, dbName);
-//            this.entityRepo = entityRepoCBL;
-//            var entityRepoCBL2 = new CouchBaseLiteRepository<TestEntity>(CouchBaseLiteLiteManager, dbName);
-//            this.entityRepo2 = entityRepoCBL;
-//            this.collectionEntityRepo = new CouchBaseLiteRepository<CollectionTest>(CouchBaseLiteLiteManager, dbName);
-//            this.entityExtraEltRepo = new CouchBaseLiteRepository<TestExtraEltEntity>(CouchBaseLiteLiteManager, dbName);
-
-//            // Define mapping for polymorphism
-//            entityRepoCBL.PolymorphicTypes["TestExtraEltEntity"] = typeof(TestExtraEltEntity);
-//            entityRepoCBL2.PolymorphicTypes["TestExtraEltEntity"] = typeof(TestExtraEltEntity);
-
-//        }
-
-//        protected override void AdditionalSetup()
-//        {
-//            base.AdditionalSetup();
-
-//            var fileStore = getFileStore();
-//            Ioc.RegisterSingleton<IMvxFileStore>(fileStore);
-//            Ioc.RegisterSingleton<ICouchBaseLiteLite>(
-//                () =>
-//                {
-//                    var cbl = new CouchBaseLiteLite();
-//                    cbl.Initialize(NoSQLCoreUnitTests.testContext.DeploymentDirectory + "\\");
-//                    return cbl;
-//                }
-//            ); 
-//        }
+        private CouchBaseLiteRepository<TestEntity> entityRepo;
+        private CouchBaseLiteRepository<TestEntity> entityRepo2;
+        private CouchBaseLiteRepository<TestExtraEltEntity> entityExtraEltRepo;
+        private CouchBaseLiteRepository<CollectionTest> collectionEntityRepo;
 
 
-//        #endregion
+        #region Members
 
-//        #region NoSQLCoreUnitTests test methods
+        public static ICouchBaseLite CouchBaseLiteLiteManager;
 
-//        [TestMethod]
-//        public override void InsertEntity()
-//        {
-//            base.InsertEntity();
-//        }
+        #endregion
 
-//        [TestMethod]
-//        public override void DeleteEntity()
-//        {
-//            base.DeleteEntity();
-//        }
-
-//        [TestMethod]
-//        public override void TimeZoneTest()
-//        {
-//            base.TimeZoneTest();
-//        }
-
-//        [TestMethod]
-//        public override void InsertExtraEltEntity()
-//        {
-//            base.InsertExtraEltEntity();
-//        }
-
-//        //[TestMethod]
-//        // Limitation : CouchBaseLite repository doesn't handle polymorphism in attribute's entity of type List, Dictionary...
-//        public override void Polymorphism()
-//        {
-//            base.Polymorphism();
-//        }
-
-//        [TestMethod]
-//        public void Attachments()
-//        {
-//            base.Attachments(Ioc.Resolve<IMvxFileStore>());
-//        }
-
-//        [TestMethod]
-//        public override void GetAll()
-//        {
-//            base.GetAll();
-//        }
+        #region Initialize & Clean
+        
+        [ClassInitialize()]
+        public static void ClassInitialize(TestContext testContext)
+        {
+            NoSQLCoreUnitTests.ClassInitialize(testContext);
+        }
 
 
-//        [TestMethod]
-//        public override void GetTests()
-//        {
-//            base.GetTests();
-//        }
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            base.Setup();
+            var dbName = "NoSQLTestCBLDb";
 
-//        //[TestMethod, ExpectedException(typeof(CouchBaseLiteLiteConcurrentException), AllowDerivedTypes = true)]
-//        [TestMethod]
-//        public void ConcurrentAccess()
-//        {
-//            base.ConcurrentAccess(true);
-//        }
-
-
-//        [TestMethod]
-//        public override void ViewTests()
-//        {
-//            ((CouchBaseLiteRepository<TestEntity>)entityRepo).CreateView<int>(nameof(TestEntity.NumberOfChildenInt), "1");
-//            ((CouchBaseLiteRepository<TestEntity>)entityRepo).CreateView<string>(nameof(TestEntity.Cities), "1");
-
-//            // Ensure that if we create a view two time that doen't raise an exception
-//            ((CouchBaseLiteRepository<TestEntity>)entityRepo).CreateView<int>(nameof(TestEntity.NumberOfChildenInt), "1");
-
-//            //CouchBaseLiteRepUnitTest.entityRepo.CreateView<string>(nameof(TestEntity.Cities), "1", true);
-//            base.ViewTests();
+            // Instanciate the manager only 1 time
+            if (CouchBaseLiteLiteManager == null)
+            {
+                CouchBaseLiteLiteManager = Mvx.Resolve<ICouchBaseLite>();
+            }
 
 
-//        }
+            // Add Sqlite plugin register. Do it only for unit tests (https://github.com/CouchBaseLite/CouchBaseLite-lite-net/wiki/Error-Dictionary#cblcs0001)
+            //CouchBaseLite.Lite.Storage.SystemSQLite.Plugin.Register();
 
-//        #endregion
+            entityRepo = new CouchBaseLiteRepository<TestEntity>(CouchBaseLiteLiteManager, dbName);
+            entityRepo2 = new CouchBaseLiteRepository<TestEntity>(CouchBaseLiteLiteManager, dbName);
+            collectionEntityRepo = new CouchBaseLiteRepository<CollectionTest>(CouchBaseLiteLiteManager, dbName);
+            entityExtraEltRepo = new CouchBaseLiteRepository<TestExtraEltEntity>(CouchBaseLiteLiteManager, dbName);
 
-//        #region Private
+            // Define mapping for polymorphism
+            entityRepo.PolymorphicTypes["TestExtraEltEntity"] = typeof(TestExtraEltEntity);
+            entityRepo2.PolymorphicTypes["TestExtraEltEntity"] = typeof(TestExtraEltEntity);
 
-//        private MvxWpfFileStore getFileStore()
-//        {
-//            return new MvxWpfFileStore(NoSQLCoreUnitTests.testContext.DeploymentDirectory + "\\");
-//        }
+            test = new NoSQLCoreUnitTests(entityRepo, entityRepo2, entityExtraEltRepo, collectionEntityRepo,
+                NoSQLCoreUnitTests.testContext.DeploymentDirectory);
+        }
 
-//        #endregion
+        protected override void AdditionalSetup()
+        {
+            base.AdditionalSetup();
+
+            var fileStore = new MvxWpfFileStore(NoSQLCoreUnitTests.testContext.DeploymentDirectory + "\\");
+            Ioc.RegisterSingleton<IMvxFileStore>(fileStore);
+
+            Ioc.RegisterSingleton<ICouchBaseLite>(
+                () =>
+                {
+                    var cbl = new CouchBaseLite();
+                    cbl.Initialize(NoSQLCoreUnitTests.testContext.DeploymentDirectory + "\\");
+                    return cbl;
+                }
+            );
+        }
+
+        #endregion
+
+        #region NoSQLCoreUnitTests test methods
+
+        [TestMethod]
+
+        public void InsertEntity()
+        {
+            test.InsertEntity();
+        }
+
+        [TestMethod]
+
+        public void DeleteEntity()
+        {
+            test.DeleteEntity();
+        }
+
+        [TestMethod]
+        public void TimeZoneTest()
+        {
+            test.TimeZoneTest();
+        }
+
+        [TestMethod]
+        public void InsertExtraEltEntity()
+        {
+            test.InsertExtraEltEntity();
+        }
+
+        //[TestMethod]
+        // Limitation : couchtest repository doesn't handle polymorphism in attribute's entity of type List, Dictionary...
+        public void Polymorphism()
+        {
+            test.Polymorphism();
+        }
+
+        [TestMethod]
+        public void Attachments()
+        {
+            test.Attachments();
+        }
+
+        [TestMethod]
+        public void GetAll()
+        {
+            test.GetAll();
+        }
 
 
-//    }
-//}
+        [TestMethod]
+        public void GetTests()
+        {
+            test.GetTests();
+        }
+
+        // Not supported for now
+        [TestMethod]
+        public void ConcurrentAccess()
+        {
+            test.ConcurrentAccess(false);
+        }
+
+        
+        [TestMethod]
+        public void ViewTests()
+        {
+            entityRepo.CreateView<int>(nameof(TestEntity.NumberOfChildenInt), "1");
+            entityRepo.CreateView<string>(nameof(TestEntity.Cities), "1");
+
+            // Ensure that if we create a view two time that doen't raise an exception
+            entityRepo.CreateView<int>(nameof(TestEntity.NumberOfChildenInt), "1");
+
+            //CouchBaseLiteRepUnitTest.entityRepo.CreateView<string>(nameof(TestEntity.Cities), "1", true);
+            test.ViewTests();
+
+
+        }
+
+        #endregion
+
+        #region Private
+
+        private MvxWpfFileStore getFileStore()
+        {
+            return new MvxWpfFileStore(NoSQLCoreUnitTests.testContext.DeploymentDirectory + "\\");
+        }
+
+        #endregion
+
+
+    }
+}

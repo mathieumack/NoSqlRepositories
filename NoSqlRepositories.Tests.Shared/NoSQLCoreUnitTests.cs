@@ -441,8 +441,12 @@ namespace NoSqlRepositories.Test.Shared
             var entitylist2 = entityRepo.GetAll();
             Assert.AreEqual(3, entitylist2.Count, "Bad number of doc. We should not return entities of an other collection");
 
+            collectionEntityRepo.TruncateCollection();
+            entitylist2 = entityRepo.GetAll();
+            Assert.AreEqual(3, entitylist2.Count, "Truncate of a collection should not affect other collections");
+
         }
-        
+
         public virtual void ConcurrentAccess(bool parallel)
         {
             var repo1 = this.entityRepo;

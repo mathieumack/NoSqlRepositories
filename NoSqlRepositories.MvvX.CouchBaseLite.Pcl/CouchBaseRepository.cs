@@ -288,14 +288,26 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
         public override long TruncateCollection()
         {
-            var query = database.CreateAllDocumentsQuery();
-            query.AllDocsMode = QueryAllDocsMode.AllDocs;
-            var result = query.Run();
-            foreach (var resultItem in result)
+            int deleted = 0;
+
+            IView view = database.GetView(CollectionName);
+            using (IQuery query = view.CreateQuery())
             {
-                resultItem.Document.Delete();
+                query.Prefetch = true;
+                query.AllDocsMode = QueryAllDocsMode.AllDocs;
+                query.IndexUpdateMode = IndexUpdateMode.Before;
+
+                using (var queryEnum = query.Run())
+                {
+                    foreach (IQueryRow resultItem in queryEnum)
+                    {
+                        resultItem.Document.Delete();
+                        deleted += 1;
+                    }
+                }
             }
-            return 0;
+
+            return deleted;
         }
 
         public override void DropCollection()
