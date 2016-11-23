@@ -10,6 +10,7 @@ using NoSqlRepositories.Test.Shared;
 using NoSqlRepositories.Test.Shared.Entities;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace NoSqlRepositories.Tests.MvvX
 {
@@ -80,7 +81,7 @@ namespace NoSqlRepositories.Tests.MvvX
                 () =>
                 {
                     var cbl = new CouchBaseLite();
-                    cbl.Initialize(NoSQLCoreUnitTests.testContext.DeploymentDirectory + "\\");
+                    cbl.Initialize(NoSQLCoreUnitTests.testContext.DeploymentDirectory + "\\DB");
                     return cbl;
                 }
             );
@@ -91,7 +92,6 @@ namespace NoSqlRepositories.Tests.MvvX
         #region NoSQLCoreUnitTests test methods
 
         [TestMethod]
-
         public void InsertEntity()
         {
             test.InsertEntity();
@@ -166,6 +166,25 @@ namespace NoSqlRepositories.Tests.MvvX
         }
 
         #endregion
+
+        [TestMethod]
+        public void NewBaseTests()
+        {
+            var dbFolderPath = Path.Combine(NoSQLCoreUnitTests.testContext.DeploymentDirectory, "DB2");
+            var fileStore = new MvxWpfFileStore(dbFolderPath);
+
+            // Ensure that the db file doesn't exists
+            if(fileStore.FolderExists(dbFolderPath))
+                fileStore.DeleteFolder(dbFolderPath, true);
+
+            var cbl = new CouchBaseLite();
+            cbl.Initialize(dbFolderPath);
+            
+            // Create a new db (the db file is missing)
+            entityRepo = new CouchBaseLiteRepository<TestEntity>(CouchBaseLiteLiteManager, "DB2");
+
+            Assert.AreEqual(false, entityRepo.Exist("123456"));
+        }
 
         #region Private
 

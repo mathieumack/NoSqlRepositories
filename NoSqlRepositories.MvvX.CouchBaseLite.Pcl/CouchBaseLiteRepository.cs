@@ -91,8 +91,8 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
         public override T GetById(string id)
         {
             //JsonConvert.DeserializeObject
-            var documentObjet = this.database.GetDocument(GetInternalCBLId(id));
-            if (documentObjet == null || string.IsNullOrEmpty(documentObjet.CurrentRevisionId) || documentObjet.Deleted)
+            var documentObjet = this.database.GetExistingDocument(GetInternalCBLId(id));
+            if (documentObjet == null || documentObjet.Deleted)
             {
                 throw new KeyNotFoundNoSQLException();
             }
@@ -163,7 +163,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
         public override bool Exist(string id)
         {
-            var documentObjet = this.database.GetDocument(GetInternalCBLId(id));
+            var documentObjet = this.database.GetExistingDocument(GetInternalCBLId(id));
             return documentObjet != null;
         }
 
@@ -199,6 +199,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
             }
             else
             {
+                // Get an existing document or return a new one if not exists
                 documentObjet = database.GetDocument(GetInternalCBLId(entity.Id));
 
                 if (documentObjet.CurrentRevisionId != null)
@@ -336,7 +337,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
                 throw new NotImplementedException();
 
             long result = 0;
-            var documentObjet = this.database.GetDocument(GetInternalCBLId(id));
+            var documentObjet = this.database.GetExistingDocument(GetInternalCBLId(id));
             // Document found
             if (documentObjet != null && !documentObjet.Deleted)
             {
@@ -357,7 +358,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
         /// <param name="attachmentName">identify of the file to attach</param>
         public override void AddAttachment(string id, Stream fileStream, string contentType, string attachmentName)
         {
-            var existingEntity = this.database.GetDocument(GetInternalCBLId(id));
+            var existingEntity = this.database.GetExistingDocument(GetInternalCBLId(id));
             if (existingEntity == null)
                 throw new KeyNotFoundNoSQLException();
 
@@ -373,7 +374,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
         /// <param name="attachmentName">name of attachment to remove</param>
         public override void RemoveAttachment(string id, string attachmentName)
         {
-            var existingEntity = this.database.GetDocument(GetInternalCBLId(id));
+            var existingEntity = this.database.GetExistingDocument(GetInternalCBLId(id));
             if (existingEntity == null)
                 throw new KeyNotFoundNoSQLException(string.Format("Entity '{0}' not found", id));
 
@@ -429,7 +430,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
         private IAttachment GetAttachmentCore(string id, string attachmentName)
         {
-            var documentAttachment = this.database.GetDocument(GetInternalCBLId(id));
+            var documentAttachment = this.database.GetExistingDocument(GetInternalCBLId(id));
             if (documentAttachment == null)
                 throw new KeyNotFoundNoSQLException();
 
@@ -471,7 +472,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
         public override IList<string> GetAttachmentNames(string id)
         {
-            var documentAttachment = this.database.GetDocument(GetInternalCBLId(id));
+            var documentAttachment = this.database.GetExistingDocument(GetInternalCBLId(id));
             if (documentAttachment == null)
                 throw new KeyNotFoundNoSQLException();
 
