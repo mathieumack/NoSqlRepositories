@@ -492,10 +492,11 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
         public override List<T> GetByField<TField>(string fieldName, TField value)
         {
             IView view = database.GetExistingView(CollectionName + "-" + fieldName);
-            view.UpdateIndex();
-
+            
             if (view == null)
                 throw new IndexNotFoundNoSQLException(string.Format("An index must be created on the fieldName '{0}' before calling GetByField", fieldName));
+
+            view.UpdateIndex();
 
             using (IQuery query = view.CreateQuery())
             {
