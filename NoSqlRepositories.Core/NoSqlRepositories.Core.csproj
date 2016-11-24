@@ -41,7 +41,9 @@
     <Compile Include="BulkInsertResult.cs" />
     <Compile Include="Helpers\NoSQLRepoHelper.cs" />
     <Compile Include="IBaseEntity.cs" />
+    <Compile Include="IAsyncNoSQLDB.cs" />
     <Compile Include="INoSQLDB.cs" />
+    <Compile Include="IAsyncNoSQLRepository.cs" />
     <Compile Include="INoSQLRepository.cs" />
     <Compile Include="InsertMode.cs" />
     <Compile Include="InsertResult.cs" />
@@ -53,6 +55,7 @@
     <Compile Include="NoSQLException\KeyNotFoundNoSQLException.cs" />
     <Compile Include="NoSQLException\QueryNotAcknowledgedException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="AsyncRepositoryBase.cs" />
     <Compile Include="RepositoryBase.cs" />
     <Compile Include="UpdateMode.cs" />
     <Compile Include="UpdateResult.cs" />
