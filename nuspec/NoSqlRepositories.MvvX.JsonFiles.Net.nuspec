@@ -21,7 +21,7 @@
     </metadata>
     <files>     
         <!-- ALL -->
-        <file src="..\NoSqlRepositories.JsonFile.NetNet\bin\Release\NoSqlRepositories.JsonFile.Net.dll" target="lib\net45" />
+        <file src="..\NoSqlRepositories.JsonFile.Net\bin\Release\NoSqlRepositories.JsonFile.Net.dll" target="lib\net45" />
     </files>
 </package>
 
