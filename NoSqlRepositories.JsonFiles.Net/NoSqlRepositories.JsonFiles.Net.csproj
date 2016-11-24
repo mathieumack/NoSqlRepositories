@@ -7,8 +7,8 @@
     <ProjectGuid>{A874E81B-5C5C-472C-9ECC-AA5B02840BBC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NoSqlRepositories.Json.Net</RootNamespace>
-    <AssemblyName>NoSqlRepositories.Json.Net</AssemblyName>
+    <RootNamespace>NoSqlRepositories.JsonFiles.Net</RootNamespace>
+    <AssemblyName>NoSqlRepositories.JsonFiles.Net</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
