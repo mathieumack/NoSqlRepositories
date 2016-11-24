@@ -547,19 +547,23 @@ namespace NoSqlRepositories.Test.Shared
             // Add the 3td et 4th entities to en secondary repo to ensure insert are visible throw all repositories
             var entity3 = TestHelper.GetEntity3();
             entity3.Id = "3";
-            entityRepo2.InsertOne(entity3);
+            entityRepo.InsertOne(entity3);
 
             var entity4 = TestHelper.GetEntity4();
             entity4.Id = "4";
-            entityRepo2.InsertOne(entity4);
+            entityRepo.InsertOne(entity4);
 
             //
             // Get data from an "Int" field
             //
 
+            // Try on an other repo
+            var res12 = entityRepo2.GetByField<int>(nameof(TestEntity.NumberOfChildenInt), 0).OrderBy(e => e.Id).ToList();
+
             // Filter on 1 value
             var res1 = entityRepo.GetByField<int>(nameof(TestEntity.NumberOfChildenInt), 0).OrderBy(e => e.Id).ToList();
 
+            
             Assert.AreEqual(2, res1.Count);
             Assert.AreEqual("2", res1[0].Id);
             Assert.AreEqual("3", res1[1].Id);
