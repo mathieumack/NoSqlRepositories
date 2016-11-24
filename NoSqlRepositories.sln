@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoSqlRepositories.Core", "N
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Custom repositories", "Custom repositories", "{9BD0BD33-E424-4206-A12D-E9A8A2783867}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoSqlRepositories.JsonFiles.Net", "NoSqlRepositories.JsonFile.Net\NoSqlRepositories.JsonFiles.Net.csproj", "{A874E81B-5C5C-472C-9ECC-AA5B02840BBC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoSqlRepositories.JsonFiles.Net", "NoSqlRepositories.JsonFiles.Net\NoSqlRepositories.JsonFiles.Net.csproj", "{A874E81B-5C5C-472C-9ECC-AA5B02840BBC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoSqlRepositories.AzureDocumentDb.Net", "NoSqlRepositories.AzureDocumentDb.Net\NoSqlRepositories.AzureDocumentDb.Net.csproj", "{D6795C6C-30CB-4653-91C1-8FC33E3C1A16}"
 EndProject

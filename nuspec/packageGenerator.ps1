@@ -39,8 +39,8 @@ $nuSpecFile =  $locationNuspec + '\NoSqlRepositories.MvvX.JsonFiles.Pcl.nuspec'
 Foreach-Object {$_ -replace "{BuildNumberVersion}", "$ProductVersion" } | 
 Set-Content $nuSpecFile
 
-write-host "Update nuspec versions NoSqlRepositories.MvvX.JsonFiles.Net.nuspec"	 -foreground "DarkGray"
-$nuSpecFile =  $locationNuspec + '\NoSqlRepositories.MvvX.JsonFiles.Net.nuspec'
+write-host "Update nuspec versions NoSqlRepositories.JsonFiles.Net.nuspec"	 -foreground "DarkGray"
+$nuSpecFile =  $locationNuspec + '\NoSqlRepositories.JsonFiles.Net.nuspec'
 (Get-Content $nuSpecFile) | 
 Foreach-Object {$_ -replace "{BuildNumberVersion}", "$ProductVersion" } | 
 Set-Content $nuSpecFile
@@ -53,8 +53,8 @@ write-host "Generate nuget package for NoSqlRepositories.MvvX.CouchBaseLite.Pcl.
 .\NuGet.exe pack NoSqlRepositories.MvvX.CouchBaseLite.Pcl.nuspec
 write-host "Generate nuget package for NoSqlRepositories.MvvX.JsonFiles.Pcl.nuspec"	 -foreground "DarkGray"
 .\NuGet.exe pack NoSqlRepositories.MvvX.JsonFiles.Pcl.nuspec
-write-host "Generate nuget package for NoSqlRepositories.MvvX.JsonFiles.Net.nuspec"	 -foreground "DarkGray"
-.\NuGet.exe pack NoSqlRepositories.MvvX.JsonFiles.Net.nuspec
+write-host "Generate nuget package for NoSqlRepositories.JsonFiles.Net.nuspec"	 -foreground "DarkGray"
+.\NuGet.exe pack NoSqlRepositories.JsonFiles.Net.nuspec
 
 $apiKey = $env:NuGetApiKey
 	
@@ -69,5 +69,5 @@ write-host NoSqlRepositories.MvvX.CouchBaseLite.Pcl.$ProductVersion.nupkg -foreg
 write-host NoSqlRepositories.MvvX.JsonFiles.Pcl.$ProductVersion.nupkg -foreground "DarkGray"
 .\NuGet push NoSqlRepositories.MvvX.JsonFiles.Pcl.$ProductVersion.nupkg -Source https://www.nuget.org/api/v2/package -ApiKey $apiKey
 
-write-host NoSqlRepositories.MvvX.JsonFiles.Net.$ProductVersion.nupkg -foreground "DarkGray"
-.\NuGet push NoSqlRepositories.MvvX.JsonFiles.Net.$ProductVersion.nupkg -Source https://www.nuget.org/api/v2/package -ApiKey $apiKey
+write-host NoSqlRepositories.JsonFiles.Net.$ProductVersion.nupkg -foreground "DarkGray"
+.\NuGet push NoSqlRepositories.JsonFiles.Net.$ProductVersion.nupkg -Source https://www.nuget.org/api/v2/package -ApiKey $apiKey

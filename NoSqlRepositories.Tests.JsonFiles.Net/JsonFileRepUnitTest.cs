@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NoSqlRepositories.Json.Net;
+using NoSqlRepositories.JsonFiles.Net;
 using NoSqlRepositories.Test.Shared;
 using NoSqlRepositories.Test.Shared.Entities;
 

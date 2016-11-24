@@ -2,7 +2,7 @@
 using NoSqlRepositories.Core;
 using NoSqlRepositories.Core.Helpers;
 using NoSqlRepositories.Core.NoSQLException;
-using NoSqlRepositories.Json.Net.Helpers;
+using NoSqlRepositories.JsonFiles.Net.Helpers;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace NoSqlRepositories.Json.Net
+namespace NoSqlRepositories.JsonFiles.Net
 {
     public class JsonFileRepository<T> : RepositoryBase<T> where T : class, IBaseEntity
     {
