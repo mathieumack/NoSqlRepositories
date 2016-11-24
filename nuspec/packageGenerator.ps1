@@ -58,7 +58,7 @@ write-host "Generate nuget package for NoSqlRepositories.JsonFiles.Net.nuspec"	 
 
 $apiKey = $env:NuGetApiKey
 	
-write-host "Phblish nuget packages" -foreground "Green"
+write-host "Publish nuget packages" -foreground "Green"
 
 write-host NoSqlRepositories.Core.$ProductVersion.nupkg -foreground "DarkGray"
 .\NuGet push NoSqlRepositories.Core.$ProductVersion.nupkg -Source https://www.nuget.org/api/v2/package -ApiKey $apiKey
