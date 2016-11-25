@@ -10,7 +10,7 @@ namespace NoSqlRepositories.Test.Shared.Helpers
     public class TestHelper
     {
 
-        internal static TestEntity GetEntity1()
+        public static TestEntity GetEntity1()
         {
             return new TestEntity
             {
@@ -25,7 +25,7 @@ namespace NoSqlRepositories.Test.Shared.Helpers
             };
         }
 
-        internal static TestExtraEltEntity GetEntity2()
+        public static TestExtraEltEntity GetEntity2()
         {
             return new TestExtraEltEntity
             {
@@ -44,7 +44,7 @@ namespace NoSqlRepositories.Test.Shared.Helpers
             };
         }
 
-        internal static TestEntity GetEntity3()
+        public static TestEntity GetEntity3()
         {
             return new TestEntity
             {
@@ -59,7 +59,7 @@ namespace NoSqlRepositories.Test.Shared.Helpers
             };
         }
 
-        internal static TestEntity GetEntity4()
+        public static TestEntity GetEntity4()
         {
             return new TestEntity
             {

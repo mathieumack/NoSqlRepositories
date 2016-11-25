@@ -459,7 +459,6 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
         {
 
             IView view = database.GetView(CollectionName);
-            view.UpdateIndex();
 
             using (IQuery query = view.CreateQuery())
             {
@@ -495,9 +494,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
             
             if (view == null)
                 throw new IndexNotFoundNoSQLException(string.Format("An index must be created on the fieldName '{0}' before calling GetByField", fieldName));
-
-            view.UpdateIndex();
-
+            
             using (IQuery query = view.CreateQuery())
             {
                 query.Prefetch = true;
@@ -527,9 +524,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
             
             if (view == null)
                 throw new IndexNotFoundNoSQLException(string.Format("An index must be created on the fieldName '{0}' before calling GetByField", fieldName));
-
-            view.UpdateIndex();
-
+            
             using (IQuery query = view.CreateQuery())
             {
                 query.Prefetch = false;
@@ -558,24 +553,22 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
             if (view == null)
             {
                 view = database.GetView(CollectionName);
-                view.SetMap(
-                (doc, emit) =>
-                {
-                    if (!doc.Keys.Contains("collection") || !doc.Keys.Contains("members"))
-                        return; // bad doc format, ignore it
+            }
+
+            view.SetMap(
+            (doc, emit) =>
+            {
+                if (!doc.Keys.Contains("collection") || !doc.Keys.Contains("members"))
+                    return; // bad doc format, ignore it
 
                     var collection = (string)doc["collection"];
-                    if (collection == null | !collection.Equals(CollectionName))
-                        return; // doc type is not the one of the current collection
+                if (collection == null | !collection.Equals(CollectionName))
+                    return; // doc type is not the one of the current collection
 
                     emit(doc["_id"], doc["_id"]);
-                }
-            , "1");
             }
-            else
-            {
-                // View already exists, nothing to do
-            }
+        , "1");
+
         }
 
         public void CreateView<TField>(string fieldName, string version)

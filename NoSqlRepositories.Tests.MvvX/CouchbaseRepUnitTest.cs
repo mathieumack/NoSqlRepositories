@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿
+using System.IO;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MvvmCross.Platform;
 using MvvmCross.Plugins.File;
 using MvvmCross.Plugins.File.Wpf;
@@ -8,9 +10,9 @@ using MvvX.Plugins.CouchBaseLite.Platform;
 using NoSqlRepositories.MvvX.CouchBaseLite.Pcl;
 using NoSqlRepositories.Test.Shared;
 using NoSqlRepositories.Test.Shared.Entities;
+using NoSqlRepositories.Test.Shared.Extensions;
+using NoSqlRepositories.Test.Shared.Helpers;
 using System;
-using System.Collections.Generic;
-using System.IO;
 
 namespace NoSqlRepositories.Tests.MvvX
 {
@@ -19,6 +21,8 @@ namespace NoSqlRepositories.Tests.MvvX
     {
 
         private NoSQLCoreUnitTests test;
+        private static TestContext testContext;
+        private const string dbName = "NoSQLTestCBLDb";
 
         private CouchBaseLiteRepository<TestEntity> entityRepo;
         private CouchBaseLiteRepository<TestEntity> entityRepo2;
@@ -37,6 +41,7 @@ namespace NoSqlRepositories.Tests.MvvX
         [ClassInitialize()]
         public static void ClassInitialize(TestContext testContext)
         {
+            CouchBaseLiteRepUnitTest.testContext = testContext;
             NoSQLCoreUnitTests.ClassInitialize(testContext);
         }
 
@@ -45,7 +50,6 @@ namespace NoSqlRepositories.Tests.MvvX
         public void TestInitialize()
         {
             base.Setup();
-            var dbName = "NoSQLTestCBLDb";
 
             // Instanciate the manager only 1 time
             if (CouchBaseLiteLiteManager == null)
@@ -149,19 +153,67 @@ namespace NoSqlRepositories.Tests.MvvX
             test.ConcurrentAccess(false);
         }
 
+        private void CreateViews(CouchBaseLiteRepository<TestEntity> entityRepo)
+        {
+
+            entityRepo.CreateView<int>(nameof(TestEntity.NumberOfChildenInt), "1");
+            entityRepo.CreateView<string>(nameof(TestEntity.Cities), "1");
+            // Ensure that if we create a view two time that doen't raise an exception
+            entityRepo.CreateView<int>(nameof(TestEntity.NumberOfChildenInt), "1");
+        }
         
         [TestMethod]
         public void ViewTests()
         {
-            entityRepo.CreateView<int>(nameof(TestEntity.NumberOfChildenInt), "1");
-            entityRepo.CreateView<string>(nameof(TestEntity.Cities), "1");
-
-            // Ensure that if we create a view two time that doen't raise an exception
-            entityRepo.CreateView<int>(nameof(TestEntity.NumberOfChildenInt), "1");
-
+            CreateViews(entityRepo);
             //CouchBaseLiteRepUnitTest.entityRepo.CreateView<string>(nameof(TestEntity.Cities), "1", true);
             test.ViewTests();
+        }
+        
+        [TestMethod]
+        public void ExistingViewTests()
+        {
+            testContext.DeployDirectory(@"Ressources\nosqltestcbldb.cblite2", @"ExistingRepo\nosqltestcbldb.cblite2");
+            var existingRepoManager = new CouchBaseLite();
+            existingRepoManager.Initialize(Path.Combine(NoSQLCoreUnitTests.testContext.DeploymentDirectory,"ExistingRepo"));
+            
+            entityRepo = new CouchBaseLiteRepository<TestEntity>(existingRepoManager, dbName);
+            CreateViews(entityRepo);
 
+
+            var res3 = entityRepo.GetAll();
+            Assert.AreEqual(4, res3.Count, "Existing view TestEntity contains 5 docs");
+
+            var res1 = entityRepo.GetByField<int>(nameof(TestEntity.NumberOfChildenInt), 0);
+            Assert.AreEqual(2, res1.Count, "Existing view TestEntity-NumberOfChildenInt contains 2 docs");
+
+            var res2 = entityRepo.GetByField<string>(nameof(TestEntity.Cities), "Andernos");
+            Assert.AreEqual(1, res2.Count, "Existing view TestEntity-Cities contains 1 docs");
+
+
+
+            var entity6 = new TestEntity
+            {
+                Id = "6",
+                Birthday = new DateTime(1985, 08, 12, 0, 0, 0, DateTimeKind.Utc),
+                IsAMan = true,
+                Name = "Balan",
+                PoidsFloat = 70.15F,
+                PoidsDouble = 70.15,
+                NumberOfChildenInt = 0,
+                NumberOfChildenLong = 9999999999999999
+            };
+
+            entityRepo.InsertOne(entity6);
+
+            var res4 = entityRepo.GetByField<int>(nameof(TestEntity.NumberOfChildenInt), 0);
+            Assert.AreEqual(3, res4.Count, "Existing view TestEntity-NumberOfChildenInt contains 5 docs");
+
+            var res5 = entityRepo.GetByField<string>(nameof(TestEntity.Cities), "Andernos");
+            Assert.AreEqual(1, res5.Count, "Existing view TestEntity-Cities contains 1 docs");
+
+            var res6 = entityRepo.GetAll();
+            Assert.AreEqual(5, res6.Count, "Existing view TestEntity contains 5 docs");
 
         }
 

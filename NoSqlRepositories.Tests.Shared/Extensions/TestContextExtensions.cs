@@ -10,7 +10,9 @@ namespace NoSqlRepositories.Test.Shared.Extensions
             foreach (DirectoryInfo dir in source.GetDirectories())
                 CopyFolder(dir, target.CreateSubdirectory(dir.Name));
             foreach (FileInfo file in source.GetFiles())
+            {
                 file.CopyTo(Path.Combine(target.FullName, file.Name), true);
+            }
         }
 
         public static void CopyFolder(string source, string target)
@@ -51,6 +53,9 @@ namespace NoSqlRepositories.Test.Shared.Extensions
 
             if (!Directory.Exists(inputDirPath))
                 throw new FileNotFoundException();
+
+            if (!Directory.Exists(outputDirPath))
+                Directory.CreateDirectory(outputDirPath);
 
             CopyFolder(inputDirPath, outputDirPath);
         }
