@@ -49,8 +49,14 @@ namespace NoSqlRepositories.Tests.MvvX
         }
 
         #endregion
-        
+
         #region NoSQLCoreUnitTests test methods
+
+        [TestMethod]
+        public void CompactDatabase()
+        {
+            test.CompactDatabase();
+        }
 
         [TestMethod]
 

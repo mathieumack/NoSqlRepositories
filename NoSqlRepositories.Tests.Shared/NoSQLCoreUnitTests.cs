@@ -10,6 +10,7 @@ using NoSqlRepositories.Core;
 using NoSqlRepositories.Test.Shared.Entities;
 using NoSqlRepositories.Core.NoSQLException;
 using NoSqlRepositories.Test.Shared.Extensions;
+using System.Threading;
 
 namespace NoSqlRepositories.Test.Shared
 {
@@ -56,6 +57,54 @@ namespace NoSqlRepositories.Test.Shared
         }
 
         #region Test methods
+
+        public virtual void ExpireAt()
+        {
+            entityRepo.TruncateCollection();
+
+            var entity1 = TestHelper.GetEntity1();
+            entityRepo.InsertOne(entity1);
+            Assert.IsFalse(string.IsNullOrEmpty(entity1.Id), "DocId has not been set during insert");
+
+            var itemsInDatabase = entityRepo.GetAll();
+
+            // We try to delete the item :
+            entityRepo.ExpireAt(entity1.Id, DateTime.Now.AddSeconds(5));
+
+            var itemsInDatabase2 = entityRepo.GetAll();
+
+            Assert.IsTrue(itemsInDatabase.Count == itemsInDatabase2.Count, "entityRepo has not been physically deleted after compact");
+
+            Thread.Sleep(7000);
+
+            // We compact the database :
+            entityRepo.CompactDatabase();
+
+            var itemsInDatabaseAfterCompact = entityRepo.GetAll();
+
+            Assert.IsTrue(itemsInDatabaseAfterCompact.Count == itemsInDatabase.Count - 1, "entityRepo has not been physically deleted after compact");
+        }
+
+        public virtual void CompactDatabase()
+        {
+            entityRepo.TruncateCollection();
+
+            var entity1 = TestHelper.GetEntity1();
+            entityRepo.InsertOne(entity1);
+            Assert.IsFalse(string.IsNullOrEmpty(entity1.Id), "DocId has not been set during insert");
+
+            var itemsInDatabase = entityRepo.GetAll();
+
+            // We try to delete the item :
+            entityRepo.Delete(entity1.Id, false);
+
+            // We compact the database :
+            entityRepo.CompactDatabase();
+
+            var itemsInDatabaseAfterCompact = entityRepo.GetAll();
+
+            Assert.IsTrue(itemsInDatabaseAfterCompact.Count == itemsInDatabase.Count - 1, "entityRepo has not been physically deleted after compact");
+        }
 
         public virtual void InsertEntity()
         {

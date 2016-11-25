@@ -92,6 +92,18 @@ namespace NoSqlRepositories.Tests.MvvX
         #region NoSQLCoreUnitTests test methods
 
         [TestMethod]
+        public void ExpireAt()
+        {
+            test.ExpireAt();
+        }
+
+        [TestMethod]
+        public void CompactDatabase()
+        {
+            test.CompactDatabase();
+        }
+
+        [TestMethod]
         public void InsertEntity()
         {
             test.InsertEntity();

@@ -80,7 +80,7 @@ namespace NoSqlRepositories.AzureDocumentDb.Net
                 Debug.WriteLine("Deleted document {0}", id);
                 return 1;
             }
-            catch (DocumentClientException de)
+            catch (DocumentClientException)
             {
                 throw;
             }

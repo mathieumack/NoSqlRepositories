@@ -87,10 +87,23 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
                 throw new NullReferenceException("CreateConnection returned no connection");
         }
 
+        public override bool CompactDatabase()
+        {
+            return this.database.Compact();
+        }
+
+        public override void ExpireAt(string id, DateTime? dateLimit)
+        {
+            var documentObjet = this.database.GetExistingDocument(GetInternalCBLId(id));
+            if (documentObjet == null || documentObjet.Deleted)
+            {
+                throw new KeyNotFoundNoSQLException();
+            }
+            documentObjet.ExpireAt(dateLimit);
+        }
 
         public override T GetById(string id)
         {
-            //JsonConvert.DeserializeObject
             var documentObjet = this.database.GetExistingDocument(GetInternalCBLId(id));
             if (documentObjet == null || documentObjet.Deleted)
             {
@@ -115,11 +128,9 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
         {
 
             T entity = null;
-
-            // Comprendre pourquoi T ou Jobject sont retournés alternativement
+            
             if (memberField is JObject)
             {
-
                 JObject testobject = (JObject)memberField;
 
                 // Determine the destination type to handle polymorphism
@@ -336,9 +347,6 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
         public override long Delete(string id, bool physical)
         {
-            if (!physical)
-                throw new NotImplementedException();
-
             long result = 0;
             var documentObjet = this.database.GetExistingDocument(GetInternalCBLId(id));
             // Document found

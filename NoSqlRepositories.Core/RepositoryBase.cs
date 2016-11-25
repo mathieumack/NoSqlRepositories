@@ -20,8 +20,12 @@ namespace NoSqlRepositories.Core
         {
             return Delete(id, true);
         }
-
+        
         public abstract long Delete(string id, bool physical);
+
+        public abstract bool CompactDatabase();
+
+        public abstract void ExpireAt(string id, DateTime? dateLimit);
 
         public abstract void DropCollection();
 

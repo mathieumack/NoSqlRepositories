@@ -198,9 +198,6 @@ namespace NoSqlRepositories.JsonFiles.Net
 
         public override long Delete(string id, bool physical)
         {
-            if (!physical)
-                throw new NotImplementedException();
-
             if (localDb.ContainsKey(id))
             {
                 foreach (var attachmentName in GetAttachmentNames(id))
@@ -248,6 +245,21 @@ namespace NoSqlRepositories.JsonFiles.Net
         #endregion
 
         #region INoSQLDB
+
+        public override void ExpireAt(string id, DateTime? dateLimit)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool CompactDatabase()
+        {
+            var items = GetAll();
+            foreach (var item in items.Where(e => e.Deleted))
+            {
+                Delete(item.Id, true);
+            }
+            return true;
+        }
 
         public override long TruncateCollection()
         {

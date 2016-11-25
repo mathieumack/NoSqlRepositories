@@ -1,4 +1,5 @@
 ﻿using NoSqlRepositories.Core;
+using System;
 
 namespace NoSqlRepositories.Core
 {
@@ -14,6 +15,23 @@ namespace NoSqlRepositories.Core
         /// </summary>
         /// <param name="dbName"></param>
         void UseDatabase(string dbName);
+
+        /// <summary>
+        /// Delete temporary items (expired, logical deleted, ...)
+        /// Do not works with JsonFiles repositories yet
+        /// </summary>
+        /// <returns>True if the refresh if ok, false if there is an error</returns>
+        bool CompactDatabase();
+
+        /// <summary>
+        /// Sets an absolute point in time for the document to expire. Must be a DateTime 
+        /// in the future. Pass a null value to cancel an expiration.
+        /// This item will be deleted after a date with the CompactDatabase() method
+        /// Do not works with JsonFiles repositories yet, only CouchBaseLite
+        /// </summary>
+        /// <param name="id">Id of the document</param>
+        /// <param name="dateLimit">Limit date, can be null to delete a previous date</param>
+        void ExpireAt(string id, DateTime? dateLimit);
 
         long TruncateCollection();
 
