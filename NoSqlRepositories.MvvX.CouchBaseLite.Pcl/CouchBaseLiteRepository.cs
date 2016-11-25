@@ -586,42 +586,38 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
             if (view == null)
             {
                 view = database.GetView(viewName);
-                view.SetMap(
-                    (doc, emit) =>
-                    {
-                        if (!doc.Keys.Contains("collection") || !doc.Keys.Contains("members"))
-                            return; // bad doc format, ignore it
-
-                        var collection = (string)doc["collection"];
-                        if (collection == null | !collection.Equals(CollectionName))
-                            return; // doc type is not the one of the current collection
-
-                        JObject jObj = (JObject)doc["members"];
-
-                        string id = jObj.GetValue("Id").Value<string>();
-
-                        JToken jToken = jObj.GetValue(fieldName);
-                        if (jToken is JArray)
-                        {
-                            foreach (var arrayToken in (JArray)jToken)
-                            {
-                                TField fieldValue = arrayToken.Value<TField>();
-                                emit(fieldValue, id);
-                            }
-                        }
-                        else
-                        {
-                            TField fieldValue = jToken.Value<TField>();
-                            emit(fieldValue, id);
-                        }
-                    }
-                , version);
-
             }
-            else
-            {
-                // View already exists, nothing to do
-            }
+
+            view.SetMap(
+                  (doc, emit) =>
+                  {
+                      if (!doc.Keys.Contains("collection") || !doc.Keys.Contains("members"))
+                          return; // bad doc format, ignore it
+
+                       var collection = (string)doc["collection"];
+                      if (collection == null | !collection.Equals(CollectionName))
+                          return; // doc type is not the one of the current collection
+
+                       JObject jObj = (JObject)doc["members"];
+
+                      string id = jObj.GetValue("Id").Value<string>();
+
+                      JToken jToken = jObj.GetValue(fieldName);
+                      if (jToken is JArray)
+                      {
+                          foreach (var arrayToken in (JArray)jToken)
+                          {
+                              TField fieldValue = arrayToken.Value<TField>();
+                              emit(fieldValue, id);
+                          }
+                      }
+                      else
+                      {
+                          TField fieldValue = jToken.Value<TField>();
+                          emit(fieldValue, id);
+                      }
+                  }
+              , version);
         }
 
         #endregion
