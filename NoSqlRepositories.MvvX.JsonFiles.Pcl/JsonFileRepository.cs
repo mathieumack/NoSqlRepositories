@@ -276,6 +276,7 @@ namespace NoSqlRepositories.MvvX.JsonFiles.Pcl
         public override void ExpireAt(string id, DateTime? dateLimit)
         {
             config.ExpireAt(id, dateLimit);
+            SavedDbConfig();
         }
 
         public override bool CompactDatabase()
