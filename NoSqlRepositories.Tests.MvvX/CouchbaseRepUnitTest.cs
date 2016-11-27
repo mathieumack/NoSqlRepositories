@@ -96,76 +96,76 @@ namespace NoSqlRepositories.Tests.MvvX
         #region NoSQLCoreUnitTests test methods
 
         [TestMethod]
-        public void ExpireAt()
+        public void MvvX_CBLite_ExpireAt()
         {
             test.ExpireAt();
         }
 
         [TestMethod]
-        public void CompactDatabase()
+        public void MvvX_CBLite_CompactDatabase()
         {
             test.CompactDatabase();
         }
 
         [TestMethod]
-        public void InsertEntity()
+        public void MvvX_CBLite_InsertEntity()
         {
             test.InsertEntity();
         }
 
         [TestMethod]
 
-        public void DeleteEntity()
+        public void MvvX_CBLite_DeleteEntity()
         {
             test.DeleteEntity();
         }
 
         [TestMethod]
-        public void TimeZoneTest()
+        public void MvvX_CBLite_TimeZoneTest()
         {
             test.TimeZoneTest();
         }
 
         [TestMethod]
-        public void InsertExtraEltEntity()
+        public void MvvX_CBLite_InsertExtraEltEntity()
         {
             test.InsertExtraEltEntity();
         }
 
         //[TestMethod]
         // Limitation : couchtest repository doesn't handle polymorphism in attribute's entity of type List, Dictionary...
-        public void Polymorphism()
+        public void MvvX_CBLite_Polymorphism()
         {
             test.Polymorphism();
         }
 
         [TestMethod]
-        public void Attachments()
+        public void MvvX_CBLite_Attachments()
         {
             test.Attachments();
         }
 
         [TestMethod]
-        public void GetAll()
+        public void MvvX_CBLite_GetAll()
         {
             test.GetAll();
         }
 
 
         [TestMethod]
-        public void GetTests()
+        public void MvvX_CBLite_GetTests()
         {
             test.GetTests();
         }
 
         // Not supported for now
         [TestMethod]
-        public void ConcurrentAccess()
+        public void MvvX_CBLite_ConcurrentAccess()
         {
             test.ConcurrentAccess(false);
         }
 
-        private void CreateViews(CouchBaseLiteRepository<TestEntity> entityRepo)
+        private void MvvX_CBLite_CreateViews(CouchBaseLiteRepository<TestEntity> entityRepo)
         {
 
             entityRepo.CreateView<int>(nameof(TestEntity.NumberOfChildenInt), "1");
@@ -175,22 +175,22 @@ namespace NoSqlRepositories.Tests.MvvX
         }
         
         [TestMethod]
-        public void ViewTests()
+        public void MvvX_CBLite_ViewTests()
         {
-            CreateViews(entityRepo);
+            MvvX_CBLite_CreateViews(entityRepo);
             //CouchBaseLiteRepUnitTest.entityRepo.CreateView<string>(nameof(TestEntity.Cities), "1", true);
             test.ViewTests();
         }
         
         [TestMethod]
-        public void ExistingViewTests()
+        public void MvvX_CBLite_ExistingViewTests()
         {
             testContext.DeployDirectory(@"Ressources\nosqltestcbldb.cblite2", @"ExistingRepo\nosqltestcbldb.cblite2");
             var existingRepoManager = new CouchBaseLite();
             existingRepoManager.Initialize(Path.Combine(NoSQLCoreUnitTests.testContext.DeploymentDirectory,"ExistingRepo"));
             
             entityRepo = new CouchBaseLiteRepository<TestEntity>(existingRepoManager, dbName);
-            CreateViews(entityRepo);
+            MvvX_CBLite_CreateViews(entityRepo);
 
 
             var res3 = entityRepo.GetAll();
@@ -232,7 +232,7 @@ namespace NoSqlRepositories.Tests.MvvX
         #endregion
 
         [TestMethod]
-        public void NewBaseTests()
+        public void MvvX_CBLite_NewBaseTests()
         {
             var dbFolderPath = Path.Combine(NoSQLCoreUnitTests.testContext.DeploymentDirectory, "DB2");
             var fileStore = new MvxWpfFileStore(dbFolderPath);

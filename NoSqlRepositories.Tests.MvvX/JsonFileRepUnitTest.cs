@@ -53,73 +53,79 @@ namespace NoSqlRepositories.Tests.MvvX
         #region NoSQLCoreUnitTests test methods
 
         [TestMethod]
-        public void CompactDatabase()
+        public void MvvX_JsonFiles_ExpireAt()
+        {
+            test.ExpireAt();
+        }
+
+        [TestMethod]
+        public void MvvX_JsonFiles_CompactDatabase()
         {
             test.CompactDatabase();
         }
 
         [TestMethod]
 
-        public void InsertEntity()
+        public void MvvX_JsonFiles_InsertEntity()
         {
             test.InsertEntity();
         }
 
         [TestMethod]
 
-        public void DeleteEntity()
+        public void MvvX_JsonFiles_DeleteEntity()
         {
             test.DeleteEntity();
         }
 
         [TestMethod]
-        public void TimeZoneTest()
+        public void MvvX_JsonFiles_TimeZoneTest()
         {
             test.TimeZoneTest();
         }
 
         [TestMethod]
-        public void InsertExtraEltEntity()
+        public void MvvX_JsonFiles_InsertExtraEltEntity()
         {
             test.InsertExtraEltEntity();
         }
 
         //[TestMethod]
         // Limitation : couchtest repository doesn't handle polymorphism in attribute's entity of type List, Dictionary...
-        public void Polymorphism()
+        public void MvvX_JsonFiles_Polymorphism()
         {
             test.Polymorphism();
         }
 
         [TestMethod]
-        public void Attachments()
+        public void MvvX_JsonFiles_Attachments()
         {
             test.Attachments();
         }
 
         [TestMethod]
-        public void GetAll()
+        public void MvvX_JsonFiles_GetAll()
         {
             test.GetAll();
         }
 
 
         [TestMethod]
-        public void GetTests()
+        public void MvvX_JsonFiles_GetTests()
         {
             test.GetTests();
         }
 
         // Not supported for now
         //[TestMethod]
-        public void ConcurrentAccess()
+        public void MvvX_JsonFiles_ConcurrentAccess()
         {
             test.ConcurrentAccess(false);
         }
 
         // Not supported for now
         //[TestMethod]
-        public void ViewTests()
+        public void MvvX_JsonFiles_ViewTests()
         {
             test.ViewTests();
         }

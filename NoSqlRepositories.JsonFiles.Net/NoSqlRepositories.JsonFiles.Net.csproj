@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DbConfiguration.cs" />
     <Compile Include="Helpers\NewtonJsonHelper.cs" />
     <Compile Include="JsonFileRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

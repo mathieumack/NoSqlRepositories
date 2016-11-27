@@ -53,7 +53,16 @@ namespace NoSqlRepositories.MvvX.JsonFiles.Pcl
             }
         }
 
+        public string DbConfigFilePath
+        {
+            get
+            {
+                return dBName + "/" + CollectionName + ".config.json";
+            }
+        }
+
         private IDictionary<string, T> localDb;
+        private DbConfiguration config;
 
         #endregion
 
@@ -81,6 +90,11 @@ namespace NoSqlRepositories.MvvX.JsonFiles.Pcl
             }
 
             if (elt.Deleted)
+            {
+                throw new KeyNotFoundNoSQLException(string.Format("Id '{0}' not found in the repository '{1}'", id, DbFilePath));
+            }
+
+            if (config.IsExpired(id))
             {
                 throw new KeyNotFoundNoSQLException(string.Format("Id '{0}' not found in the repository '{1}'", id, DbFilePath));
             }
@@ -128,6 +142,7 @@ namespace NoSqlRepositories.MvvX.JsonFiles.Pcl
             var entityToStore = NewtonJsonHelper.CloneJson(entity, DateTimeZoneHandling.Utc);
 
             localDb[entity.Id] = entityToStore;
+            config.ExpireAt(entity.Id, null);
 
             SaveJSONFile();
             return insertResult;
@@ -153,6 +168,7 @@ namespace NoSqlRepositories.MvvX.JsonFiles.Pcl
 
                 var entityToStore = NewtonJsonHelper.CloneJson(entity, DateTimeZoneHandling.Utc);
                 localDb[entity.Id] = entityToStore;
+                config.ExpireAt(entity.Id, null);
                 insertResult[entity.Id] = InsertResult.unknown;
             }
             SaveJSONFile();
@@ -162,7 +178,7 @@ namespace NoSqlRepositories.MvvX.JsonFiles.Pcl
 
         public override bool Exist(string id)
         {
-            return localDb.Keys.Contains(id);
+            return localDb.ContainsKey(id);
         }
 
         public override UpdateResult Update(T entity, UpdateMode updateMode)
@@ -218,6 +234,7 @@ namespace NoSqlRepositories.MvvX.JsonFiles.Pcl
                 if (physical)
                 {
                     localDb.Remove(id);
+                    config.Delete(id);
                 }
                 else
                 {
@@ -258,13 +275,13 @@ namespace NoSqlRepositories.MvvX.JsonFiles.Pcl
 
         public override void ExpireAt(string id, DateTime? dateLimit)
         {
-            throw new NotImplementedException();
+            config.ExpireAt(id, dateLimit);
         }
 
         public override bool CompactDatabase()
         {
             var items = GetAll();
-            foreach (var item in items.Where(e => e.Deleted))
+            foreach (var item in items.Where(e => e.Deleted || config.IsExpired(e.Id)))
             {
                 Delete(item.Id, true);
             }
@@ -275,6 +292,7 @@ namespace NoSqlRepositories.MvvX.JsonFiles.Pcl
         {
             var count = localDb.Keys.Count;
             localDb = new ConcurrentDictionary<string, T>();
+            config.Compact();
             SaveJSONFile();
             return count;
         }
@@ -303,6 +321,7 @@ namespace NoSqlRepositories.MvvX.JsonFiles.Pcl
         public override void DropCollection()
         {
             this.localDb = new Dictionary<string, T>();
+            config.Compact();
             SaveJSONFile();
         }
 
@@ -315,7 +334,6 @@ namespace NoSqlRepositories.MvvX.JsonFiles.Pcl
             //if (File.Exists(DbFilePath))
             if (fileStore.Exists(DbFilePath))
             {
-
                 string content = null;
                 if (fileStore.TryReadTextFile(DbFilePath, out content))
                 {
@@ -339,6 +357,7 @@ namespace NoSqlRepositories.MvvX.JsonFiles.Pcl
             {
                 this.localDb = new Dictionary<string, T>();
             }
+            LoadDbConfigFile();
         }
 
         private void SaveJSONFile()
@@ -354,6 +373,47 @@ namespace NoSqlRepositories.MvvX.JsonFiles.Pcl
             string content = JsonConvert.SerializeObject(this.localDb, Formatting.Indented, settings);
             fileStore.EnsureFolderExists(DbDirectoryPath);
             fileStore.WriteFile(DbFilePath, content);
+
+            SavedDbConfig();
+        }
+        
+        private void LoadDbConfigFile()
+        {
+            if (fileStore.Exists(DbConfigFilePath))
+            {
+                string content = null;
+                if (fileStore.TryReadTextFile(DbConfigFilePath, out content))
+                {
+                        var settings = new JsonSerializerSettings()
+                    {
+                        TypeNameHandling = TypeNameHandling.Objects,
+                        DefaultValueHandling = DefaultValueHandling.Populate
+                    };
+
+                    this.config = JsonConvert.DeserializeObject<DbConfiguration>(content, settings);
+
+                    if (this.config == null)
+                        this.config = new DbConfiguration(); // Empty file
+                }
+            }
+            else
+            {
+                this.config = new DbConfiguration();
+            }
+        }
+
+        private void SavedDbConfig()
+        {
+            var settings = new JsonSerializerSettings()
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                NullValueHandling = NullValueHandling.Ignore,
+                DefaultValueHandling = DefaultValueHandling.Ignore
+            };
+
+            string content = JsonConvert.SerializeObject(this.config, Formatting.Indented, settings);
+            fileStore.EnsureFolderExists(DbDirectoryPath);
+            fileStore.WriteFile(DbConfigFilePath, content);
         }
 
         #endregion
@@ -404,13 +464,10 @@ namespace NoSqlRepositories.MvvX.JsonFiles.Pcl
         public override IList<T> GetAll()
         {
             List<T> result = new List<T>();
-            LoadJSONFile();
+            //LoadJSONFile();
             if (this.localDb != null)
             {
-                foreach (var key in localDb.Keys)
-                {
-                    result.Add(localDb[key]);
-                }
+                return localDb.Values.Where(e => !config.IsExpired(e.Id)).ToList();
             }
 
             return result;

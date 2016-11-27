@@ -44,7 +44,16 @@ namespace NoSqlRepositories.JsonFiles.Net
             }
         }
 
+        public string DbConfigFilePath
+        {
+            get
+            {
+                return dbDirectoryPath + "/" + CollectionName + ".config.json";
+            }
+        }
+
         private IDictionary<string, T> localDb;
+        private DbConfiguration config;
 
         #endregion
 
@@ -71,6 +80,11 @@ namespace NoSqlRepositories.JsonFiles.Net
             }
 
             if (elt.Deleted)
+            {
+                throw new KeyNotFoundNoSQLException(string.Format("Id '{0}' not found in the repository '{1}'", id, DbFilePath));
+            }
+
+            if (config.IsExpired(id))
             {
                 throw new KeyNotFoundNoSQLException(string.Format("Id '{0}' not found in the repository '{1}'", id, DbFilePath));
             }
@@ -118,6 +132,7 @@ namespace NoSqlRepositories.JsonFiles.Net
             var entityToStore = NewtonJsonHelper.CloneJson(entity, DateTimeZoneHandling.Utc);
 
             localDb[entity.Id] = entityToStore;
+            config.ExpireAt(entity.Id, null);
 
             SaveJSONFile();
             return insertResult;
@@ -143,6 +158,7 @@ namespace NoSqlRepositories.JsonFiles.Net
 
                 var entityToStore = NewtonJsonHelper.CloneJson(entity, DateTimeZoneHandling.Utc);
                 localDb[entity.Id] = entityToStore;
+                config.ExpireAt(entity.Id, null);
                 insertResult[entity.Id] = InsertResult.unknown;
             }
             SaveJSONFile();
@@ -152,7 +168,7 @@ namespace NoSqlRepositories.JsonFiles.Net
 
         public override bool Exist(string id)
         {
-            return localDb.Keys.Contains(id);
+            return localDb.ContainsKey(id);
         }
 
         public override UpdateResult Update(T entity, UpdateMode updateMode)
@@ -208,6 +224,7 @@ namespace NoSqlRepositories.JsonFiles.Net
                 if (physical)
                 {
                     localDb.Remove(id);
+                    config.Delete(id);
                 }
                 else
                 {
@@ -248,13 +265,13 @@ namespace NoSqlRepositories.JsonFiles.Net
 
         public override void ExpireAt(string id, DateTime? dateLimit)
         {
-            throw new NotImplementedException();
+            config.ExpireAt(id, dateLimit);
         }
 
         public override bool CompactDatabase()
         {
             var items = GetAll();
-            foreach (var item in items.Where(e => e.Deleted))
+            foreach (var item in items.Where(e => e.Deleted || config.IsExpired(e.Id)))
             {
                 Delete(item.Id, true);
             }
@@ -265,6 +282,7 @@ namespace NoSqlRepositories.JsonFiles.Net
         {
             var count = localDb.Keys.Count;
             localDb = new ConcurrentDictionary<string, T>();
+            config.TruncateCollection();
             SaveJSONFile();
             return count;
         }
@@ -293,6 +311,7 @@ namespace NoSqlRepositories.JsonFiles.Net
         public override void DropCollection()
         {
             this.localDb = new Dictionary<string, T>();
+            config.TruncateCollection();
             SaveJSONFile();
         }
 
@@ -328,8 +347,10 @@ namespace NoSqlRepositories.JsonFiles.Net
             {
                 this.localDb = new Dictionary<string, T>();
             }
-        }
 
+            LoadDbConfigFile();
+        }
+        
         private void SaveJSONFile()
         {
             var settings = new JsonSerializerSettings()
@@ -345,6 +366,54 @@ namespace NoSqlRepositories.JsonFiles.Net
                 Directory.CreateDirectory(dbDirectoryPath);
 
             File.WriteAllText(DbFilePath, content);
+
+            SavedDbConfig();
+        }
+
+        private void LoadDbConfigFile()
+        {
+            if (File.Exists(DbConfigFilePath))
+            {
+                string content = null;
+                try
+                {
+                    content = File.ReadAllText(DbConfigFilePath);
+                    var settings = new JsonSerializerSettings()
+                    {
+                        TypeNameHandling = TypeNameHandling.Objects,
+                        DefaultValueHandling = DefaultValueHandling.Populate
+                    };
+
+                    this.config = JsonConvert.DeserializeObject<DbConfiguration>(content, settings);
+
+                    if (this.config == null)
+                        this.config = new DbConfiguration(); // Empty file
+                }
+                catch
+                {
+                    throw new IOException(string.Format("Cannot read config repository file '{0}'", DbFilePath));
+                }
+            }
+            else
+            {
+                this.config = new DbConfiguration();
+            }
+        }
+
+        private void SavedDbConfig()
+        {
+            var settings = new JsonSerializerSettings()
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                NullValueHandling = NullValueHandling.Ignore,
+                DefaultValueHandling = DefaultValueHandling.Ignore
+            };
+
+            string content = JsonConvert.SerializeObject(this.config, Formatting.Indented, settings);
+            if (!Directory.Exists(dbDirectoryPath))
+                Directory.CreateDirectory(dbDirectoryPath);
+
+            File.WriteAllText(DbConfigFilePath, content);
         }
 
         #endregion
@@ -400,13 +469,10 @@ namespace NoSqlRepositories.JsonFiles.Net
         public override IList<T> GetAll()
         {
             List<T> result = new List<T>();
-            LoadJSONFile();
+            //LoadJSONFile();
             if (this.localDb != null)
             {
-                foreach (var key in localDb.Keys)
-                {
-                    result.Add(localDb[key]);
-                }
+                return localDb.Values.Where(e => !config.IsExpired(e.Id)).ToList();
             }
 
             return result;

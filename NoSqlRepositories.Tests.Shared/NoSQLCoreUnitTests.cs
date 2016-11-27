@@ -69,13 +69,13 @@ namespace NoSqlRepositories.Test.Shared
             var itemsInDatabase = entityRepo.GetAll();
 
             // We try to delete the item :
-            entityRepo.ExpireAt(entity1.Id, DateTime.Now.AddSeconds(5));
+            entityRepo.ExpireAt(entity1.Id, DateTime.Now.AddSeconds(2));
 
             var itemsInDatabase2 = entityRepo.GetAll();
 
             Assert.IsTrue(itemsInDatabase.Count == itemsInDatabase2.Count, "entityRepo has not been physically deleted after compact");
 
-            Thread.Sleep(7000);
+            Thread.Sleep(4000);
 
             // We compact the database :
             entityRepo.CompactDatabase();
