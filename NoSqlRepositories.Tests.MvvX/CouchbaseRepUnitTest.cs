@@ -13,6 +13,7 @@ using NoSqlRepositories.Test.Shared.Entities;
 using NoSqlRepositories.Test.Shared.Extensions;
 using NoSqlRepositories.Test.Shared.Helpers;
 using System;
+using System.Linq;
 
 namespace NoSqlRepositories.Tests.MvvX
 {
@@ -194,13 +195,13 @@ namespace NoSqlRepositories.Tests.MvvX
 
 
             var res3 = entityRepo.GetAll();
-            Assert.AreEqual(4, res3.Count, "Existing view TestEntity contains 5 docs");
+            Assert.AreEqual(4, res3.Count(), "Existing view TestEntity contains 5 docs");
 
             var res1 = entityRepo.GetByField<int>(nameof(TestEntity.NumberOfChildenInt), 0);
-            Assert.AreEqual(2, res1.Count, "Existing view TestEntity-NumberOfChildenInt contains 2 docs");
+            Assert.AreEqual(2, res1.Count(), "Existing view TestEntity-NumberOfChildenInt contains 2 docs");
 
             var res2 = entityRepo.GetByField<string>(nameof(TestEntity.Cities), "Andernos");
-            Assert.AreEqual(1, res2.Count, "Existing view TestEntity-Cities contains 1 docs");
+            Assert.AreEqual(1, res2.Count(), "Existing view TestEntity-Cities contains 1 docs");
 
 
 
@@ -219,13 +220,13 @@ namespace NoSqlRepositories.Tests.MvvX
             entityRepo.InsertOne(entity6);
 
             var res4 = entityRepo.GetByField<int>(nameof(TestEntity.NumberOfChildenInt), 0);
-            Assert.AreEqual(3, res4.Count, "Existing view TestEntity-NumberOfChildenInt contains 5 docs");
+            Assert.AreEqual(3, res4.Count(), "Existing view TestEntity-NumberOfChildenInt contains 5 docs");
 
             var res5 = entityRepo.GetByField<string>(nameof(TestEntity.Cities), "Andernos");
-            Assert.AreEqual(1, res5.Count, "Existing view TestEntity-Cities contains 1 docs");
+            Assert.AreEqual(1, res5.Count(), "Existing view TestEntity-Cities contains 1 docs");
 
             var res6 = entityRepo.GetAll();
-            Assert.AreEqual(5, res6.Count, "Existing view TestEntity contains 5 docs");
+            Assert.AreEqual(5, res6.Count(), "Existing view TestEntity contains 5 docs");
 
         }
 

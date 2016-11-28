@@ -463,9 +463,8 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
             throw new NotImplementedException();
         }
 
-        public override IList<T> GetAll()
+        public override IEnumerable<T> GetAll()
         {
-
             IView view = database.GetView(CollectionName);
 
             using (IQuery query = view.CreateQuery())
@@ -477,12 +476,12 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
                 using (var queryEnum = query.Run())
                 {
                     return queryEnum.Where(row => !row.Document.Deleted)
-                        .Select(row => GetEntityFromDocument(row.Document)).ToList();
+                        .Select(row => GetEntityFromDocument(row.Document));
                 }
             }
         }
-
-        public override IList<string> GetAttachmentNames(string id)
+        
+        public override IEnumerable<string> GetAttachmentNames(string id)
         {
             var documentAttachment = this.database.GetExistingDocument(GetInternalCBLId(id));
             if (documentAttachment == null)
@@ -490,13 +489,13 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
             var revision = documentAttachment.CurrentRevision;
 
-            return revision.AttachmentNames.ToList();
+            return revision.AttachmentNames;
         }
 
 
         #region Views
 
-        public override List<T> GetByField<TField>(string fieldName, TField value)
+        public override IEnumerable<T> GetByField<TField>(string fieldName, TField value)
         {
             IView view = database.GetExistingView(CollectionName + "-" + fieldName);
             
@@ -513,20 +512,19 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
                 using (var queryEnum = query.Run())
                 {
                     return queryEnum.Where(row => !row.Document.Deleted)
-                        .Select(doc => GetEntityFromDocument(doc.Document)).ToList();
+                        .Select(doc => GetEntityFromDocument(doc.Document));
                 }
             }
         }
 
-        public override List<T> GetByField<TField>(string fieldName, List<TField> values)
+        public override IEnumerable<T> GetByField<TField>(string fieldName, List<TField> values)
         {
             return values.SelectMany(v => GetByField(fieldName, v))
                 .GroupBy(e => e.Id)
-                .Select(g => g.First()) // Remove duplicates entities
-                .ToList();
+                .Select(g => g.First()); // Remove duplicates entities
         }
 
-        public override List<string> GetKeyByField<TField>(string fieldName, TField value)
+        public override IEnumerable<string> GetKeyByField<TField>(string fieldName, TField value)
         {
             IView view = database.GetExistingView(CollectionName + "-" + fieldName);
             
@@ -541,14 +539,14 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
                 using (var queryEnum = query.Run())
                 {
-                    return queryEnum.Select(doc => GetIdFromInternalCBLId(doc.DocumentId)).ToList();
+                    return queryEnum.Select(doc => GetIdFromInternalCBLId(doc.DocumentId));
                 }
             }
         }
 
-        public override List<string> GetKeyByField<TField>(string fieldName, List<TField> values)
+        public override IEnumerable<string> GetKeyByField<TField>(string fieldName, List<TField> values)
         {
-            return values.SelectMany(v => GetKeyByField(fieldName, v)).Distinct().ToList();
+            return values.SelectMany(v => GetKeyByField(fieldName, v)).Distinct();
         }
 
         /// <summary>

@@ -281,10 +281,12 @@ namespace NoSqlRepositories.MvvX.JsonFiles.Pcl
 
         public override bool CompactDatabase()
         {
-            var items = GetAll();
-            foreach (var item in items.Where(e => e.Deleted || config.IsExpired(e.Id)))
+            if (this.localDb != null)
             {
-                Delete(item.Id, true);
+                foreach (var item in localDb.Values.Where(e => e.Deleted || config.IsExpired(e.Id)))
+                {
+                    Delete(item.Id, true);
+                }
             }
             return true;
         }
@@ -462,16 +464,14 @@ namespace NoSqlRepositories.MvvX.JsonFiles.Pcl
         /// Return all entities of repository
         /// </summary>
         /// <returns></returns>
-        public override IList<T> GetAll()
+        public override IEnumerable<T> GetAll()
         {
-            List<T> result = new List<T>();
-            //LoadJSONFile();
             if (this.localDb != null)
             {
-                return localDb.Values.Where(e => !config.IsExpired(e.Id)).ToList();
+                return localDb.Values.Where(e => !config.IsExpired(e.Id));
             }
 
-            return result;
+            return new List<T>();
         }
 
         /// <summary>
@@ -479,35 +479,34 @@ namespace NoSqlRepositories.MvvX.JsonFiles.Pcl
         /// </summary>
         /// <param name="idDocument"></param>
         /// <returns></returns>
-        public override IList<string> GetAttachmentNames(string idDocument)
+        public override IEnumerable<string> GetAttachmentNames(string idDocument)
         {
-            var result = new List<string>();
             var entityAttachmentDir = fileStore.PathCombine(AttachmentsDirectoryPath, idDocument);
 
             if (fileStore.FolderExists(entityAttachmentDir))
             {
                 var fullFilePath = fileStore.GetFilesIn(entityAttachmentDir);
-                result = fullFilePath.Select(file => file.Substring(file.LastIndexOf("\\", StringComparison.Ordinal) + 1)).ToList();
+                return fullFilePath.Select(file => file.Substring(file.LastIndexOf("\\", StringComparison.Ordinal) + 1));
             }
-            return result;
+            return new List<string>();
         }
 
-        public override List<T> GetByField<TField>(string fieldName, List<TField> values)
+        public override IEnumerable<T> GetByField<TField>(string fieldName, List<TField> values)
         {
             throw new NotImplementedException();
         }
 
-        public override List<T> GetByField<TField>(string fieldName, TField value)
+        public override IEnumerable<T> GetByField<TField>(string fieldName, TField value)
         {
             throw new NotImplementedException();
         }
 
-        public override List<string> GetKeyByField<TField>(string fieldName, List<TField> values)
+        public override IEnumerable<string> GetKeyByField<TField>(string fieldName, List<TField> values)
         {
             throw new NotImplementedException();
         }
 
-        public override List<string> GetKeyByField<TField>(string fieldName, TField value)
+        public override IEnumerable<string> GetKeyByField<TField>(string fieldName, TField value)
         {
             throw new NotImplementedException();
         }

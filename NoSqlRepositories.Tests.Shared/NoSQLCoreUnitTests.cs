@@ -73,7 +73,7 @@ namespace NoSqlRepositories.Test.Shared
 
             var itemsInDatabase2 = entityRepo.GetAll();
 
-            Assert.IsTrue(itemsInDatabase.Count == itemsInDatabase2.Count, "entityRepo has not been physically deleted after compact");
+            Assert.IsTrue(itemsInDatabase.Count() == itemsInDatabase2.Count(), "entityRepo has not been physically deleted after compact");
 
             Thread.Sleep(4000);
 
@@ -82,7 +82,7 @@ namespace NoSqlRepositories.Test.Shared
 
             var itemsInDatabaseAfterCompact = entityRepo.GetAll();
 
-            Assert.IsTrue(itemsInDatabaseAfterCompact.Count == itemsInDatabase.Count - 1, "entityRepo has not been physically deleted after compact");
+            Assert.IsTrue(itemsInDatabaseAfterCompact.Count() == itemsInDatabase.Count() - 1, "entityRepo has not been physically deleted after compact");
         }
 
         public virtual void CompactDatabase()
@@ -103,7 +103,7 @@ namespace NoSqlRepositories.Test.Shared
 
             var itemsInDatabaseAfterCompact = entityRepo.GetAll();
 
-            Assert.IsTrue(itemsInDatabaseAfterCompact.Count == itemsInDatabase.Count - 1, "entityRepo has not been physically deleted after compact");
+            Assert.IsTrue(itemsInDatabaseAfterCompact.Count() == itemsInDatabase.Count() - 1, "entityRepo has not been physically deleted after compact");
         }
 
         public virtual void InsertEntity()
@@ -355,14 +355,14 @@ namespace NoSqlRepositories.Test.Shared
                 // Try to get the list of attachments
                 var attachNames = entityRepo.GetAttachmentNames(entity1.Id);
 
-                Assert.AreEqual(2, attachNames.Count, "Invalid number of attachments names found");
+                Assert.AreEqual(2, attachNames.Count(), "Invalid number of attachments names found");
                 Assert.IsTrue(attachNames.Contains(attach1FileName), "First attachment not found in the list");
                 Assert.IsTrue(attachNames.Contains(attach2FileName), "2nd attachment not found in the list");
 
                 entity1.Name = "NewName";
                 entityRepo.Update(entity1);
                 var attachNames2 = entityRepo.GetAttachmentNames(entity1.Id);
-                Assert.AreEqual(2, attachNames.Count, "An update of an entity should not alter its attachments");
+                Assert.AreEqual(2, attachNames.Count(), "An update of an entity should not alter its attachments");
                 Assert.IsTrue(attachNames.Contains(attach1FileName), "An update of an entity should not alter its attachments");
                 Assert.IsTrue(attachNames.Contains(attach2FileName), "An update of an entity should not alter its attachments");
 
@@ -417,13 +417,13 @@ namespace NoSqlRepositories.Test.Shared
                 Assert.IsInstanceOfType(notfoundEx, typeof(AttachmentNotFoundNoSQLException), "The get should return exception because the attachement has been deleted");
                 
                 var attachNames3 = entityRepo.GetAttachmentNames(entity1.Id);
-                Assert.AreEqual(1, attachNames3.Count);
+                Assert.AreEqual(1, attachNames3.Count());
 
                 entityRepo.Delete(entity1.Id);
                 entityRepo.InsertOne(entity1);
                 
                 var attachNames4 = entityRepo.GetAttachmentNames(entity1.Id);
-                Assert.AreEqual(0, attachNames4.Count, "Delete of an entity should delete its attachemnts");
+                Assert.AreEqual(0, attachNames4.Count(), "Delete of an entity should delete its attachemnts");
             }
 
             //
@@ -468,7 +468,7 @@ namespace NoSqlRepositories.Test.Shared
             entityRepo.Delete(entity3.Id);
 
             var entitylist = entityRepo.GetAll();
-            Assert.AreEqual(3, entitylist.Count, "Invalide number. The expected result is " + entitylist.Count);
+            Assert.AreEqual(3, entitylist.Count(), "Invalide number. The expected result is " + entitylist.Count());
 
             foreach (var e in entitylist)
             {
@@ -485,14 +485,14 @@ namespace NoSqlRepositories.Test.Shared
             collectionEntityRepo.InsertOne(collectionTest2);
 
             var entityCollectionlist = collectionEntityRepo.GetAll();
-            Assert.AreEqual(2, entityCollectionlist.Count, "Bad number of doc. We should not return entities of an other collection");
+            Assert.AreEqual(2, entityCollectionlist.Count(), "Bad number of doc. We should not return entities of an other collection");
 
             var entitylist2 = entityRepo.GetAll();
-            Assert.AreEqual(3, entitylist2.Count, "Bad number of doc. We should not return entities of an other collection");
+            Assert.AreEqual(3, entitylist2.Count(), "Bad number of doc. We should not return entities of an other collection");
 
             collectionEntityRepo.TruncateCollection();
             entitylist2 = entityRepo.GetAll();
-            Assert.AreEqual(3, entitylist2.Count, "Truncate of a collection should not affect other collections");
+            Assert.AreEqual(3, entitylist2.Count(), "Truncate of a collection should not affect other collections");
 
         }
 

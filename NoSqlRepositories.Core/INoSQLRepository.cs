@@ -139,13 +139,13 @@ namespace NoSqlRepositories.Core
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        IList<string> GetAttachmentNames(string id);
+        IEnumerable<string> GetAttachmentNames(string id);
 
         /// <summary>
         /// Return all entities of the repository
         /// </summary>
         /// <returns></returns>
-        IList<T> GetAll();
+        IEnumerable<T> GetAll();
 
         /// <summary>
         /// Get entities that match de field = List of Value condition
@@ -154,7 +154,7 @@ namespace NoSqlRepositories.Core
         /// <param name="fieldName"></param>
         /// <param name="values"></param>
         /// <returns></returns>
-        List<T> GetByField<TField>(string fieldName, List<TField> values);
+        IEnumerable<T> GetByField<TField>(string fieldName, List<TField> values);
 
         /// <summary>
         /// Get entities that match de field = Value condition
@@ -163,7 +163,7 @@ namespace NoSqlRepositories.Core
         /// <param name="fieldName"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        List<T> GetByField<TField>(string fieldName, TField value);
+        IEnumerable<T> GetByField<TField>(string fieldName, TField value);
 
         /// <summary>
         /// Get entities Ids that match de field = List of Value condition
@@ -172,7 +172,7 @@ namespace NoSqlRepositories.Core
         /// <param name="fieldName"></param>
         /// <param name="values"></param>
         /// <returns></returns>
-        List<string> GetKeyByField<TField>(string fieldName, List<TField> values);
+        IEnumerable<string> GetKeyByField<TField>(string fieldName, List<TField> values);
 
         /// <summary>
         /// Get entities Ids that match de field = Value condition
@@ -181,7 +181,6 @@ namespace NoSqlRepositories.Core
         /// <param name="fieldName"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        List<string> GetKeyByField<TField>(string fieldName, TField value);
-
+        IEnumerable<string> GetKeyByField<TField>(string fieldName, TField value);
     }
 }
