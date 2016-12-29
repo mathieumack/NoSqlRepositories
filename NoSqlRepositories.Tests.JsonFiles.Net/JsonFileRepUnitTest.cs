@@ -32,12 +32,18 @@ namespace NoSqlRepositories.Tests.MvvX
             var entityExtraEltRepo = new JsonFileRepository<TestExtraEltEntity>(NoSQLCoreUnitTests.testContext.DeploymentDirectory, dbName);
             
             test = new NoSQLCoreUnitTests(entityRepo, entityRepo2, entityExtraEltRepo, collectionEntityRepo,
-                NoSQLCoreUnitTests.testContext.DeploymentDirectory);
+                NoSQLCoreUnitTests.testContext.DeploymentDirectory, dbName);
         }
 
         #endregion
 
         #region NoSQLCoreUnitTests test methods
+
+        [TestMethod]
+        public void MvvX_JsonFiles_DatabaseName()
+        {
+            test.DatabaseName();
+        }
 
         [TestMethod]
         public void MvvX_JsonFiles_ExpireAt()

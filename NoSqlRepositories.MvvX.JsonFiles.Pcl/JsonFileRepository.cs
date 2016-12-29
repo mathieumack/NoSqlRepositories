@@ -16,6 +16,14 @@ namespace NoSqlRepositories.MvvX.JsonFiles.Pcl
     public class JsonFileRepository<T> : RepositoryBase<T> where T : class, IBaseEntity
     {
         #region Members
+        
+        public override string DatabaseName
+        {
+            get
+            {
+                return dBName;
+            }
+        }
 
         public override NoSQLEngineType EngineType
         {

@@ -7,6 +7,8 @@ namespace NoSqlRepositories.Core
 {
     public abstract class RepositoryBase<T> : INoSQLRepository<T> where T : class, IBaseEntity
     {
+        public abstract string DatabaseName { get; }
+
         public abstract NoSQLEngineType EngineType { get; }
 
         protected string CollectionName { get; set; }
