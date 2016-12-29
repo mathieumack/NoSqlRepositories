@@ -19,6 +19,7 @@ namespace NoSqlRepositories.Test.Shared
         #region Members
 
         protected string baseFilePath;
+        protected string dbName;
 
         protected INoSQLRepository<TestEntity> entityRepo;
         protected INoSQLRepository<TestEntity> entityRepo2;
@@ -33,7 +34,8 @@ namespace NoSqlRepositories.Test.Shared
             INoSQLRepository<TestEntity> entityRepo2,
             INoSQLRepository<TestExtraEltEntity> entityExtraEltRepo,
             INoSQLRepository<CollectionTest> collectionEntityRepo,
-            string baseFilePath)
+            string baseFilePath,
+            string dbName)
         {
             this.entityRepo = entityRepo;
             this.entityRepo2 = entityRepo2;
@@ -45,6 +47,7 @@ namespace NoSqlRepositories.Test.Shared
             this.collectionEntityRepo.TruncateCollection();
 
             this.baseFilePath = baseFilePath;
+            this.dbName = dbName;
         }
 
         public static void ClassInitialize(TestContext testContext)
@@ -57,6 +60,11 @@ namespace NoSqlRepositories.Test.Shared
         }
 
         #region Test methods
+
+        public virtual void DatabaseName()
+        {
+            Assert.IsTrue(entityRepo.DatabaseName.Equals(dbName));
+        }
 
         public virtual void ExpireAt()
         {

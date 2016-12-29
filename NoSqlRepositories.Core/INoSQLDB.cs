@@ -11,6 +11,11 @@ namespace NoSqlRepositories.Core
         NoSQLEngineType EngineType { get; }
 
         /// <summary>
+        /// Get database name used for configuration
+        /// </summary>
+        string DatabaseName { get; }
+
+        /// <summary>
         /// Change the active database
         /// </summary>
         /// <param name="dbName"></param>

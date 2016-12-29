@@ -22,7 +22,7 @@ namespace NoSqlRepositories.Tests.MvvX
 
         private NoSQLCoreUnitTests test;
         private static TestContext testContext;
-        private const string dbName = "NoSQLTestCBLDb";
+        private const string dbName = "nosqltestcbldb"; // Not uppercase for CouchBase lite db names
 
         private CouchBaseLiteRepository<TestEntity> entityRepo;
         private CouchBaseLiteRepository<TestEntity> entityRepo2;
@@ -56,8 +56,7 @@ namespace NoSqlRepositories.Tests.MvvX
             {
                 CouchBaseLiteLiteManager = Mvx.Resolve<ICouchBaseLite>();
             }
-
-
+            
             // Add Sqlite plugin register. Do it only for unit tests (https://github.com/CouchBaseLite/CouchBaseLite-lite-net/wiki/Error-Dictionary#cblcs0001)
             //CouchBaseLite.Lite.Storage.SystemSQLite.Plugin.Register();
 
@@ -70,8 +69,12 @@ namespace NoSqlRepositories.Tests.MvvX
             entityRepo.PolymorphicTypes["TestExtraEltEntity"] = typeof(TestExtraEltEntity);
             entityRepo2.PolymorphicTypes["TestExtraEltEntity"] = typeof(TestExtraEltEntity);
 
-            test = new NoSQLCoreUnitTests(entityRepo, entityRepo2, entityExtraEltRepo, collectionEntityRepo,
-                NoSQLCoreUnitTests.testContext.DeploymentDirectory);
+            test = new NoSQLCoreUnitTests(entityRepo, 
+                                            entityRepo2, 
+                                            entityExtraEltRepo, 
+                                            collectionEntityRepo,
+                                            NoSQLCoreUnitTests.testContext.DeploymentDirectory,
+                                            dbName);
         }
 
         protected override void AdditionalSetup()
@@ -230,6 +233,12 @@ namespace NoSqlRepositories.Tests.MvvX
         }
 
         #endregion
+
+        [TestMethod]
+        public void MvvX_CBLite_DatabaseName()
+        {
+            test.DatabaseName();
+        }
 
         [TestMethod]
         public void MvvX_CBLite_NewBaseTests()

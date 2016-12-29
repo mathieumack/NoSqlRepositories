@@ -25,6 +25,14 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
     /// <typeparam name="T"></typeparam>
     public class CouchBaseLiteRepository<T> : RepositoryBase<T> where T : class, IBaseEntity
     {
+        public override string DatabaseName
+        {
+            get
+            {
+                return this.database.Name;
+            }
+        }
+
         public override NoSQLEngineType EngineType
         {
             get

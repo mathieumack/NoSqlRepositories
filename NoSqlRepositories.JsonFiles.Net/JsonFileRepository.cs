@@ -16,6 +16,15 @@ namespace NoSqlRepositories.JsonFiles.Net
     {
         #region Members
 
+        private string dbName;
+        public override string DatabaseName
+        {
+            get
+            {
+                return dbName;
+            }
+        }
+
         public override NoSQLEngineType EngineType
         {
             get
@@ -64,6 +73,7 @@ namespace NoSqlRepositories.JsonFiles.Net
 
             this.dbDirectoryPath = Path.Combine(dbDirectoryPath, dbName);
 
+            this.dbName = dbName;
             CollectionName = typeof(T).Name;
             LoadJSONFile();
         }
