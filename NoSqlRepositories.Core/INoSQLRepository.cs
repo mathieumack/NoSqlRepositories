@@ -109,7 +109,7 @@ namespace NoSqlRepositories.Core
         /// </summary>
         /// <returns>True if the collection has been initialized</returns>
         /// <returns></returns>
-        void InitCollection(List<Expression<Func<T, object>>> indexFieldSelectors);
+        void InitCollection(IList<Expression<Func<T, object>>> indexFieldSelectors);
 
         /// <summary>
         /// Add an attachment to an entity
@@ -161,7 +161,7 @@ namespace NoSqlRepositories.Core
         /// <param name="fieldName"></param>
         /// <param name="values"></param>
         /// <returns></returns>
-        List<T> GetByField<TField>(string fieldName, List<TField> values);
+        IList<T> GetByField<TField>(string fieldName, IList<TField> values);
 
         /// <summary>
         /// Get entities that match de field = Value condition
@@ -170,7 +170,7 @@ namespace NoSqlRepositories.Core
         /// <param name="fieldName"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        List<T> GetByField<TField>(string fieldName, TField value);
+        IList<T> GetByField<TField>(string fieldName, TField value);
 
         /// <summary>
         /// Get entities Ids that match de field = List of Value condition
@@ -179,7 +179,7 @@ namespace NoSqlRepositories.Core
         /// <param name="fieldName"></param>
         /// <param name="values"></param>
         /// <returns></returns>
-        List<string> GetKeyByField<TField>(string fieldName, List<TField> values);
+        IList<string> GetKeyByField<TField>(string fieldName, IList<TField> values);
 
         /// <summary>
         /// Get entities Ids that match de field = Value condition
@@ -188,7 +188,7 @@ namespace NoSqlRepositories.Core
         /// <param name="fieldName"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        List<string> GetKeyByField<TField>(string fieldName, TField value);
+        IList<string> GetKeyByField<TField>(string fieldName, TField value);
 
         /// <summary>
         /// Get the number of entities

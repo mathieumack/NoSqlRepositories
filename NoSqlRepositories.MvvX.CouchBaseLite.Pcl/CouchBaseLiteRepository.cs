@@ -483,7 +483,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
         #endregion
 
-        public override void InitCollection(List<Expression<Func<T, object>>> indexFieldSelectors)
+        public override void InitCollection(IList<Expression<Func<T, object>>> indexFieldSelectors)
         {
             throw new NotImplementedException();
         }
@@ -521,7 +521,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
         #region Views
 
-        public override List<T> GetByField<TField>(string fieldName, TField value)
+        public override IList<T> GetByField<TField>(string fieldName, TField value)
         {
             IView view = database.GetExistingView(CollectionName + "-" + fieldName);
             
@@ -543,7 +543,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
             }
         }
 
-        public override List<T> GetByField<TField>(string fieldName, List<TField> values)
+        public override IList<T> GetByField<TField>(string fieldName, IList<TField> values)
         {
             return values.SelectMany(v => GetByField(fieldName, v))
                 .GroupBy(e => e.Id)
@@ -551,7 +551,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
                 .ToList();
         }
 
-        public override List<string> GetKeyByField<TField>(string fieldName, TField value)
+        public override IList<string> GetKeyByField<TField>(string fieldName, TField value)
         {
             IView view = database.GetExistingView(CollectionName + "-" + fieldName);
             
@@ -589,7 +589,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
             }
         }
 
-        public override List<string> GetKeyByField<TField>(string fieldName, List<TField> values)
+        public override IList<string> GetKeyByField<TField>(string fieldName, IList<TField> values)
         {
             return values.SelectMany(v => GetKeyByField(fieldName, v)).Distinct().ToList();
         }

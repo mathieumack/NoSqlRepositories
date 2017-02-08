@@ -288,7 +288,7 @@ namespace NoSqlRepositories.JsonFiles.Net
             return 0;
         }
 
-        public override void InitCollection(List<Expression<Func<T, object>>> indexFieldSelectors)
+        public override void InitCollection(IList<Expression<Func<T, object>>> indexFieldSelectors)
         {
             // Nothing to do to initialize the collection
         }
@@ -531,22 +531,22 @@ namespace NoSqlRepositories.JsonFiles.Net
             return result;
         }
 
-        public override List<T> GetByField<TField>(string fieldName, List<TField> values)
+        public override IList<T> GetByField<TField>(string fieldName, IList<TField> values)
         {
             throw new NotImplementedException();
         }
 
-        public override List<T> GetByField<TField>(string fieldName, TField value)
+        public override IList<T> GetByField<TField>(string fieldName, TField value)
         {
             throw new NotImplementedException();
         }
 
-        public override List<string> GetKeyByField<TField>(string fieldName, List<TField> values)
+        public override IList<string> GetKeyByField<TField>(string fieldName, IList<TField> values)
         {
             throw new NotImplementedException();
         }
 
-        public override List<string> GetKeyByField<TField>(string fieldName, TField value)
+        public override IList<string> GetKeyByField<TField>(string fieldName, TField value)
         {
             throw new NotImplementedException();
         }
