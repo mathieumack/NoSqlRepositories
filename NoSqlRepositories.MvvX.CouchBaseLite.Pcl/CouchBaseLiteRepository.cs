@@ -123,6 +123,23 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
         }
 
         /// <summary>
+        /// Get the entities that match given ids. The list is empty if no entities were found
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public override IList<T> GetByIds(IList<string> ids)
+        {
+            var objects = new List<T>();
+            foreach(string id in ids)
+            {
+                var obj = TryGetById(id);
+                if (obj != null)
+                    objects.Add(obj);
+            }
+            return objects;
+        }
+
+        /// <summary>
         /// Extract en Entity stored in the CouchBaseLite document
         /// </summary>
         /// <param name="documentObjet"></param>
@@ -466,7 +483,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
         #endregion
 
-        public override void InitCollection(List<Expression<Func<T, object>>> indexFieldSelectors)
+        public override void InitCollection(IList<Expression<Func<T, object>>> indexFieldSelectors)
         {
             throw new NotImplementedException();
         }
@@ -504,7 +521,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
         #region Views
 
-        public override List<T> GetByField<TField>(string fieldName, TField value)
+        public override IList<T> GetByField<TField>(string fieldName, TField value)
         {
             IView view = database.GetExistingView(CollectionName + "-" + fieldName);
             
@@ -526,7 +543,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
             }
         }
 
-        public override List<T> GetByField<TField>(string fieldName, List<TField> values)
+        public override IList<T> GetByField<TField>(string fieldName, IList<TField> values)
         {
             return values.SelectMany(v => GetByField(fieldName, v))
                 .GroupBy(e => e.Id)
@@ -534,7 +551,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
                 .ToList();
         }
 
-        public override List<string> GetKeyByField<TField>(string fieldName, TField value)
+        public override IList<string> GetKeyByField<TField>(string fieldName, TField value)
         {
             IView view = database.GetExistingView(CollectionName + "-" + fieldName);
             
@@ -554,7 +571,25 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
             }
         }
 
-        public override List<string> GetKeyByField<TField>(string fieldName, List<TField> values)
+        public override int Count()
+        {
+            IView view = database.GetView(CollectionName);
+
+            using (IQuery query = view.CreateQuery())
+            {
+                query.Prefetch = false;
+                query.AllDocsMode = QueryAllDocsMode.AllDocs;
+
+                using (var queryEnum = query.Run())
+                {
+                    return queryEnum.Where(row => !row.Document.Deleted)
+                        .Select(row => GetEntityFromDocument(row.Document))
+                        .Count();
+                }
+            }
+        }
+
+        public override IList<string> GetKeyByField<TField>(string fieldName, IList<TField> values)
         {
             return values.SelectMany(v => GetKeyByField(fieldName, v)).Distinct().ToList();
         }

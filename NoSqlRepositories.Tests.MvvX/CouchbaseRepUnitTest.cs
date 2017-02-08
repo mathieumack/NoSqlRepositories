@@ -259,6 +259,12 @@ namespace NoSqlRepositories.Tests.MvvX
             Assert.AreEqual(false, entityRepo.Exist("123456"));
         }
 
+        [TestMethod]
+        public void MvvX_CBLite_Count()
+        {
+            test.Count();
+        }
+
         #region Private
 
         private MvxWpfFileStore getFileStore()
