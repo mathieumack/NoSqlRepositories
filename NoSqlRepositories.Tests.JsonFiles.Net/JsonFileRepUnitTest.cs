@@ -109,6 +109,12 @@ namespace NoSqlRepositories.Tests.MvvX
             test.GetTests();
         }
 
+        [TestMethod]
+        public void Mvvx_JsonFiles_Count()
+        {
+            test.Count();
+        }
+
         // Not supported for now
         //[TestMethod]
         public void MvvX_JsonFiles_ConcurrentAccess()

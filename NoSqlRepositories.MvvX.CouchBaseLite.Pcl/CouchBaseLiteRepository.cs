@@ -123,6 +123,23 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
         }
 
         /// <summary>
+        /// Get the entities that match given ids. The list is empty if no entities were found
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public override IList<T> GetByIds(IList<string> ids)
+        {
+            var objects = new List<T>();
+            foreach(string id in ids)
+            {
+                var obj = TryGetById(id);
+                if (obj != null)
+                    objects.Add(obj);
+            }
+            return objects;
+        }
+
+        /// <summary>
         /// Extract en Entity stored in the CouchBaseLite document
         /// </summary>
         /// <param name="documentObjet"></param>
@@ -550,6 +567,24 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
                 using (var queryEnum = query.Run())
                 {
                     return queryEnum.Select(doc => GetIdFromInternalCBLId(doc.DocumentId)).ToList();
+                }
+            }
+        }
+
+        public override int Count()
+        {
+            IView view = database.GetView(CollectionName);
+
+            using (IQuery query = view.CreateQuery())
+            {
+                query.Prefetch = false;
+                query.AllDocsMode = QueryAllDocsMode.AllDocs;
+
+                using (var queryEnum = query.Run())
+                {
+                    return queryEnum.Where(row => !row.Document.Deleted)
+                        .Select(row => GetEntityFromDocument(row.Document))
+                        .Count();
                 }
             }
         }

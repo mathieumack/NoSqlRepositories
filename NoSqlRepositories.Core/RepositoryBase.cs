@@ -92,6 +92,8 @@ namespace NoSqlRepositories.Core
 
         public abstract T TryGetById(string id);
 
+        public abstract IList<T> GetByIds(IList<string> ids);
+
         public UpdateResult Update(T entity)
         {
             return Update(entity, UpdateMode.db_implementation);
@@ -108,6 +110,8 @@ namespace NoSqlRepositories.Core
         public abstract List<string> GetKeyByField<TField>(string fieldName, List<TField> values);
 
         public abstract List<string> GetKeyByField<TField>(string fieldName, TField value);
+
+        public abstract int Count();
 
     }
 }

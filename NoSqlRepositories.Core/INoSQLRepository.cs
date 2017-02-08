@@ -22,6 +22,13 @@ namespace NoSqlRepositories.Core
         T TryGetById(string id);
 
         /// <summary>
+        /// Get the entities that match given ids. The list is empty if no entities are found
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        IList<T> GetByIds(IList<string> ids);
+
+        /// <summary>
         /// Insert one entity
         /// Raise an error if the key is already used
         /// </summary>
@@ -182,6 +189,12 @@ namespace NoSqlRepositories.Core
         /// <param name="value"></param>
         /// <returns></returns>
         List<string> GetKeyByField<TField>(string fieldName, TField value);
+
+        /// <summary>
+        /// Get the number of entities
+        /// </summary>
+        /// <returns></returns>
+        int Count();
 
     }
 }

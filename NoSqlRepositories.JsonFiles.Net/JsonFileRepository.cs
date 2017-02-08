@@ -102,6 +102,20 @@ namespace NoSqlRepositories.JsonFiles.Net
             return elt;
         }
 
+        public override IList<T> GetByIds(IList<string> ids)
+        {
+            IList<T> elts = new List<T>();
+
+            foreach(string id in ids)
+            {
+                var elt = TryGetById(id);
+                if (elt != null)
+                    elts.Add(elt);
+            }
+
+            return elts;
+        }
+
         public override InsertResult InsertOne(T entity, InsertMode keyExistsAction)
         {
             var insertResult = default(InsertResult);
@@ -262,6 +276,16 @@ namespace NoSqlRepositories.JsonFiles.Net
                 res = default(T);
             }
             return res;
+        }
+
+        public override int Count()
+        {
+            if (this.localDb != null)
+            {
+                return localDb.Values.Count(e => !config.IsExpired(e.Id));
+            }
+
+            return 0;
         }
 
         public override void InitCollection(List<Expression<Func<T, object>>> indexFieldSelectors)
