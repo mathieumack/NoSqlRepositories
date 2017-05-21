@@ -50,6 +50,14 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
         protected IDatabase database;
 
         /// <summary>
+        /// Empty constructor used for SqlCipher constructor
+        /// </summary>
+        protected CouchBaseLiteRepository()
+        {
+
+        }
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="CouchBaseLiteLite"></param>
@@ -598,7 +606,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
         /// Create a view to get All document of the collection without scranning the whole database
         /// Reminder : in CouchBaseLite, there is no "collection", all objects belong to the same storage
         /// </summary>
-        private void CreateAllDocView()
+        protected void CreateAllDocView()
         {
             IView view = database.GetExistingView(CollectionName);
             if (view == null)
