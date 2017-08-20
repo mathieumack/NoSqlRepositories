@@ -189,7 +189,6 @@ namespace NoSqlRepositories.Core
         /// <param name="value"></param>
         /// <returns></returns>
         IEnumerable<string> GetKeyByField<TField>(string fieldName, TField value);
-        IList<string> GetKeyByField<TField>(string fieldName, TField value);
 
         /// <summary>
         /// Get the number of entities

@@ -109,7 +109,8 @@ namespace NoSqlRepositories.Core
         public abstract IEnumerable<T> GetByField<TField>(string fieldName, TField value);
 
         public abstract IEnumerable<string> GetKeyByField<TField>(string fieldName, List<TField> values);
-        public abstract IList<string> GetKeyByField<TField>(string fieldName, TField value);
+
+        public abstract IEnumerable<string> GetKeyByField<TField>(string fieldName, TField value);
 
         public abstract int Count();
     }

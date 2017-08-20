@@ -220,19 +220,13 @@ namespace NoSqlRepositories.Tests.MvvX
         //    };
 
         //    entityRepo.InsertOne(entity6);
-
-            var res4 = entityRepo.GetByField<int>(nameof(TestEntity.NumberOfChildenInt), 0);
-            Assert.AreEqual(3, res4.Count(), "Existing view TestEntity-NumberOfChildenInt contains 5 docs");
+        
         //    var res4 = entityRepo.GetByField<int>(nameof(TestEntity.NumberOfChildenInt), 0);
         //    Assert.AreEqual(3, res4.Count, "Existing view TestEntity-NumberOfChildenInt contains 5 docs");
-
-            var res5 = entityRepo.GetByField<string>(nameof(TestEntity.Cities), "Andernos");
-            Assert.AreEqual(1, res5.Count(), "Existing view TestEntity-Cities contains 1 docs");
+        
         //    var res5 = entityRepo.GetByField<string>(nameof(TestEntity.Cities), "Andernos");
         //    Assert.AreEqual(1, res5.Count, "Existing view TestEntity-Cities contains 1 docs");
-
-            var res6 = entityRepo.GetAll();
-            Assert.AreEqual(5, res6.Count(), "Existing view TestEntity contains 5 docs");
+        
         //    var res6 = entityRepo.GetAll();
         //    Assert.AreEqual(5, res6.Count, "Existing view TestEntity contains 5 docs");
 

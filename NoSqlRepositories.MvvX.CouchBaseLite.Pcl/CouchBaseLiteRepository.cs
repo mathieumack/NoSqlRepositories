@@ -594,8 +594,8 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
                 }
             }
         }
-
-        public override IEnumerable<string> GetKeyByField<TField>(string fieldName, IList<TField> values)
+        
+        public override IEnumerable<string> GetKeyByField<TField>(string fieldName, List<TField> values)
         {
             return values.SelectMany(v => GetKeyByField(fieldName, v)).Distinct();
         }
@@ -705,7 +705,6 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
                 id = cblGeneratedIdPrefix + cblId;
             return id;
         }
-
 
         private const string cblGeneratedIdPrefix = "$$CBL$$";
 
