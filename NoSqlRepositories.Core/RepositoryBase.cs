@@ -69,7 +69,7 @@ namespace NoSqlRepositories.Core
 
         public abstract void InitCollection();
 
-        public abstract void InitCollection(List<System.Linq.Expressions.Expression<Func<T, object>>> indexFieldSelectors);
+        public abstract void InitCollection(IList<System.Linq.Expressions.Expression<Func<T, object>>> indexFieldSelectors);
 
         public BulkInsertResult<string> InsertMany(IEnumerable<T> entities)
         {
@@ -93,6 +93,8 @@ namespace NoSqlRepositories.Core
 
         public abstract T TryGetById(string id);
 
+        public abstract IList<T> GetByIds(IList<string> ids);
+
         public UpdateResult Update(T entity)
         {
             return Update(entity, UpdateMode.db_implementation);
@@ -107,7 +109,8 @@ namespace NoSqlRepositories.Core
         public abstract IEnumerable<T> GetByField<TField>(string fieldName, TField value);
 
         public abstract IEnumerable<string> GetKeyByField<TField>(string fieldName, List<TField> values);
+        public abstract IList<string> GetKeyByField<TField>(string fieldName, TField value);
 
-        public abstract IEnumerable<string> GetKeyByField<TField>(string fieldName, TField value);
+        public abstract int Count();
     }
 }

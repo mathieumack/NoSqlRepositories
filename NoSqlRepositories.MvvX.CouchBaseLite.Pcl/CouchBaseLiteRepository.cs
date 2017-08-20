@@ -50,6 +50,14 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
         protected IDatabase database;
 
         /// <summary>
+        /// Empty constructor used for SqlCipher constructor
+        /// </summary>
+        protected CouchBaseLiteRepository()
+        {
+
+        }
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="CouchBaseLiteLite"></param>
@@ -120,6 +128,23 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
             T entity = GetEntityFromDocument(documentObjet);
             return entity;
+        }
+
+        /// <summary>
+        /// Get the entities that match given ids. The list is empty if no entities were found
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public override IList<T> GetByIds(IList<string> ids)
+        {
+            var objects = new List<T>();
+            foreach(string id in ids)
+            {
+                var obj = TryGetById(id);
+                if (obj != null)
+                    objects.Add(obj);
+            }
+            return objects;
         }
 
         /// <summary>
@@ -466,7 +491,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
         #endregion
 
-        public override void InitCollection(List<Expression<Func<T, object>>> indexFieldSelectors)
+        public override void InitCollection(IList<Expression<Func<T, object>>> indexFieldSelectors)
         {
             throw new NotImplementedException();
         }
@@ -552,7 +577,25 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
             }
         }
 
-        public override IEnumerable<string> GetKeyByField<TField>(string fieldName, List<TField> values)
+        public override int Count()
+        {
+            IView view = database.GetView(CollectionName);
+
+            using (IQuery query = view.CreateQuery())
+            {
+                query.Prefetch = false;
+                query.AllDocsMode = QueryAllDocsMode.AllDocs;
+
+                using (var queryEnum = query.Run())
+                {
+                    return queryEnum.Where(row => !row.Document.Deleted)
+                        .Select(row => GetEntityFromDocument(row.Document))
+                        .Count();
+                }
+            }
+        }
+
+        public override IEnumerable<string> GetKeyByField<TField>(string fieldName, IList<TField> values)
         {
             return values.SelectMany(v => GetKeyByField(fieldName, v)).Distinct();
         }
@@ -561,7 +604,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
         /// Create a view to get All document of the collection without scranning the whole database
         /// Reminder : in CouchBaseLite, there is no "collection", all objects belong to the same storage
         /// </summary>
-        private void CreateAllDocView()
+        protected void CreateAllDocView()
         {
             IView view = database.GetExistingView(CollectionName);
             if (view == null)

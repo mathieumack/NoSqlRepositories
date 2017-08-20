@@ -96,6 +96,12 @@ namespace NoSqlRepositories.Tests.MvvX
             test.InsertExtraEltEntity();
         }
 
+        [TestMethod]
+        public void MvvX_JsonFiles_Count()
+        {
+            test.Count();
+        }
+
         //[TestMethod]
         // Limitation : couchtest repository doesn't handle polymorphism in attribute's entity of type List, Dictionary...
         public void MvvX_JsonFiles_Polymorphism()

@@ -114,6 +114,25 @@ namespace NoSqlRepositories.Test.Shared
             Assert.IsTrue(itemsInDatabaseAfterCompact.Count() == itemsInDatabase.Count() - 1, "entityRepo has not been physically deleted after compact");
         }
 
+        public void Count()
+        {
+            entityRepo.TruncateCollection();
+            Assert.AreEqual(0, entityRepo.Count(), "Repo should be empty");
+
+            var entity1 = TestHelper.GetEntity1();
+            entityRepo.InsertOne(entity1);
+            Assert.AreEqual(1, entityRepo.Count(), "Repo should contain one element");
+
+            var entity2 = TestHelper.GetEntity2();
+            entityRepo.InsertOne(entity2);
+            Assert.AreEqual(2, entityRepo.Count(), "Repo should contain two elements");
+
+            var entity3 = TestHelper.GetEntity3();
+            var entity4 = TestHelper.GetEntity4();
+            entityRepo.InsertMany(new List<TestEntity>(){ entity3, entity4 });
+            Assert.AreEqual(4, entityRepo.Count(), "Repo should contain four elements");
+        }
+
         public virtual void InsertEntity()
         {
             entityRepo.TruncateCollection();
@@ -281,6 +300,9 @@ namespace NoSqlRepositories.Test.Shared
 
         public virtual void GetTests()
         {
+            //
+            // Test missing element
+            //
             entityRepo.TruncateCollection();
 
             Exception e = null;
@@ -293,7 +315,24 @@ namespace NoSqlRepositories.Test.Shared
                 e = ex;
             }
 
-            Assert.IsInstanceOfType(e, typeof(KeyNotFoundNoSQLException), "Getbyid sould raise IdNotFoundException for missing ids");           
+            Assert.IsInstanceOfType(e, typeof(KeyNotFoundNoSQLException), "Getbyid sould raise IdNotFoundException for missing ids");
+            //
+            // Test GetByIds
+            //
+
+            // Init test
+            var entity1 = TestHelper.GetEntity1();
+            var entity2 = TestHelper.GetEntity2();
+
+            entityRepo.InsertOne(entity1);
+            entityRepo.InsertOne(entity2);
+
+            List<string> ids = new List<string>() { entity1.Id, entity2.Id , "unknown_id"};
+            var results = entityRepo.GetByIds(ids);
+
+            Assert.AreEqual(2, results.Count, "GetByIds should return 2 entities");
+            Assert.IsTrue(results.Any(i => i.Name.Equals("Balan")));
+            Assert.IsTrue(results.Any(i => i.Name.Equals("Mack")));
         }
 
         public virtual void Polymorphism()
