@@ -103,6 +103,5 @@ namespace NoSqlRepositories.Core
         public abstract Task<List<string>> GetKeyByField<TField>(string fieldName, List<TField> values);
 
         public abstract Task<List<string>> GetKeyByField<TField>(string fieldName, TField value);
-
     }
 }

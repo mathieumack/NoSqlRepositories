@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
@@ -33,11 +34,11 @@ namespace NoSqlRepositories.Core
 
         public abstract bool Exist(string id);
 
-        public abstract IList<T> GetAll();
+        public abstract IEnumerable<T> GetAll();
 
         public abstract Stream GetAttachment(string id, string attachmentName);
 
-        public abstract IList<string> GetAttachmentNames(string id);
+        public abstract IEnumerable<string> GetAttachmentNames(string id);
 
         public abstract T GetById(string id);
 
@@ -103,15 +104,14 @@ namespace NoSqlRepositories.Core
 
         public abstract void UseDatabase(string dbName);
 
-        public abstract IList<T> GetByField<TField>(string fieldName, IList<TField> values);
+        public abstract IEnumerable<T> GetByField<TField>(string fieldName, List<TField> values);
 
-        public abstract IList<T> GetByField<TField>(string fieldName, TField value);
+        public abstract IEnumerable<T> GetByField<TField>(string fieldName, TField value);
 
-        public abstract IList<string> GetKeyByField<TField>(string fieldName, IList<TField> values);
+        public abstract IEnumerable<string> GetKeyByField<TField>(string fieldName, List<TField> values);
 
-        public abstract IList<string> GetKeyByField<TField>(string fieldName, TField value);
+        public abstract IEnumerable<string> GetKeyByField<TField>(string fieldName, TField value);
 
         public abstract int Count();
-
     }
 }
