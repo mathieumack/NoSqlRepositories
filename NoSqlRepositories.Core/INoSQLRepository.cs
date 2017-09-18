@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq.Expressions;
+using NoSqlRepositories.Core.Queries;
 
 namespace NoSqlRepositories.Core
 {
@@ -61,6 +62,12 @@ namespace NoSqlRepositories.Core
         /// <param name="insertMode"></param>
         /// <returns></returns>
         BulkInsertResult<string> InsertMany(IEnumerable<T> entities, InsertMode insertMode);
+
+        /// <summary>
+        /// Create a new query on database.
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters);
 
         /// <summary>
         /// Test if the entity key exists in the repository

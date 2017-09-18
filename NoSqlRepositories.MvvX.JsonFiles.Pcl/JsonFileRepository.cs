@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using NoSqlRepositories.Core.Queries;
 
 namespace NoSqlRepositories.MvvX.JsonFiles.Pcl
 {
@@ -541,6 +542,29 @@ namespace NoSqlRepositories.MvvX.JsonFiles.Pcl
         public override IEnumerable<string> GetKeyByField<TField>(string fieldName, TField value)
         {
             throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region Queries
+
+        public override IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters)
+        {
+            if (this.localDb != null)
+            {
+                var resultQuery = localDb.Values.Where(e => !config.IsExpired(e.Id));
+
+                if (queryFilters.PostFilter != null)
+                    resultQuery = resultQuery.Where(e => queryFilters.PostFilter(e));
+                if (queryFilters.Skip != 0)
+                    resultQuery = resultQuery.Skip(queryFilters.Skip);
+                if (queryFilters.Limit != 0)
+                    resultQuery = resultQuery.Take(queryFilters.Limit);
+
+                return resultQuery;
+            }
+
+            return new List<T>();
         }
 
         #endregion

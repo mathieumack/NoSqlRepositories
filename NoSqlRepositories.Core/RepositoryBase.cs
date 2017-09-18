@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using NoSqlRepositories.Core.Queries;
 
 namespace NoSqlRepositories.Core
 {
@@ -113,5 +114,7 @@ namespace NoSqlRepositories.Core
         public abstract IEnumerable<string> GetKeyByField<TField>(string fieldName, TField value);
 
         public abstract int Count();
+
+        public abstract IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters);
     }
 }

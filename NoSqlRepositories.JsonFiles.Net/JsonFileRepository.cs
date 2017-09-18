@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using NoSqlRepositories.Core.Queries;
 
 namespace NoSqlRepositories.JsonFiles.Net
 {
@@ -547,6 +548,15 @@ namespace NoSqlRepositories.JsonFiles.Net
         }
 
         public override IEnumerable<string> GetKeyByField<TField>(string fieldName, TField value)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region Queries
+
+        public override IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters)
         {
             throw new NotImplementedException();
         }
