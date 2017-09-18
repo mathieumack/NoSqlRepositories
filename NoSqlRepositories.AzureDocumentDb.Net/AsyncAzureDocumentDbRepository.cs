@@ -23,7 +23,7 @@ namespace NoSqlRepositories.AzureDocumentDb.Net
         {
             get
             {
-                return NoSQLEngineType.AzureDb;
+                return NoSQLEngineType.AzureDocumentDb;
             }
         }
 

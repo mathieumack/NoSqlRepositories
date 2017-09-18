@@ -4,6 +4,6 @@
     {
         JsonFile = 0,
         CouchBaseLiteLite,
-        AzureDb
+        AzureDocumentDb
     }
 }
