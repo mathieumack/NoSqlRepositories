@@ -14,6 +14,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using MvvX.Plugins.CouchBaseLite.Storages;
 using System.Threading.Tasks;
+using NoSqlRepositories.Core.Queries;
 
 namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 {
@@ -91,6 +92,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
             CreateAllDocView();
         }
 
+
         private void ConnectToDatabase(StorageTypes storage, string dbName)
         {
             var databaseOptions = this.CouchBaseLiteLite.CreateDatabaseOptions();
@@ -101,6 +103,11 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
             if (this.database == null)
                 throw new NullReferenceException("CreateConnection returned no connection");
+        }
+
+        void CreateQuery()
+        {
+            var query = this.database.CreateAllDocumentsQuery();
         }
 
         public override bool CompactDatabase()
@@ -494,6 +501,34 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
         public override void InitCollection(IList<Expression<Func<T, object>>> indexFieldSelectors)
         {
             throw new NotImplementedException();
+        }
+
+        public override IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters)
+        {
+            IView view = database.GetView(CollectionName);
+
+            using (IQuery query = view.CreateQuery())
+            {
+                query.Prefetch = true;
+                query.AllDocsMode = QueryAllDocsMode.AllDocs;
+                query.IndexUpdateMode = IndexUpdateMode.Before;
+                if (queryFilters.Skip != 0)
+                    query.Skip = queryFilters.Skip;
+                if (queryFilters.Limit != 0)
+                    query.Limit = queryFilters.Limit;
+                if (queryFilters.PostFilter != null)
+                {
+                    query.PostFilter = (row) =>
+                    {
+                        var item = GetEntityFromDocument(row.Document);
+                        return queryFilters.PostFilter(item);
+                    };
+                }
+                using (var queryEnum = query.Run())
+                {
+                    return queryEnum.Select(row => GetEntityFromDocument(row.Document));
+                }
+            }
         }
 
         public override IEnumerable<T> GetAll()

@@ -1,15 +1,11 @@
 ﻿using NoSqlRepositories.Test.Shared.Entities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NoSqlRepositories.Test.Shared.Helpers
 {
     public class TestHelper
     {
-
         public static TestEntity GetEntity1()
         {
             return new TestEntity

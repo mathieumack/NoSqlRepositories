@@ -143,5 +143,15 @@ namespace NoSqlRepositories.Tests.MvvX
         }
 
         #endregion  
+
+        #region Queries
+
+        [TestMethod]
+        public void MvvX_JsonFiles_DoQuery()
+        {
+            test.DoQuery();
+        }
+
+        #endregion
     }
 }

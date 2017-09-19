@@ -265,6 +265,16 @@ namespace NoSqlRepositories.Tests.MvvX
             test.Count();
         }
 
+        #region Queries
+
+        [TestMethod]
+        public void MvvX_CBLite_DoQuery()
+        {
+            test.DoQuery();
+        }
+
+        #endregion
+
         #region Private
 
         protected virtual CouchBaseLiteRepository<T> GetRepository<T>(ICouchBaseLite couchBaseLiteManager, string dbName)
@@ -279,7 +289,5 @@ namespace NoSqlRepositories.Tests.MvvX
         }
 
         #endregion
-
-
     }
 }
