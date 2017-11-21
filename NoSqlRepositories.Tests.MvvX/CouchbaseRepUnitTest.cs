@@ -1,5 +1,4 @@
-﻿
-using System.IO;
+﻿using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MvvmCross.Platform;
 using MvvmCross.Plugins.File;
@@ -10,10 +9,6 @@ using MvvX.Plugins.CouchBaseLite.Platform;
 using NoSqlRepositories.MvvX.CouchBaseLite.Pcl;
 using NoSqlRepositories.Test.Shared;
 using NoSqlRepositories.Test.Shared.Entities;
-using NoSqlRepositories.Test.Shared.Extensions;
-using NoSqlRepositories.Test.Shared.Helpers;
-using System;
-using System.Linq;
 using NoSqlRepositories.Core;
 
 namespace NoSqlRepositories.Tests.MvvX
@@ -135,6 +130,18 @@ namespace NoSqlRepositories.Tests.MvvX
         public void MvvX_CBLite_InsertExtraEltEntity()
         {
             test.InsertExtraEltEntity();
+        }
+
+        [TestMethod]
+        public void MvvX_CBLite_Close()
+        {
+            test.Close();
+        }
+
+        [TestMethod]
+        public void MvvX_CBLite_ConnectAgain()
+        {
+            test.ConnectAgain();
         }
 
         //[TestMethod]

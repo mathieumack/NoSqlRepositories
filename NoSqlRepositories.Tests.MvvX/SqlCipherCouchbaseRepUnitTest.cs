@@ -1,20 +1,9 @@
-﻿
-using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MvvmCross.Platform;
-using MvvmCross.Plugins.File;
-using MvvmCross.Plugins.File.Wpf;
-using MvvmCross.Test.Core;
 using MvvX.Plugins.CouchBaseLite;
-using MvvX.Plugins.CouchBaseLite.Platform;
 using NoSqlRepositories.MvvX.CouchBaseLite.Pcl;
 using NoSqlRepositories.Test.Shared;
 using NoSqlRepositories.Test.Shared.Entities;
-using NoSqlRepositories.Test.Shared.Extensions;
-using NoSqlRepositories.Test.Shared.Helpers;
-using System;
-using System.Text;
-using MvvX.Plugins.CouchBaseLite.Storages;
 
 namespace NoSqlRepositories.Tests.MvvX
 {

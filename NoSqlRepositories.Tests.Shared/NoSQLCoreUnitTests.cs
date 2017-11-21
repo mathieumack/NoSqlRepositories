@@ -525,7 +525,78 @@ namespace NoSqlRepositories.Test.Shared
             }
         }
 
-  
+        /// <summary>
+        /// Init Set demo
+        /// => Copy files in : C:\Users\abala\AppData\Roaming
+        /// </summary>
+        public virtual void Close()
+        {
+            entityRepo.TruncateCollection();
+
+            var entity1 = TestHelper.GetEntity1();
+            entityRepo.InsertOne(entity1);
+
+            var entitylist = entityRepo.GetAll();
+            Assert.AreEqual(1, entitylist.Count(), "Invalide number. The expected result is " + entitylist.Count());
+            
+            var task = Task.Run(() => entityRepo.Close());
+            task.Wait();
+
+            Assert.IsFalse(entityRepo.ConnectionOpened, "The connection must be closed");
+            try
+            {
+                entityRepo.GetAll();
+                Assert.Fail();
+            }
+            catch (InvalidOperationException)
+            {
+                // Good !
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+            // Now we try to get datas
+        }
+
+        /// <summary>
+        /// Init Set demo
+        /// => Copy files in : C:\Users\abala\AppData\Roaming
+        /// </summary>
+        public virtual void ConnectAgain()
+        {
+            entityRepo.TruncateCollection();
+
+            var entity1 = TestHelper.GetEntity1();
+            entityRepo.InsertOne(entity1);
+
+            var entitylist = entityRepo.GetAll();
+            Assert.AreEqual(1, entitylist.Count(), "Invalide number. The expected result is " + entitylist.Count());
+
+            var task = Task.Run(() => entityRepo.Close());
+            task.Wait();
+
+            Assert.IsFalse(entityRepo.ConnectionOpened, "The connection must be closed");
+            try
+            {
+                entityRepo.GetAll();
+                Assert.Fail();
+            }
+            catch (InvalidOperationException)
+            {
+                // Good !
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+            // Now we try to connect again
+            entityRepo.ConnectAgain();
+
+            entitylist = entityRepo.GetAll();
+            Assert.AreEqual(1, entitylist.Count(), "Invalide number. The expected result is " + entitylist.Count());
+        }
+
         /// <summary>
         /// Init Set demo
         /// => Copy files in : C:\Users\abala\AppData\Roaming
@@ -794,7 +865,5 @@ namespace NoSqlRepositories.Test.Shared
         }
 
         #endregion
-
-
     }
 }

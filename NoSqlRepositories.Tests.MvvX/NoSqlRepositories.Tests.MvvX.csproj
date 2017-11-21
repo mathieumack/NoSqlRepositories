@@ -88,11 +88,11 @@
       <HintPath>..\packages\MvvmCross.Core.4.2.2\lib\net45\MvvmCross.Wpf.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MvvX.Plugins.CouchBaseLite, Version=2017.10521.11245.80, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MvvX.Plugins.CouchBaseLite.2017.10521.11245.80\lib\net45\MvvX.Plugins.CouchBaseLite.dll</HintPath>
+    <Reference Include="MvvX.Plugins.CouchBaseLite, Version=2017.11117.10954.93, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvX.Plugins.CouchBaseLite.2017.11117.10954.93\lib\net45\MvvX.Plugins.CouchBaseLite.dll</HintPath>
     </Reference>
-    <Reference Include="MvvX.Plugins.CouchBaseLite.Wpf, Version=2017.10521.11245.80, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MvvX.Plugins.CouchBaseLite.2017.10521.11245.80\lib\net45\MvvX.Plugins.CouchBaseLite.Wpf.dll</HintPath>
+    <Reference Include="MvvX.Plugins.CouchBaseLite.Wpf, Version=2017.11117.10954.93, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvX.Plugins.CouchBaseLite.2017.11117.10954.93\lib\net45\MvvX.Plugins.CouchBaseLite.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>

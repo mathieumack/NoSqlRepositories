@@ -65,6 +65,18 @@ namespace NoSqlRepositories.Tests.MvvX
         }
 
         [TestMethod]
+        public void MvvX_JsonFiles_Close()
+        {
+            test.Close();
+        }
+
+        [TestMethod]
+        public void MvvX_JsonFiles_ConnectAgain()
+        {
+            test.ConnectAgain();
+        }
+
+        [TestMethod]
         public void MvvX_JsonFiles_CompactDatabase()
         {
             test.CompactDatabase();
