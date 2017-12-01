@@ -2,12 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using NoSqlRepositories.Core.Queries;
 
 namespace NoSqlRepositories.Core
 {
     public abstract class RepositoryBase<T> : INoSQLRepository<T> where T : class, IBaseEntity
     {
+        protected Action ConnectAgainToDatabase { get; set; }
+
+        public bool ConnectionOpened { get; protected set; }
+
         public abstract string DatabaseName { get; }
 
         public abstract NoSQLEngineType EngineType { get; }
@@ -27,6 +32,10 @@ namespace NoSqlRepositories.Core
         
         public abstract long Delete(string id, bool physical);
 
+        public abstract Task Close();
+
+        public abstract void ConnectAgain();
+
         public abstract bool CompactDatabase();
 
         public abstract void ExpireAt(string id, DateTime? dateLimit);
@@ -44,6 +53,16 @@ namespace NoSqlRepositories.Core
         public abstract T GetById(string id);
 
         /// <summary>
+        /// Check if the connection is opened.
+        /// Generate a InvalidOperationException if the connection if not opened
+        /// </summary>
+        protected void CheckOpenedConnection()
+        {
+            if (!ConnectionOpened)
+                throw new InvalidOperationException("Connection not opened");
+        }
+        
+        /// <summary>
         /// Get an attachment of an entity in Byte[] or empty if the attachement is not found
         /// </summary>
         /// <param name="id">Id of entity</param>
@@ -51,6 +70,8 @@ namespace NoSqlRepositories.Core
         /// <returns></returns>
         public byte[] GetByteAttachment(string id, string attachmentName)
         {
+            CheckOpenedConnection();
+
             var reuslt = new Byte[0];
 
             using (MemoryStream memoryStream = new MemoryStream())
@@ -74,6 +95,8 @@ namespace NoSqlRepositories.Core
 
         public BulkInsertResult<string> InsertMany(IEnumerable<T> entities)
         {
+            CheckOpenedConnection();
+
             return InsertMany(entities, InsertMode.db_implementation);
         }
 
@@ -81,6 +104,8 @@ namespace NoSqlRepositories.Core
 
         public InsertResult InsertOne(T entity)
         {
+            CheckOpenedConnection();
+
             return InsertOne(entity, InsertMode.error_if_key_exists);
         }
 
@@ -98,6 +123,8 @@ namespace NoSqlRepositories.Core
 
         public UpdateResult Update(T entity)
         {
+            CheckOpenedConnection();
+
             return Update(entity, UpdateMode.db_implementation);
         }
 

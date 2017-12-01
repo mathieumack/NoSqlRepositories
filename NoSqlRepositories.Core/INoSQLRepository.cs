@@ -2,12 +2,18 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using NoSqlRepositories.Core.Queries;
 
 namespace NoSqlRepositories.Core
 {
     public interface INoSQLRepository<T> : INoSQLDB<T> where T : class, IBaseEntity
     {
+        /// <summary>
+        /// Indicate if the connection is opened
+        /// </summary>
+        bool ConnectionOpened { get; }
+
         /// <summary>
         /// Get the entity corresponding to the provided id. Raise an IdNotFoundException if not found
         /// </summary>
@@ -75,6 +81,18 @@ namespace NoSqlRepositories.Core
         /// <param name="id"></param>
         /// <returns></returns>
         bool Exist(string id);
+
+        /// <summary>
+        /// Close the connection to the database
+        /// </summary>
+        /// <returns></returns>
+        Task Close();
+
+        /// <summary>
+        /// Connect again to the database if you already call the Close method
+        /// </summary>
+        /// <returns></returns>
+        void ConnectAgain();
 
         /// <summary>
         /// Update an entity with the specify behavor

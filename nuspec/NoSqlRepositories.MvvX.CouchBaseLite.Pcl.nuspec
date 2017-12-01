@@ -15,7 +15,7 @@
           <group>
             <!-- Always include regardless of target framework -->
             <dependency id="NoSqlRepositories.Core" version="{BuildNumberVersion}" />
-            <dependency id="MvvX.Plugins.CouchBaseLite" version="2017.10521.11245.80" />
+            <dependency id="MvvX.Plugins.CouchBaseLite" version="2017.11117.10954.93" />
             <dependency id="MvvmCross.Platform" version="4.2.2" />
             <dependency id="Newtonsoft.Json" version="9.0.1" />
         </group>

@@ -69,6 +69,8 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
             ConnectToDatabase(storage, dbName, password);
 
+            this.ConnectAgainToDatabase = () => Construct(CouchBaseLiteLite, storage, dbName, password);
+
             CreateAllDocView();
         }
 
@@ -117,6 +119,8 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
             if (this.database == null)
                 throw new NullReferenceException("CreateConnection returned no connection");
+
+            ConnectionOpened = true;
         }
 
         private void ConnectToDatabase(StorageTypes storage, string dbName, byte[] keyData)
@@ -130,6 +134,8 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
             if (this.database == null)
                 throw new NullReferenceException("CreateConnection returned no connection");
+
+            ConnectionOpened = true;
         }
 
         private void ConnectToDatabase(StorageTypes storage, string dbName, string password, byte[] salt, int rounds)
@@ -143,6 +149,8 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
             if (this.database == null)
                 throw new NullReferenceException("CreateConnection returned no connection");
+
+            ConnectionOpened = true;
         }
     }
 }

@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using NoSqlRepositories.Core.Queries;
+using System.Threading.Tasks;
 
 namespace NoSqlRepositories.JsonFiles.Net
 {
@@ -77,12 +78,27 @@ namespace NoSqlRepositories.JsonFiles.Net
             this.dbName = dbName;
             CollectionName = typeof(T).Name;
             LoadJSONFile();
+
+            ConnectAgainToDatabase = () => LoadJSONFile();
         }
 
         #region INoSQLRepository
 
+        public override async Task Close()
+        {
+            SaveJSONFile();
+            ConnectionOpened = false;
+        }
+
+        public override void ConnectAgain()
+        {
+            ConnectAgainToDatabase();
+        }
+
         public override T GetById(string id)
         {
+            CheckOpenedConnection();
+
             T elt;
 
             if (!localDb.TryGetValue(id, out elt))
@@ -105,6 +121,8 @@ namespace NoSqlRepositories.JsonFiles.Net
 
         public override IList<T> GetByIds(IList<string> ids)
         {
+            CheckOpenedConnection();
+
             IList<T> elts = new List<T>();
 
             foreach(string id in ids)
@@ -119,6 +137,8 @@ namespace NoSqlRepositories.JsonFiles.Net
 
         public override InsertResult InsertOne(T entity, InsertMode keyExistsAction)
         {
+            CheckOpenedConnection();
+
             var insertResult = default(InsertResult);
 
             var date = NoSQLRepoHelper.DateTimeUtcNow();
@@ -165,6 +185,8 @@ namespace NoSqlRepositories.JsonFiles.Net
 
         public override BulkInsertResult<string> InsertMany(IEnumerable<T> entities, InsertMode insertMode)
         {
+            CheckOpenedConnection();
+
             if (insertMode != InsertMode.db_implementation)
                 throw new NotImplementedException();
 
@@ -193,11 +215,15 @@ namespace NoSqlRepositories.JsonFiles.Net
 
         public override bool Exist(string id)
         {
+            CheckOpenedConnection();
+
             return localDb.ContainsKey(id);
         }
 
         public override UpdateResult Update(T entity, UpdateMode updateMode)
         {
+            CheckOpenedConnection();
+
             var updateResult = default(UpdateResult);
 
             if (updateMode == UpdateMode.upsert_if_missing_key)
@@ -239,6 +265,8 @@ namespace NoSqlRepositories.JsonFiles.Net
 
         public override long Delete(string id, bool physical)
         {
+            CheckOpenedConnection();
+
             if (localDb.ContainsKey(id))
             {
                 foreach (var attachmentName in GetAttachmentNames(id))
@@ -266,6 +294,8 @@ namespace NoSqlRepositories.JsonFiles.Net
 
         public override T TryGetById(string id)
         {
+            CheckOpenedConnection();
+
             T res;
 
             try
@@ -281,6 +311,8 @@ namespace NoSqlRepositories.JsonFiles.Net
 
         public override int Count()
         {
+            CheckOpenedConnection();
+
             if (this.localDb != null)
             {
                 return localDb.Values.Count(e => !config.IsExpired(e.Id));
@@ -300,12 +332,16 @@ namespace NoSqlRepositories.JsonFiles.Net
 
         public override void ExpireAt(string id, DateTime? dateLimit)
         {
+            CheckOpenedConnection();
+
             config.ExpireAt(id, dateLimit);
             SavedDbConfig();
         }
 
         public override bool CompactDatabase()
         {
+            CheckOpenedConnection();
+
             if (this.localDb != null)
             {
                 foreach (var item in localDb.Values.Where(e => e.Deleted || config.IsExpired(e.Id)))
@@ -318,6 +354,8 @@ namespace NoSqlRepositories.JsonFiles.Net
 
         public override long TruncateCollection()
         {
+            CheckOpenedConnection();
+
             var count = localDb.Keys.Count;
             localDb = new ConcurrentDictionary<string, T>();
             config.TruncateCollection();
@@ -327,27 +365,37 @@ namespace NoSqlRepositories.JsonFiles.Net
 
         public override void SetCollectionName(string typeName)
         {
+            CheckOpenedConnection();
+
             CollectionName = typeName;
             LoadJSONFile();
         }
 
         public override void InitCollection()
         {
+            CheckOpenedConnection();
+
             // Autoinit, nothing to do
         }
 
         public override void UseDatabase(string dbName)
         {
+            CheckOpenedConnection();
+
             throw new NotImplementedException();
         }
 
         public override bool CollectionExists(bool createIfNotExists)
         {
+            CheckOpenedConnection();
+
             throw new NotImplementedException();
         }
 
         public override void DropCollection()
         {
+            CheckOpenedConnection();
+
             this.localDb = new Dictionary<string, T>();
             config.TruncateCollection();
             SaveJSONFile();
@@ -387,6 +435,8 @@ namespace NoSqlRepositories.JsonFiles.Net
             }
 
             LoadDbConfigFile();
+
+            ConnectionOpened = true;
         }
         
         private void SaveJSONFile()
@@ -460,6 +510,8 @@ namespace NoSqlRepositories.JsonFiles.Net
 
         public override void AddAttachment(string id, Stream fileStream, string contentType, string attachmentName)
         {
+            CheckOpenedConnection();
+
             var entityAttachmentDir = Path.Combine(AttachmentsDirectoryPath, id);
             var attachmentFilePath = Path.Combine(entityAttachmentDir, attachmentName);
 
@@ -474,6 +526,8 @@ namespace NoSqlRepositories.JsonFiles.Net
 
         public override void RemoveAttachment(string id, string attachmentName)
         {
+            CheckOpenedConnection();
+
             var entityAttachmentDir = AttachmentsDirectoryPath + "/" + id;
             var attachmentFilePath = entityAttachmentDir + "/" + attachmentName;
 
@@ -488,6 +542,8 @@ namespace NoSqlRepositories.JsonFiles.Net
 
         public override Stream GetAttachment(string id, string attachmentName)
         {
+            CheckOpenedConnection();
+
             var entityAttachmentDir = AttachmentsDirectoryPath + "/" + id;
             var attachmentFilePath = entityAttachmentDir + "/" + attachmentName;
 
@@ -506,6 +562,8 @@ namespace NoSqlRepositories.JsonFiles.Net
         /// <returns></returns>
         public override IEnumerable<T> GetAll()
         {
+            CheckOpenedConnection();
+
             List<T> result = new List<T>();
             if (this.localDb != null)
             {
@@ -522,6 +580,8 @@ namespace NoSqlRepositories.JsonFiles.Net
         /// <returns></returns>
         public override IEnumerable<string> GetAttachmentNames(string idDocument)
         {
+            CheckOpenedConnection();
+
             var entityAttachmentDir = Path.Combine(AttachmentsDirectoryPath, idDocument);
 
             if (Directory.Exists(entityAttachmentDir))
@@ -534,21 +594,29 @@ namespace NoSqlRepositories.JsonFiles.Net
 
         public override IEnumerable<T> GetByField<TField>(string fieldName, List<TField> values)
         {
+            CheckOpenedConnection();
+
             throw new NotImplementedException();
         }
 
         public override IEnumerable<T> GetByField<TField>(string fieldName, TField value)
         {
+            CheckOpenedConnection();
+
             throw new NotImplementedException();
         }
 
         public override IEnumerable<string> GetKeyByField<TField>(string fieldName, List<TField> values)
         {
+            CheckOpenedConnection();
+
             throw new NotImplementedException();
         }
 
         public override IEnumerable<string> GetKeyByField<TField>(string fieldName, TField value)
         {
+            CheckOpenedConnection();
+
             throw new NotImplementedException();
         }
 
@@ -558,6 +626,8 @@ namespace NoSqlRepositories.JsonFiles.Net
 
         public override IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters)
         {
+            CheckOpenedConnection();
+
             throw new NotImplementedException();
         }
 

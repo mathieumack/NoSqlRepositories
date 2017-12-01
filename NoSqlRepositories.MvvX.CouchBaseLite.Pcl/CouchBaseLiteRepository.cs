@@ -55,41 +55,42 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
         /// </summary>
         protected CouchBaseLiteRepository()
         {
-
         }
 
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="CouchBaseLiteLite"></param>
+        /// <param name="couchBaseLiteLite"></param>
         /// <param name="fileStore"></param>
-        public CouchBaseLiteRepository(ICouchBaseLite CouchBaseLiteLite, string dbName)
+        public CouchBaseLiteRepository(ICouchBaseLite couchBaseLiteLite, string dbName)
         {
-            Construct(CouchBaseLiteLite, StorageTypes.Sqlite, dbName);
+            Construct(couchBaseLiteLite, StorageTypes.Sqlite, dbName);
         }
 
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="CouchBaseLiteLite"></param>
+        /// <param name="couchBaseLiteLite"></param>
         /// <param name="fileStore"></param>
-        public CouchBaseLiteRepository(ICouchBaseLite CouchBaseLiteLite, StorageTypes storage, string dbName)
+        public CouchBaseLiteRepository(ICouchBaseLite couchBaseLiteLite, StorageTypes storage, string dbName)
         {
-            Construct(CouchBaseLiteLite, storage, dbName);
+            Construct(couchBaseLiteLite, storage, dbName);
         }
 
 
-        private void Construct(ICouchBaseLite CouchBaseLiteLite, StorageTypes storage, string dbName)
+        private void Construct(ICouchBaseLite couchBaseLiteLite, StorageTypes storage, string dbName)
         {
-            if (CouchBaseLiteLite == null)
+            if (couchBaseLiteLite == null)
                 throw new ArgumentNullException("CouchBaseLiteLite");
-            
-            this.CouchBaseLiteLite = CouchBaseLiteLite;
+
+            this.CouchBaseLiteLite = couchBaseLiteLite;
             this.CollectionName = typeof(T).Name;
 
             ConnectToDatabase(storage, dbName);
 
             CreateAllDocView();
+
+            ConnectAgainToDatabase = () => Construct(couchBaseLiteLite, storage, dbName);
         }
 
 
@@ -103,20 +104,39 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
             if (this.database == null)
                 throw new NullReferenceException("CreateConnection returned no connection");
+
+            ConnectionOpened = true;
+        }
+
+        public override async Task Close()
+        {
+            await this.database.Close();
+            ConnectionOpened = false;
+        }
+
+        public override void ConnectAgain()
+        {
+            ConnectAgainToDatabase();
         }
 
         void CreateQuery()
         {
+            CheckOpenedConnection();
+
             var query = this.database.CreateAllDocumentsQuery();
         }
 
         public override bool CompactDatabase()
         {
+            CheckOpenedConnection();
+
             return this.database.Compact();
         }
 
         public override void ExpireAt(string id, DateTime? dateLimit)
         {
+            CheckOpenedConnection();
+
             var documentObjet = this.database.GetExistingDocument(GetInternalCBLId(id));
             if (documentObjet == null || documentObjet.Deleted)
             {
@@ -127,6 +147,8 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
         public override T GetById(string id)
         {
+            CheckOpenedConnection();
+
             var documentObjet = this.database.GetExistingDocument(GetInternalCBLId(id));
             if (documentObjet == null || documentObjet.Deleted)
             {
@@ -144,8 +166,10 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
         /// <returns></returns>
         public override IList<T> GetByIds(IList<string> ids)
         {
+            CheckOpenedConnection();
+
             var objects = new List<T>();
-            foreach(string id in ids)
+            foreach (string id in ids)
             {
                 var obj = TryGetById(id);
                 if (obj != null)
@@ -161,14 +185,17 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
         /// <returns></returns>
         private T GetEntityFromDocument(IDocument documentObjet)
         {
+            CheckOpenedConnection();
+
             return GetEntityFromDocument(documentObjet.GetProperty("members"), (string)documentObjet.GetProperty("entityType"));
         }
 
         private T GetEntityFromDocument(object memberField, string originalEntityType)
         {
+            CheckOpenedConnection();
 
             T entity = null;
-            
+
             if (memberField is JObject)
             {
                 JObject testobject = (JObject)memberField;
@@ -214,16 +241,20 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
         public override bool Exist(string id)
         {
+            CheckOpenedConnection();
+
             var documentObjet = this.database.GetExistingDocument(GetInternalCBLId(id));
             return documentObjet != null;
         }
 
         public override BulkInsertResult<string> InsertMany(IEnumerable<T> entities, InsertMode insertMode)
         {
+            CheckOpenedConnection();
+
             var insertResult = new BulkInsertResult<string>();
 
             //TODO : restore Parralel.ForEach
-            foreach(var entity in entities)
+            foreach (var entity in entities)
             {
                 // Create the document
                 InsertOne(entity, insertMode);
@@ -235,6 +266,8 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
         public override InsertResult InsertOne(T entity, InsertMode insertMode)
         {
+            CheckOpenedConnection();
+
             var insertResult = default(InsertResult);
             bool documentAlreadyExists = false;
             IDocument documentObjet = null;
@@ -308,6 +341,8 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
         public override UpdateResult Update(T entity, UpdateMode updateMode)
         {
+            CheckOpenedConnection();
+
             if (entity.Id == null)
                 throw new ArgumentException("Cannot update an entity with a null field value");
 
@@ -338,11 +373,15 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
         public override void UseDatabase(string dbName)
         {
+            CheckOpenedConnection();
+
             throw new NotImplementedException();
         }
 
         public override long TruncateCollection()
         {
+            CheckOpenedConnection();
+
             int deleted = 0;
 
             IView view = database.GetView(CollectionName);
@@ -367,26 +406,36 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
         public override void DropCollection()
         {
+            CheckOpenedConnection();
+
             throw new NotImplementedException();
         }
 
         public override void SetCollectionName(string typeName)
         {
+            CheckOpenedConnection();
+
             this.CollectionName = typeName;
         }
 
         public override void InitCollection()
         {
+            CheckOpenedConnection();
+
             // Nothing to do to initialize the collection
         }
 
         public override bool CollectionExists(bool createIfNotExists)
         {
+            CheckOpenedConnection();
+
             throw new NotImplementedException();
         }
 
         public override long Delete(string id, bool physical)
         {
+            CheckOpenedConnection();
+
             long result = 0;
             var documentObjet = this.database.GetExistingDocument(GetInternalCBLId(id));
             // Document found
@@ -400,6 +449,7 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
         }
 
         #region Attachments
+
         /// <summary>
         /// Add an attachment to an entity
         /// </summary>
@@ -409,6 +459,8 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
         /// <param name="attachmentName">identify of the file to attach</param>
         public override void AddAttachment(string id, Stream fileStream, string contentType, string attachmentName)
         {
+            CheckOpenedConnection();
+
             var existingEntity = this.database.GetExistingDocument(GetInternalCBLId(id));
             if (existingEntity == null)
                 throw new KeyNotFoundNoSQLException();
@@ -425,6 +477,8 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
         /// <param name="attachmentName">name of attachment to remove</param>
         public override void RemoveAttachment(string id, string attachmentName)
         {
+            CheckOpenedConnection();
+
             var existingEntity = this.database.GetExistingDocument(GetInternalCBLId(id));
             if (existingEntity == null)
                 throw new KeyNotFoundNoSQLException(string.Format("Entity '{0}' not found", id));
@@ -445,6 +499,8 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
         /// <returns></returns>
         public override Stream GetAttachment(string id, string attachmentName)
         {
+            CheckOpenedConnection();
+
             var attachement = GetAttachmentCore(id, attachmentName);
             if (attachement != null)
                 return attachement.ContentStream;
@@ -454,6 +510,8 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
         public IEnumerable<byte> GetAttachmentInMemory(string id, string attachmentName)
         {
+            CheckOpenedConnection();
+
             if (string.IsNullOrWhiteSpace(id))
                 throw new ArgumentNullException("id");
 
@@ -500,11 +558,15 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
         public override void InitCollection(IList<Expression<Func<T, object>>> indexFieldSelectors)
         {
+            CheckOpenedConnection();
+
             throw new NotImplementedException();
         }
 
         public override IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters)
         {
+            CheckOpenedConnection();
+
             IView view = database.GetView(CollectionName);
 
             using (IQuery query = view.CreateQuery())
@@ -533,6 +595,8 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
         public override IEnumerable<T> GetAll()
         {
+            CheckOpenedConnection();
+
             IView view = database.GetView(CollectionName);
 
             using (IQuery query = view.CreateQuery())
@@ -548,9 +612,11 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
                 }
             }
         }
-        
+
         public override IEnumerable<string> GetAttachmentNames(string id)
         {
+            CheckOpenedConnection();
+
             var documentAttachment = this.database.GetExistingDocument(GetInternalCBLId(id));
             if (documentAttachment == null)
                 throw new KeyNotFoundNoSQLException();
@@ -565,11 +631,13 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
         public override IEnumerable<T> GetByField<TField>(string fieldName, TField value)
         {
+            CheckOpenedConnection();
+
             IView view = database.GetExistingView(CollectionName + "-" + fieldName);
-            
+
             if (view == null)
                 throw new IndexNotFoundNoSQLException(string.Format("An index must be created on the fieldName '{0}' before calling GetByField", fieldName));
-            
+
             using (IQuery query = view.CreateQuery())
             {
                 query.Prefetch = true;
@@ -587,6 +655,8 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
         public override IEnumerable<T> GetByField<TField>(string fieldName, List<TField> values)
         {
+            CheckOpenedConnection();
+
             return values.SelectMany(v => GetByField(fieldName, v))
                 .GroupBy(e => e.Id)
                 .Select(g => g.First()); // Remove duplicates entities
@@ -594,11 +664,13 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
         public override IEnumerable<string> GetKeyByField<TField>(string fieldName, TField value)
         {
+            CheckOpenedConnection();
+
             IView view = database.GetExistingView(CollectionName + "-" + fieldName);
-            
+
             if (view == null)
                 throw new IndexNotFoundNoSQLException(string.Format("An index must be created on the fieldName '{0}' before calling GetByField", fieldName));
-            
+
             using (IQuery query = view.CreateQuery())
             {
                 query.Prefetch = false;
@@ -614,6 +686,8 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
         public override int Count()
         {
+            CheckOpenedConnection();
+
             IView view = database.GetView(CollectionName);
 
             using (IQuery query = view.CreateQuery())
@@ -629,9 +703,11 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
                 }
             }
         }
-        
+
         public override IEnumerable<string> GetKeyByField<TField>(string fieldName, List<TField> values)
         {
+            CheckOpenedConnection();
+
             return values.SelectMany(v => GetKeyByField(fieldName, v)).Distinct();
         }
 
@@ -653,11 +729,11 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
                 if (!doc.Keys.Contains("collection") || !doc.Keys.Contains("members"))
                     return; // bad doc format, ignore it
 
-                    var collection = (string)doc["collection"];
+                var collection = (string)doc["collection"];
                 if (collection == null | !collection.Equals(CollectionName))
                     return; // doc type is not the one of the current collection
 
-                    emit(doc["_id"], doc["_id"]);
+                emit(doc["_id"], doc["_id"]);
             }
         , "1");
 
@@ -665,6 +741,8 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
 
         public void CreateView<TField>(string fieldName, string version)
         {
+            CheckOpenedConnection();
+
             var viewName = CollectionName + "-" + fieldName; // view name = collectionName-fieldName
             IView view = database.GetExistingView(viewName);
 
@@ -679,11 +757,11 @@ namespace NoSqlRepositories.MvvX.CouchBaseLite.Pcl
                       if (!doc.Keys.Contains("collection") || !doc.Keys.Contains("members"))
                           return; // bad doc format, ignore it
 
-                       var collection = (string)doc["collection"];
+                      var collection = (string)doc["collection"];
                       if (collection == null | !collection.Equals(CollectionName))
                           return; // doc type is not the one of the current collection
 
-                       JObject jObj = (JObject)doc["members"];
+                      JObject jObj = (JObject)doc["members"];
 
                       string id = jObj.GetValue("Id").Value<string>();
 
