@@ -1,4 +1,3 @@
-
 write-host "**************************" -foreground "Cyan"
 write-host "*   Packaging to nuget   *" -foreground "Cyan"
 write-host "**************************" -foreground "Cyan"
@@ -20,6 +19,9 @@ write-host "Product version : " $ProductVersion -foreground "Green"
 write-host "Packaging to nuget..." -foreground "Magenta"
 
 write-host "Update nuspec versions" -foreground "Green"
+
+write-host "Update the nuget.exe file" -foreground "DarkGray"
+.\NuGet.exe update -self
 
 write-host "Update nuspec versions NoSqlRepositories.Core.nuspec" -foreground "DarkGray"
 $nuSpecFile =  $locationNuspec + '\NoSqlRepositories.Core.nuspec'
