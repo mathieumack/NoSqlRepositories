@@ -45,6 +45,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MongoDb", "MongoDb", "{2EA6
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoSqlRepositories.MongoDb.Net", "NoSqlRepositories.MongoDb.Net\NoSqlRepositories.MongoDb.Net.csproj", "{9DA9B5C7-5C6B-46F9-8809-2DFB36369CA2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoSqlRepositories.Tests.MongoDb.Net", "NoSqlRepositories.Tests.MongoDb.Net\NoSqlRepositories.Tests.MongoDb.Net.csproj", "{FBF7A598-5F58-479F-AA8E-C53712B98AF0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +93,10 @@ Global
 		{9DA9B5C7-5C6B-46F9-8809-2DFB36369CA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DA9B5C7-5C6B-46F9-8809-2DFB36369CA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9DA9B5C7-5C6B-46F9-8809-2DFB36369CA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBF7A598-5F58-479F-AA8E-C53712B98AF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBF7A598-5F58-479F-AA8E-C53712B98AF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBF7A598-5F58-479F-AA8E-C53712B98AF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBF7A598-5F58-479F-AA8E-C53712B98AF0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -114,5 +120,9 @@ Global
 		{C9672F95-75C3-430B-8905-A2B023BBE9F2} = {118944B3-BF23-4D06-A993-FFE2E85833F7}
 		{2EA61B58-B56A-46BC-8161-72D54B2CD5E2} = {9582B178-8088-4D93-AB4E-B3AA60D90DB8}
 		{9DA9B5C7-5C6B-46F9-8809-2DFB36369CA2} = {2EA61B58-B56A-46BC-8161-72D54B2CD5E2}
+		{FBF7A598-5F58-479F-AA8E-C53712B98AF0} = {118944B3-BF23-4D06-A993-FFE2E85833F7}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B9D3F0E7-DAB9-4DD7-98C3-55ADD4015978}
 	EndGlobalSection
 EndGlobal

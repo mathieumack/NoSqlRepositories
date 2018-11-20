@@ -31,11 +31,11 @@ namespace NoSqlRepositories.Test.Shared
         #endregion
 
         public NoSQLCoreUnitTests(INoSQLRepository<TestEntity> entityRepo,
-            INoSQLRepository<TestEntity> entityRepo2,
-            INoSQLRepository<TestExtraEltEntity> entityExtraEltRepo,
-            INoSQLRepository<CollectionTest> collectionEntityRepo,
-            string baseFilePath,
-            string dbName)
+                                    INoSQLRepository<TestEntity> entityRepo2,
+                                    INoSQLRepository<TestExtraEltEntity> entityExtraEltRepo,
+                                    INoSQLRepository<CollectionTest> collectionEntityRepo,
+                                    string baseFilePath,
+                                    string dbName)
         {
             this.entityRepo = entityRepo;
             this.entityRepo2 = entityRepo2;

@@ -205,7 +205,6 @@ namespace NoSqlRepositories.JsonFiles.Net
             }
 
             var updateDate = NoSQLRepoHelper.DateTimeUtcNow();
-
             entity.SystemLastUpdateDate = updateDate;
 
             if (updateMode == UpdateMode.upsert_if_missing_key)

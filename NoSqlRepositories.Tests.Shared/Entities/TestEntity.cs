@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace NoSqlRepositories.Test.Shared.Entities
 {
-    public class TestEntity:IBaseEntity
+    public class TestEntity : IBaseEntity
     {
         /// <summary>
         /// Unique indentifier
@@ -25,7 +25,7 @@ namespace NoSqlRepositories.Test.Shared.Entities
         /// Logical delete status
         /// </summary>
         public bool Deleted { get; set; }
-        
+
         public string Name { get; set; }
         public DateTime Birthday { get; set; }
         public float PoidsFloat { get; set; }
