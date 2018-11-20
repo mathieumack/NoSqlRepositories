@@ -130,7 +130,7 @@ namespace NoSqlRepositories.MongoDb.Net
                 
                 if (e.WriteError.Category == ServerErrorCategory.DuplicateKey && insertMode == InsertMode.error_if_key_exists)
                 {
-                    throw new DupplicateKeyNoSQLException("La clé '" + entity.Id + "' existe déjà", e);
+                    throw new DupplicateKeyNoSQLException("The key '" + entity.Id + "' already exists", e);
                 }
                 if (e.WriteError.Category == ServerErrorCategory.DuplicateKey && insertMode == InsertMode.do_nothing_if_key_exists)
                 {
