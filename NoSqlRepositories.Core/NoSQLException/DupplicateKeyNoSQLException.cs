@@ -2,7 +2,7 @@
 
 namespace NoSqlRepositories.Core.NoSQLException
 {
-    public class DupplicateKeyNoSQLException:Exception
+    public class DupplicateKeyNoSQLException : Exception
     {
         public DupplicateKeyNoSQLException()
         { }
