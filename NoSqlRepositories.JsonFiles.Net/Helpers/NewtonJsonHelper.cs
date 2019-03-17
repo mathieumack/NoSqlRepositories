@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 
-namespace NoSqlRepositories.JsonFiles.Net.Helpers
+namespace NoSqlRepositories.JsonFiles.Helpers
 {
     public static class NewtonJsonHelper
     {

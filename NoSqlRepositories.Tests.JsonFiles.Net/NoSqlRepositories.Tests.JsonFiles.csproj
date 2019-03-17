@@ -6,9 +6,9 @@
     <ProjectGuid>{5B16F816-B454-45E9-A7F1-556C82A64B6B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NoSqlRepositories.JsonFiles.Net.Tests</RootNamespace>
-    <AssemblyName>NoSqlRepositories.JsonFiles.Net.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <RootNamespace>NoSqlRepositories.JsonFiles.Tests</RootNamespace>
+    <AssemblyName>NoSqlRepositories.JsonFiles.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -16,6 +16,7 @@
     <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,6 +34,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -58,9 +62,9 @@
       <Project>{49a4ab0f-5e00-46a4-8436-9faa3c5d87de}</Project>
       <Name>NoSqlRepositories.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\NoSqlRepositories.JsonFiles.Net\NoSqlRepositories.JsonFiles.Net.csproj">
+    <ProjectReference Include="..\NoSqlRepositories.JsonFiles.Net\NoSqlRepositories.JsonFiles.csproj">
       <Project>{A874E81B-5C5C-472C-9ECC-AA5B02840BBC}</Project>
-      <Name>NoSqlRepositories.JsonFiles.Net</Name>
+      <Name>NoSqlRepositories.JsonFiles</Name>
     </ProjectReference>
     <ProjectReference Include="..\NoSqlRepositories.Tests.Shared\NoSqlRepositories.Tests.Shared.csproj">
       <Project>{220B2F71-E18B-4530-8E59-1E3B694A50AE}</Project>

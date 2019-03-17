@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NoSqlRepositories.JsonFiles.Net;
+using NoSqlRepositories.JsonFiles;
 using NoSqlRepositories.Test.Shared;
 using NoSqlRepositories.Test.Shared.Entities;
 
-namespace NoSqlRepositories.Tests.MvvX
+namespace NoSqlRepositories.Tests.JsonFiles
 {
     [TestClass]
     public class JsonFileRepUnitTest

@@ -10,12 +10,17 @@ using MongoDB.Bson;
 using NoSqlRepositories.Core.Helpers;
 using MongoDB.Driver.GridFS;
 using System.Linq;
+using NoSqlRepositories.Core.Queries;
+using System.Threading.Tasks;
 
-namespace NoSqlRepositories.MongoDb.Net
+namespace NoSqlRepositories.MongoDb
 {
     public class MongoDbRepository<T> : RepositoryBase<T> where T : class, IBaseEntity
     {
         #region private fields
+
+        private readonly string mongoDbUrl;
+        private readonly string collectionName;
 
         protected IMongoClient client;
         protected IMongoDatabase database;
@@ -52,15 +57,11 @@ namespace NoSqlRepositories.MongoDb.Net
         public MongoDbRepository(string mongoDbUrl, string databaseName, string collectionName)
         {
             TypeName = typeof(T).Name;
-            this.client = new MongoClient();
 
-            MongoClientSettings settings = MongoClientSettings.FromUrl(new MongoUrl(mongoDbUrl));
-            settings.SslSettings = new SslSettings() { EnabledSslProtocols = SslProtocols.Tls12 };
+            this.mongoDbUrl = mongoDbUrl;
+            this.collectionName = collectionName;
 
-            client = new MongoClient(settings);
-            database = client.GetDatabase(databaseName);
-            CollectionName = collectionName;
-            collection = database.GetCollection<T>(collectionName);
+            ConnectAgain();
         }
 
         public override T GetById(string id)
@@ -445,6 +446,30 @@ namespace NoSqlRepositories.MongoDb.Net
         public override int Count()
         {
             return (int)collection.EstimatedDocumentCount();
+        }
+
+        public override Task Close()
+        {
+            // Nothing to do, the connection is automatically closed.
+            return new Task(() => { });
+        }
+
+        public override void ConnectAgain()
+        {
+            this.client = new MongoClient();
+
+            MongoClientSettings settings = MongoClientSettings.FromUrl(new MongoUrl(mongoDbUrl));
+            settings.SslSettings = new SslSettings() { EnabledSslProtocols = SslProtocols.Tls12 };
+
+            client = new MongoClient(settings);
+            database = client.GetDatabase(databaseName);
+            CollectionName = collectionName;
+            collection = database.GetCollection<T>(collectionName);
+        }
+
+        public override IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

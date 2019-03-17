@@ -1,19 +1,19 @@
-﻿using MvvmCross.Plugins.File;
+﻿using MvvmCross.Plugin.File;
 using Newtonsoft.Json;
 using NoSqlRepositories.Core;
 using NoSqlRepositories.Core.Helpers;
 using NoSqlRepositories.Core.NoSQLException;
-using NoSqlRepositories.MvvX.JsonFiles.Pcl.Helpers;
+using NoSqlRepositories.Core.Queries;
+using NoSqlRepositories.MvvX.JsonFiles.Helpers;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using NoSqlRepositories.Core.Queries;
 using System.Threading.Tasks;
 
-namespace NoSqlRepositories.MvvX.JsonFiles.Pcl
+namespace NoSqlRepositories.MvvX.JsonFiles
 {
     public class JsonFileRepository<T> : RepositoryBase<T> where T : class, IBaseEntity
     {
@@ -79,7 +79,7 @@ namespace NoSqlRepositories.MvvX.JsonFiles.Pcl
         public JsonFileRepository(IMvxFileStore fileStore, string dbName)
         {
             if (fileStore == null)
-                throw new ArgumentNullException("fileStore");
+                throw new ArgumentNullException(nameof(fileStore));
 
             this.fileStore = fileStore;
             this.dBName = dbName;

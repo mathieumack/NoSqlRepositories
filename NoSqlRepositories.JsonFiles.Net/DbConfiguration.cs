@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace NoSqlRepositories.JsonFiles.Net
+namespace NoSqlRepositories.JsonFiles
 {
     internal class DbConfiguration
     {

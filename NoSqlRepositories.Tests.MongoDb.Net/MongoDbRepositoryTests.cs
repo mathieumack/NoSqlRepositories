@@ -1,15 +1,13 @@
-using System;
 using NoSqlRepositories.Test.Shared;
-using NoSqlRepositories.MongoDb.Net;
+using NoSqlRepositories.MongoDb;
 using NoSqlRepositories.Test.Shared.Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Configuration;
-using System.Threading.Tasks;
 using MongoDB.Bson.Serialization;
 using NoSqlRepositories.Core;
 using MongoDB.Bson.Serialization.IdGenerators;
 
-namespace NoSqlRepositories.Tests.MongoDb.Net
+namespace NoSqlRepositories.Tests.MongoDb
 {
     [TestClass]
     public class MongoDbRepositoryTests

@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>NoSqlRepositories.Tests.MvvX</RootNamespace>
     <AssemblyName>NoSqlRepositories.Tests.MvvX</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -18,6 +18,7 @@
     <TestProjectType>UnitTest</TestProjectType>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -35,6 +36,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Couchbase.Lite, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -94,9 +98,8 @@
     <Reference Include="MvvX.Plugins.CouchBaseLite.Wpf, Version=2017.11117.10954.93, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvX.Plugins.CouchBaseLite.2017.11117.10954.93\lib\net45\MvvX.Plugins.CouchBaseLite.Wpf.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="SQLitePCL.raw, Version=0.9.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SQLitePCL.raw.0.9.1\lib\net45\SQLitePCL.raw.dll</HintPath>
@@ -155,14 +158,6 @@
     <ProjectReference Include="..\NoSqlRepositories.Core\NoSqlRepositories.Core.csproj">
       <Project>{49a4ab0f-5e00-46a4-8436-9faa3c5d87de}</Project>
       <Name>NoSqlRepositories.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NoSqlRepositories.MvvX.CouchBaseLite.Pcl\NoSqlRepositories.MvvX.CouchBaseLite.Pcl.csproj">
-      <Project>{b01e9f47-daeb-4e66-8335-dedb515d8028}</Project>
-      <Name>NoSqlRepositories.MvvX.CouchBaseLite.Pcl</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NoSqlRepositories.MvvX.JsonFiles.Pcl\NoSqlRepositories.MvvX.JsonFiles.Pcl.csproj">
-      <Project>{e207f5d1-c8dd-420c-a19b-011703a01ad7}</Project>
-      <Name>NoSqlRepositories.MvvX.JsonFiles.Pcl</Name>
     </ProjectReference>
     <ProjectReference Include="..\NoSqlRepositories.Tests.Shared\NoSqlRepositories.Tests.Shared.csproj">
       <Project>{220B2F71-E18B-4530-8E59-1E3B694A50AE}</Project>

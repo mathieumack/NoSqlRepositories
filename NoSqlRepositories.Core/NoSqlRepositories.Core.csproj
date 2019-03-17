@@ -1,73 +1,44 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="MSBuild.Sdk.Extras">
+
   <PropertyGroup>
-    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{49A4AB0F-5E00-46A4-8436-9FAA3C5D87DE}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NoSqlRepositories.Core</RootNamespace>
     <AssemblyName>NoSqlRepositories.Core</AssemblyName>
-    <DefaultLanguage>fr-FR</DefaultLanguage>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <TargetFrameworkProfile>Profile111</TargetFrameworkProfile>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <RootNamespace>NoSqlRepositories.Core</RootNamespace>
+    <PackageId>NoSqlRepositories.Core</PackageId>
+    <TargetFramework>netstandard1.2</TargetFramework>
+    <NeutralLanguage>en</NeutralLanguage>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Product>No sql repository project that let you use CosmosDb, MongoDb or json file storage</Product>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseUrl>https://github.com/mathieumack/NoSqlRepositories</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/mathieumack/NoSqlRepositories</PackageProjectUrl>
+    <Authors>MACK Mathieu</Authors>
+    <Company></Company>
+    <Version>2019.0.0.0</Version>
+    <Description>This package contains a memory cache manager for your application.</Description>
+    <RepositoryUrl>https://github.com/mathieumack/NoSqlRepositories</RepositoryUrl>
+    <PackageTags>repository;nosql</PackageTags>
+    <PackageIconUrl />
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\NoSqlRepositories.Core.XML</DocumentationFile>
-  </PropertyGroup>
+
   <ItemGroup>
-    <!-- A reference to the entire .NET Framework is automatically included -->
+    <Compile Remove="platforms\**\*.cs" />
+    <None Include="platforms\**\*.cs" />
+    <None Include="Resources\*.cs" />
+    <Compile Remove="Resources\*.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="BulkInsertResult.cs" />
-    <Compile Include="Helpers\NoSQLRepoHelper.cs" />
-    <Compile Include="IBaseEntity.cs" />
-    <Compile Include="IAsyncNoSQLDB.cs" />
-    <Compile Include="INoSQLDB.cs" />
-    <Compile Include="IAsyncNoSQLRepository.cs" />
-    <Compile Include="INoSQLRepository.cs" />
-    <Compile Include="InsertMode.cs" />
-    <Compile Include="InsertResult.cs" />
-    <Compile Include="NoSQLEngineType.cs" />
-    <Compile Include="NoSQLException\AttachmentNotFoundNoSQLException.cs" />
-    <Compile Include="NoSQLException\DupplicateKeyNoSQLException.cs" />
-    <Compile Include="NoSQLException\EntityConcurrentUpdateException.cs" />
-    <Compile Include="NoSQLException\IndexNotFoundNoSQLException.cs" />
-    <Compile Include="NoSQLException\KeyNotFoundNoSQLException.cs" />
-    <Compile Include="NoSQLException\QueryNotAcknowledgedException.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AsyncRepositoryBase.cs" />
-    <Compile Include="Queries\NoSqlQuery.cs" />
-    <Compile Include="Queries\QueryCreator.cs" />
-    <Compile Include="RepositoryBase.cs" />
-    <Compile Include="UpdateMode.cs" />
-    <Compile Include="UpdateResult.cs" />
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) ">
+    <Compile Include="platforms\wpf\**\*.cs" />
+    <Reference Include="System.Runtime.Caching" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
+    <Compile Include="platforms\ios\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
+    <Compile Include="platforms\android\**\*.cs" />
+    <AndroidResource Include="Resources\**\*.xml" SubType="Designer" Generator="MSBuild:UpdateAndroidResources" />
+  </ItemGroup>
+
 </Project>
