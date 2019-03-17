@@ -122,12 +122,7 @@ namespace NoSqlRepositories.CouchBaseLite
         {
             CheckOpenedConnection();
 
-            var documentObjet = this.database.GetExistingDocument(GetInternalCBLId(id));
-            if (documentObjet == null || documentObjet.Deleted)
-            {
-                throw new KeyNotFoundNoSQLException();
-            }
-            documentObjet.ExpireAt(dateLimit);
+            database.SetDocumentExpiration(id, dateLimit);
         }
 
         public override T GetById(string id)
