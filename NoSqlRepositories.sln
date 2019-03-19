@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoSqlRepositories.Tests.Mon
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoSqlRepositories.CouchBaseLite", "NoSqlRepositories.CouchBaseLite\NoSqlRepositories.CouchBaseLite.csproj", "{752BE308-DCC0-4582-8D73-7B7E003A11EA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoSqlRepositories.Tests.CouchbaseLite", "NoSqlRepositories.Tests.CouchbaseLite\NoSqlRepositories.Tests.CouchbaseLite.csproj", "{BEE9D23D-AFC3-4109-A370-EB04DE1F0BA7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{752BE308-DCC0-4582-8D73-7B7E003A11EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{752BE308-DCC0-4582-8D73-7B7E003A11EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{752BE308-DCC0-4582-8D73-7B7E003A11EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEE9D23D-AFC3-4109-A370-EB04DE1F0BA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEE9D23D-AFC3-4109-A370-EB04DE1F0BA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEE9D23D-AFC3-4109-A370-EB04DE1F0BA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEE9D23D-AFC3-4109-A370-EB04DE1F0BA7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -72,6 +78,7 @@ Global
 		{9DA9B5C7-5C6B-46F9-8809-2DFB36369CA2} = {9582B178-8088-4D93-AB4E-B3AA60D90DB8}
 		{FBF7A598-5F58-479F-AA8E-C53712B98AF0} = {C66EA697-7C85-4820-9348-D07C25EE1EE5}
 		{752BE308-DCC0-4582-8D73-7B7E003A11EA} = {9582B178-8088-4D93-AB4E-B3AA60D90DB8}
+		{BEE9D23D-AFC3-4109-A370-EB04DE1F0BA7} = {C66EA697-7C85-4820-9348-D07C25EE1EE5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B9D3F0E7-DAB9-4DD7-98C3-55ADD4015978}

@@ -10,6 +10,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using NoSqlRepositories.Core.Queries;
+using Couchbase.Lite.Query;
 
 namespace NoSqlRepositories.CouchBaseLite
 {
@@ -120,22 +121,26 @@ namespace NoSqlRepositories.CouchBaseLite
 
         public override void ExpireAt(string id, DateTime? dateLimit)
         {
-            CheckOpenedConnection();
+            throw new NotImplementedException("TTL feature will be available only in v2.5. More informations : https://github.com/couchbase/couchbase-lite-net/issues/1129");
+            //CheckOpenedConnection();
 
-            database.SetDocumentExpiration(id, dateLimit);
+            //database.SetDocumentExpiration(id, dateLimit);
         }
 
         public override T GetById(string id)
         {
             CheckOpenedConnection();
+                       
+            var documentObjet = this.database.GetDocument(GetInternalCBLId(id));
 
-            var documentObjet = this.database.GetExistingDocument(GetInternalCBLId(id));
-            if (documentObjet == null || documentObjet.Deleted)
-            {
+            if (documentObjet == null)
                 throw new KeyNotFoundNoSQLException();
-            }
 
             T entity = GetEntityFromDocument(documentObjet);
+
+            if (entity.Deleted)
+                throw new KeyNotFoundNoSQLException();
+
             return entity;
         }
 
@@ -167,7 +172,7 @@ namespace NoSqlRepositories.CouchBaseLite
         {
             CheckOpenedConnection();
 
-            return GetEntityFromDocument(documentObjet.GetProperty("members"), (string)documentObjet.GetProperty("entityType"));
+            return GetEntityFromDocument(documentObjet.GetValue("members"), documentObjet.GetString("entityType"));
         }
 
         private T GetEntityFromDocument(object memberField, string originalEntityType)
@@ -223,7 +228,7 @@ namespace NoSqlRepositories.CouchBaseLite
         {
             CheckOpenedConnection();
 
-            var documentObjet = this.database.GetExistingDocument(GetInternalCBLId(id));
+            var documentObjet = this.database.GetDocument(GetInternalCBLId(id));
             return documentObjet != null;
         }
 
@@ -233,13 +238,16 @@ namespace NoSqlRepositories.CouchBaseLite
 
             var insertResult = new BulkInsertResult<string>();
 
-            //TODO : restore Parralel.ForEach
-            foreach (var entity in entities)
+            database.InBatch(() =>
             {
-                // Create the document
-                InsertOne(entity, insertMode);
-                insertResult[entity.Id] = InsertResult.unknown;
-            };
+                foreach (var entity in entities)
+                {
+                    // Create the document
+                    InsertOne(entity, insertMode);
+                    insertResult[entity.Id] = InsertResult.unknown;
+                }
+            });
+            
             return insertResult;
         }
 
@@ -332,15 +340,16 @@ namespace NoSqlRepositories.CouchBaseLite
                 var idDocument = GetInternalCBLId(entity.Id);
                 var updateDate = NoSQLRepoHelper.DateTimeUtcNow();
 
-                var documentObjet = database.GetDocument(idDocument);
-
-                documentObjet.Update((IUnsavedRevision newRevision) =>
+                using (var documentObjet = database.GetDocument(idDocument))
                 {
-                    var properties = newRevision.Properties;
-                    properties["update date"] = updateDate;
-                    properties["members"] = entity;
-                    return true;
-                });
+                    using (var mutableDocument = documentObjet.ToMutable())
+                    {
+                        mutableDocument.SetDate("update date", updateDate);
+                        mutableDocument.SetValue("members", entity);
+
+                        database.Save(mutableDocument);
+                    }
+                }
                 updateResult = UpdateResult.updated;
             }
             else
@@ -416,11 +425,12 @@ namespace NoSqlRepositories.CouchBaseLite
             CheckOpenedConnection();
 
             long result = 0;
-            var documentObjet = this.database.GetExistingDocument(GetInternalCBLId(id));
+            var document = database.GetDocument(GetInternalCBLId(id));
+
             // Document found
-            if (documentObjet != null && !documentObjet.Deleted)
+            if (document != null)
             {
-                documentObjet.Delete();
+                this.database.Delete(document);
                 result = 1;
             }
 
@@ -440,13 +450,15 @@ namespace NoSqlRepositories.CouchBaseLite
         {
             CheckOpenedConnection();
 
-            var existingEntity = this.database.GetExistingDocument(GetInternalCBLId(id));
+            var existingEntity = this.database.GetDocument(GetInternalCBLId(id));
             if (existingEntity == null)
                 throw new KeyNotFoundNoSQLException();
 
-            IUnsavedRevision newRevision = existingEntity.CurrentRevision.CreateRevision();
-            newRevision.SetAttachment(attachmentName, contentType, fileStream);
-            newRevision.Save();
+            using (var mutableDocument = existingEntity.ToMutable())
+            {
+                mutableDocument.SetBlob(attachmentName, new Blob(contentType, fileStream));
+                database.Save(mutableDocument);
+            }
         }
 
         /// <summary>
@@ -458,16 +470,23 @@ namespace NoSqlRepositories.CouchBaseLite
         {
             CheckOpenedConnection();
 
-            var existingEntity = this.database.GetExistingDocument(GetInternalCBLId(id));
-            if (existingEntity == null)
-                throw new KeyNotFoundNoSQLException(string.Format("Entity '{0}' not found", id));
+            using (var existingEntity = this.database.GetDocument(GetInternalCBLId(id)))
+            {
+                if (existingEntity == null)
+                    throw new KeyNotFoundNoSQLException(string.Format("Entity '{0}' not found", id));
 
-            if (!AttachmentExists(existingEntity.CurrentRevision, attachmentName))
-                throw new AttachmentNotFoundNoSQLException(string.Format("Attachement {0} not found on Entity '{1}'", attachmentName, id));
+                var blob = existingEntity.GetBlob(attachmentName);
+                if (blob == null)
+                    throw new AttachmentNotFoundNoSQLException(string.Format("Attachement {0} not found on Entity '{1}'", attachmentName, id));
 
-            IUnsavedRevision newRevision = existingEntity.CurrentRevision.CreateRevision();
-            newRevision.RemoveAttachment(attachmentName);
-            newRevision.Save();
+                // TODO : Check how to remove blob from document !!
+                using (var mutableDocument = existingEntity.ToMutable())
+                {
+                    //mutableDocument.blo
+                    //database.Delete()
+                    //newRevision.Save();
+                }
+            }
         }
 
         /// <summary>
@@ -500,37 +519,17 @@ namespace NoSqlRepositories.CouchBaseLite
             var attachement = GetAttachmentCore(id, attachmentName);
             if (attachement != null)
                 return attachement.Content;
-            else
-                return null;
+
+            return new List<byte>();
         }
 
-        /// <summary>
-        /// Indicate if an attachement exits
-        /// Should not use "revision.GetAttachment" == null that always returned an object instance, event if the attachment doesn't exist 
-        /// </summary>
-        /// <param name="revision"></param>
-        /// <param name="attachmentName"></param>
-        /// <returns></returns>
-        private bool AttachmentExists(IRevision revision, string attachmentName)
+        private Blob GetAttachmentCore(string id, string attachmentName)
         {
-            return revision.AttachmentNames.Any(a => attachmentName.Equals(a));
-        }
-
-        private IAttachment GetAttachmentCore(string id, string attachmentName)
-        {
-            var documentAttachment = this.database.GetExistingDocument(GetInternalCBLId(id));
-            if (documentAttachment == null)
+            var document = this.database.GetDocument(GetInternalCBLId(id));
+            if (document == null)
                 throw new KeyNotFoundNoSQLException();
 
-            var revision = documentAttachment.CurrentRevision;
-
-            if (!AttachmentExists(revision, attachmentName))
-                return null;
-            else
-            {
-                var attachment = revision.GetAttachment(attachmentName);
-                return attachment;
-            }
+            return document.GetBlob(attachmentName);
         }
 
         #endregion
@@ -596,13 +595,12 @@ namespace NoSqlRepositories.CouchBaseLite
         {
             CheckOpenedConnection();
 
-            var documentAttachment = this.database.GetExistingDocument(GetInternalCBLId(id));
-            if (documentAttachment == null)
+            var document = this.database.GetDocument(GetInternalCBLId(id));
+            if (document == null)
                 throw new KeyNotFoundNoSQLException();
 
-            var revision = documentAttachment.CurrentRevision;
-
-            return revision.AttachmentNames;
+            var properties = document.Keys;
+            return properties.Where(e => document.GetBlob(e) != null);
         }
         
         #region Views
