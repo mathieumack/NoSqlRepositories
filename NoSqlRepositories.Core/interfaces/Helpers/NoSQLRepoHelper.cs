@@ -19,23 +19,23 @@ namespace NoSqlRepositories.Core.Helpers
         /// </summary>
         public static List<string> IgnoredFieldMapping { get; set; } = new List<string> { };
 
-        /// <summary>
-        /// Define internal _DbId and DocId if they are not specified by user
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="entity"></param>
-        public static void SetIds<T>(T entity) where T : IBaseEntity
-        {
+        ///// <summary>
+        ///// Define internal _DbId and DocId if they are not specified by user
+        ///// </summary>
+        ///// <typeparam name="T"></typeparam>
+        ///// <param name="entity"></param>
+        //public static void SetIds<T>(T entity) where T : IBaseEntity
+        //{
 
-            if (string.IsNullOrWhiteSpace(entity.Id))
-            {
-                entity.Id = GetNewGuid();
-            }
-        }
+        //    if (string.IsNullOrWhiteSpace(entity.Id))
+        //    {
+        //        entity.Id = GetNewGuid();
+        //    }
+        //}
 
-        private static string GetNewGuid()
-        {
-            return Guid.NewGuid().ToString();
-        }
+        //private static string GetNewGuid()
+        //{
+        //    return Guid.NewGuid().ToString();
+        //}
     }
 }

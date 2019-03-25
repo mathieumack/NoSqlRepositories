@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using NoSqlRepositories.Core.interfaces;
 using NoSqlRepositories.Core.Queries;
 
 namespace NoSqlRepositories.Core
 {
-    public abstract class RepositoryBase<T> : INoSQLRepository<T> where T : class, IBaseEntity
+    public abstract class RepositoryBase<T> : INoSQLRepository<T> where T : class, IBaseEntity, new()
     {
         protected Action ConnectAgainToDatabase { get; set; }
 
@@ -44,13 +44,17 @@ namespace NoSqlRepositories.Core
 
         public abstract bool Exist(string id);
 
-        public abstract IEnumerable<T> GetAll();
+        public abstract IEnumerable<INoSqlEntity<T>> GetAll();
 
         public abstract Stream GetAttachment(string id, string attachmentName);
 
         public abstract IEnumerable<string> GetAttachmentNames(string id);
 
-        public abstract T GetById(string id);
+        public abstract INoSqlEntity<T> GetById(string id);
+
+        public abstract INoSqlEntity<T> CreateNewDocument();
+
+        public abstract INoSqlEntity<T> CreateNewDocument(string id);
 
         /// <summary>
         /// Check if the connection is opened.
@@ -72,16 +76,16 @@ namespace NoSqlRepositories.Core
         {
             CheckOpenedConnection();
 
-            var reuslt = new Byte[0];
+            var result = new Byte[0];
 
             using (MemoryStream memoryStream = new MemoryStream())
             {
                 var attachmentStream = GetAttachment(id, attachmentName);
                 attachmentStream.CopyTo(memoryStream);
-                reuslt = memoryStream.ToArray();
+                result = memoryStream.ToArray();
             }
 
-            return reuslt;
+            return result;
         }
 
         public string GetCollectionName()
@@ -91,25 +95,25 @@ namespace NoSqlRepositories.Core
 
         public abstract void InitCollection();
 
-        public abstract void InitCollection(IList<System.Linq.Expressions.Expression<Func<T, object>>> indexFieldSelectors);
+        public abstract void InitCollection(IList<string> indexFieldSelectors);
 
-        public BulkInsertResult<string> InsertMany(IEnumerable<T> entities)
+        public BulkInsertResult<string> InsertMany(IEnumerable<INoSqlEntity<T>> entities)
         {
             CheckOpenedConnection();
 
             return InsertMany(entities, InsertMode.db_implementation);
         }
 
-        public abstract BulkInsertResult<string> InsertMany(IEnumerable<T> entities, InsertMode insertMode);
+        public abstract BulkInsertResult<string> InsertMany(IEnumerable<INoSqlEntity<T>> entities, InsertMode insertMode);
 
-        public InsertResult InsertOne(T entity)
+        public InsertResult InsertOne(INoSqlEntity<T> entity)
         {
             CheckOpenedConnection();
 
             return InsertOne(entity, InsertMode.error_if_key_exists);
         }
 
-        public abstract InsertResult InsertOne(T entity, InsertMode insertMode);
+        public abstract InsertResult InsertOne(INoSqlEntity<T> entity, InsertMode insertMode);
 
         public abstract void RemoveAttachment(string id, string attachmentName);
 
@@ -117,24 +121,24 @@ namespace NoSqlRepositories.Core
 
         public abstract long TruncateCollection();
 
-        public abstract T TryGetById(string id);
+        public abstract INoSqlEntity<T> TryGetById(string id);
 
-        public abstract IList<T> GetByIds(IList<string> ids);
+        public abstract IEnumerable<INoSqlEntity<T>> GetByIds(IList<string> ids);
 
-        public UpdateResult Update(T entity)
+        public UpdateResult Update(INoSqlEntity<T> entity)
         {
             CheckOpenedConnection();
 
             return Update(entity, UpdateMode.db_implementation);
         }
 
-        public abstract UpdateResult Update(T entity, UpdateMode updateMode);
+        public abstract UpdateResult Update(INoSqlEntity<T> entity, UpdateMode updateMode);
 
         public abstract void UseDatabase(string dbName);
 
-        public abstract IEnumerable<T> GetByField<TField>(string fieldName, List<TField> values);
+        //public abstract IEnumerable<IBaseEntity<T>> GetByField<TField>(string fieldName, List<TField> values);
 
-        public abstract IEnumerable<T> GetByField<TField>(string fieldName, TField value);
+        //public abstract IEnumerable<IBaseEntity<T>> GetByField<TField>(string fieldName, TField value);
 
         public abstract IEnumerable<string> GetKeyByField<TField>(string fieldName, List<TField> values);
 
@@ -142,6 +146,6 @@ namespace NoSqlRepositories.Core
 
         public abstract int Count();
 
-        public abstract IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters);
+        public abstract IEnumerable<INoSqlEntity<T>> DoQuery(NoSqlQuery<INoSqlEntity<T>> queryFilters);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Couchbase.Lite;
-using Newtonsoft.Json.Linq;
 using NoSqlRepositories.Core;
 using NoSqlRepositories.Core.Helpers;
 using NoSqlRepositories.Core.NoSQLException;
@@ -7,10 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using NoSqlRepositories.Core.Queries;
 using Couchbase.Lite.Query;
+using NoSqlRepositories.Core.interfaces;
 
 namespace NoSqlRepositories.CouchBaseLite
 {
@@ -20,7 +19,7 @@ namespace NoSqlRepositories.CouchBaseLite
     /// Limitations : CouchBaseLite repository doesn't handle polymorphism in attribute's entity of type List, Dictionary...
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class CouchBaseLiteRepository<T> : RepositoryBase<T> where T : class, IBaseEntity
+    public class CouchBaseLiteRepository<T> : RepositoryBase<T> where T : class, IBaseEntity, new()
     {
         public override string DatabaseName
         {
@@ -37,11 +36,6 @@ namespace NoSqlRepositories.CouchBaseLite
                 return NoSQLEngineType.CouchBaseLiteLite;
             }
         }
-
-        /// <summary>
-        /// Contains list of subclasses of the class T to handle polymorphism during deserialization
-        /// </summary>
-        public IDictionary<string, Type> PolymorphicTypes { get; } = new Dictionary<string, Type>();
 
         protected Database database;
 
@@ -105,13 +99,6 @@ namespace NoSqlRepositories.CouchBaseLite
             ConnectAgainToDatabase();
         }
 
-        //void CreateQuery()
-        //{
-        //    CheckOpenedConnection();
-
-        //    var query = this.database.CreateAllDocumentsQuery();
-        //}
-
         public override bool CompactDatabase()
         {
             CheckOpenedConnection();
@@ -127,7 +114,7 @@ namespace NoSqlRepositories.CouchBaseLite
             //database.SetDocumentExpiration(id, dateLimit);
         }
 
-        public override T GetById(string id)
+        public override INoSqlEntity<T> GetById(string id)
         {
             CheckOpenedConnection();
                        
@@ -136,12 +123,12 @@ namespace NoSqlRepositories.CouchBaseLite
             if (documentObjet == null)
                 throw new KeyNotFoundNoSQLException();
 
-            T entity = GetEntityFromDocument(documentObjet);
+            var result = new NoSqlEntity<T>(documentObjet);
 
-            if (entity.Deleted)
+            if (result.Deleted)
                 throw new KeyNotFoundNoSQLException();
 
-            return entity;
+            return result;
         }
 
         /// <summary>
@@ -149,69 +136,14 @@ namespace NoSqlRepositories.CouchBaseLite
         /// </summary>
         /// <param name="ids"></param>
         /// <returns></returns>
-        public override IList<T> GetByIds(IList<string> ids)
+        public override IEnumerable<INoSqlEntity<T>> GetByIds(IList<string> ids)
         {
             CheckOpenedConnection();
 
-            var objects = new List<T>();
-            foreach (string id in ids)
-            {
-                var obj = TryGetById(id);
-                if (obj != null)
-                    objects.Add(obj);
-            }
-            return objects;
+            return ids.Select(e => TryGetById(e)).Where(e => e != null);
         }
 
-        /// <summary>
-        /// Extract en Entity stored in the CouchBaseLite document
-        /// </summary>
-        /// <param name="documentObjet"></param>
-        /// <returns></returns>
-        private T GetEntityFromDocument(Document documentObjet)
-        {
-            CheckOpenedConnection();
-
-            return GetEntityFromDocument(documentObjet.GetValue("members"), documentObjet.GetString("entityType"));
-        }
-
-        private T GetEntityFromDocument(object memberField, string originalEntityType)
-        {
-            CheckOpenedConnection();
-
-            T entity = null;
-
-            if (memberField is JObject)
-            {
-                JObject testobject = (JObject)memberField;
-
-                // Determine the destination type to handle polymorphism
-                Type destinationType = typeof(T);
-
-                if (!string.IsNullOrEmpty(originalEntityType))
-                {
-                    // We stored the original entity type
-                    Type mappedDestinationType;
-                    if (PolymorphicTypes.TryGetValue(originalEntityType, out mappedDestinationType))
-                    {
-                        // We found a mapped destination type
-                        destinationType = mappedDestinationType;
-
-                    }
-                }
-
-                entity = (T)testobject.ToObject(destinationType);
-            }
-            else
-            {
-                entity = (T)memberField;
-
-            }
-
-            return entity;
-        }
-
-        public override T TryGetById(string id)
+        public override INoSqlEntity<T> TryGetById(string id)
         {
             // Refactor to optimize this implementation
             try
@@ -232,7 +164,7 @@ namespace NoSqlRepositories.CouchBaseLite
             return documentObjet != null;
         }
 
-        public override BulkInsertResult<string> InsertMany(IEnumerable<T> entities, InsertMode insertMode)
+        public override BulkInsertResult<string> InsertMany(IEnumerable<INoSqlEntity<T>> entities, InsertMode insertMode)
         {
             CheckOpenedConnection();
 
@@ -251,112 +183,91 @@ namespace NoSqlRepositories.CouchBaseLite
             return insertResult;
         }
 
-        public override InsertResult InsertOne(T entity, InsertMode insertMode)
+        /// <summary>
+        /// Create a new empty document
+        /// The document is no inserted in database
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="insertMode"></param>
+        /// <returns></returns>
+        public override INoSqlEntity<T> CreateNewDocument(string id)
         {
-            CheckOpenedConnection();
-
-            var insertResult = default(InsertResult);
-            bool documentAlreadyExists = false;
-            Document documentObjet = null;
-
-            var date = NoSQLRepoHelper.DateTimeUtcNow();
-            IDictionary<string, object> properties;
-
-            if (string.IsNullOrEmpty(entity.Id))
-            {
-                // No id specified, let CouchBaseLite generate the id and affect it to the entity
-                documentObjet = database.CreateDocument();
-                entity.Id = cblGeneratedIdPrefix + documentObjet.Id; // NB: prefix the Id generated by CouchBaseLite to be able to distinguish it with a user provided id
-            }
-            else
-            {
-                // Get an existing document or return a new one if not exists
-                documentObjet = database.GetDocument(GetInternalCBLId(entity.Id));
-
-                if (documentObjet.CurrentRevisionId != null)
-                {
-                    // Document already exists
-                    if (insertMode == InsertMode.error_if_key_exists)
-                    {
-                        throw new DupplicateKeyNoSQLException();
-                    }
-                    else if (insertMode == InsertMode.do_nothing_if_key_exists)
-                    {
-                        return InsertResult.not_affected;
-                    }
-
-                    documentAlreadyExists = true;
-                }
-            }
-
-            if (!documentAlreadyExists)
-            {
-                if (AutoGeneratedEntityDate)
-                {
-                    entity.SystemCreationDate = date;
-                    entity.SystemLastUpdateDate = date;
-                }
-
-                properties = new Dictionary<string, object>()
-                {
-                    {"creat date", date},
-                    {"update date", date},
-                    {"collection", this.CollectionName},
-                    {"members", entity},
-                    {"entityType", entity.GetType().Name} // Store the original actual object class to handle polymorphism 
-                };
-
-                insertResult = InsertResult.inserted;
-            }
-            else
-            {
-                properties = documentObjet.Properties;
-
-                entity.SystemCreationDate = (DateTime)properties["creat date"];
-                entity.SystemLastUpdateDate = date;
-
-                properties["update date"] = entity.SystemLastUpdateDate;
-                properties["members"] = entity;
-
-                insertResult = InsertResult.updated;
-            }
-
-            documentObjet.PutProperties(properties);
-
-            return insertResult;
+            var entity = new NoSqlEntity<T>(this.CollectionName, new MutableDocument(cblGeneratedIdPrefix + id));
+            return entity;
         }
 
-        public override UpdateResult Update(T entity, UpdateMode updateMode)
+        /// <summary>
+        /// Create a new empty document
+        /// The document is no inserted in database
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="insertMode"></param>
+        /// <returns></returns>
+        public override INoSqlEntity<T> CreateNewDocument()
+        {
+            return new NoSqlEntity<T>(this.CollectionName, new MutableDocument());
+        }
+
+        public override InsertResult InsertOne(INoSqlEntity<T> entity, InsertMode insertMode)
         {
             CheckOpenedConnection();
 
-            if (entity.Id == null)
-                throw new ArgumentException("Cannot update an entity with a null field value");
+            var nosqlEntity = entity as NoSqlEntity<T>;
+            if (nosqlEntity == null || nosqlEntity.CollectionName != this.CollectionName)
+                throw new InvalidOperationException("the entity was created from an other repository");
 
-            var updateResult = default(UpdateResult);
+            var date = NoSQLRepoHelper.DateTimeUtcNow();
 
-            if (updateMode == UpdateMode.db_implementation)
+            if (!string.IsNullOrEmpty(entity.Id))
             {
-                var idDocument = GetInternalCBLId(entity.Id);
-                var updateDate = NoSQLRepoHelper.DateTimeUtcNow();
-
-                using (var documentObjet = database.GetDocument(idDocument))
+                // Get an existing document or return a new one if not exists
+                var document = database.GetDocument(GetInternalCBLId(entity.Id));
+                if (document != null)
                 {
-                    using (var mutableDocument = documentObjet.ToMutable())
+                    // Document already exists
+                    switch (insertMode)
                     {
-                        mutableDocument.SetDate("update date", updateDate);
-                        mutableDocument.SetValue("members", entity);
-
-                        database.Save(mutableDocument);
+                        case InsertMode.error_if_key_exists:
+                            throw new DupplicateKeyNoSQLException();
+                        case InsertMode.erase_existing:
+                            database.Delete(document);
+                            break;
+                        case InsertMode.do_nothing_if_key_exists:
+                            return InsertResult.not_affected;
+                        default:
+                            break;
                     }
                 }
-                updateResult = UpdateResult.updated;
             }
-            else
-            {
+
+            // Normally, at this point, the document is deleted from database or an exception occured.
+            // We can insert the new document :
+
+            nosqlEntity.SystemCreationDate = date;
+            nosqlEntity.SystemLastUpdateDate = date;
+
+            database.Save(nosqlEntity.Document.MutableDocument);
+
+            return InsertResult.inserted;
+        }
+
+        public override UpdateResult Update(INoSqlEntity<T> entity, UpdateMode updateMode)
+        {
+            CheckOpenedConnection();
+
+            var nosqlEntity = entity as NoSqlEntity<T>;
+            if (nosqlEntity == null || nosqlEntity.CollectionName != this.CollectionName)
+                throw new InvalidOperationException("the entity was created from an other repository");
+
+            if (updateMode != UpdateMode.db_implementation)
                 throw new NotImplementedException();
-            }
-            return updateResult;
+
+            // Update update date
+            var date = NoSQLRepoHelper.DateTimeUtcNow();
+            nosqlEntity.SystemLastUpdateDate = date;
+
+            database.Save(nosqlEntity.Document.MutableDocument);
+            return UpdateResult.updated;
         }
 
         public override void UseDatabase(string dbName)
@@ -372,22 +283,26 @@ namespace NoSqlRepositories.CouchBaseLite
 
             int deleted = 0;
 
-            IView view = database.GetView(CollectionName);
-            using (IQuery query = view.CreateQuery())
-            {
-                query.Prefetch = true;
-                query.AllDocsMode = QueryAllDocsMode.AllDocs;
-                query.IndexUpdateMode = IndexUpdateMode.Before;
+            var documents = new List<Document>();
 
-                using (var queryEnum = query.Run())
+            using (var query = QueryBuilder.Select(SelectResult.Property("id"))
+                                .From(DataSource.Database(database))
+                                .Where(Expression.Property("collection").EqualTo(Expression.String(CollectionName))))
+            {
+                foreach (var result in query.Execute())
                 {
-                    foreach (IQueryRow resultItem in queryEnum)
-                    {
-                        resultItem.Document.Delete();
-                        deleted += 1;
-                    }
+                    documents.Add(database.GetDocument(result.GetString("id")));
                 }
             }
+
+            database.InBatch(() =>
+            {
+                foreach (var entity in documents)
+                {
+                    database.Purge(entity);
+                    deleted++;
+                }
+            });
 
             return deleted;
         }
@@ -395,8 +310,7 @@ namespace NoSqlRepositories.CouchBaseLite
         public override void DropCollection()
         {
             CheckOpenedConnection();
-
-            throw new NotImplementedException();
+            TruncateCollection();
         }
 
         public override void SetCollectionName(string typeName)
@@ -411,6 +325,19 @@ namespace NoSqlRepositories.CouchBaseLite
             CheckOpenedConnection();
 
             // Nothing to do to initialize the collection
+        }
+
+        public override void InitCollection(IList<string> indexFieldSelectors)
+        {
+            if (indexFieldSelectors == null)
+                throw new ArgumentNullException(nameof(indexFieldSelectors));
+
+            CheckOpenedConnection();
+
+            foreach(var indexfield in indexFieldSelectors)
+            {
+                CreateView(indexfield, indexfield);
+            }
         }
 
         public override bool CollectionExists(bool createIfNotExists)
@@ -430,7 +357,10 @@ namespace NoSqlRepositories.CouchBaseLite
             // Document found
             if (document != null)
             {
-                this.database.Delete(document);
+                if(physical)
+                    this.database.Purge(document);
+                else
+                    this.database.Delete(document);
                 result = 1;
             }
 
@@ -534,60 +464,45 @@ namespace NoSqlRepositories.CouchBaseLite
 
         #endregion
 
-        public override void InitCollection(IList<Expression<Func<T, object>>> indexFieldSelectors)
+        public override IEnumerable<INoSqlEntity<T>> DoQuery(NoSqlQuery<INoSqlEntity<T>> queryFilters)
         {
+            // TODO : Review this method. Change documents query results ?
             CheckOpenedConnection();
 
-            throw new NotImplementedException();
-        }
-
-        public override IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters)
-        {
-            CheckOpenedConnection();
-
-            IView view = database.GetView(CollectionName);
-
-            using (IQuery query = view.CreateQuery())
+            if (queryFilters.Skip != 0)
             {
-                query.Prefetch = true;
-                query.AllDocsMode = QueryAllDocsMode.AllDocs;
-                query.IndexUpdateMode = IndexUpdateMode.Before;
-                if (queryFilters.Skip != 0)
-                    query.Skip = queryFilters.Skip;
-                if (queryFilters.Limit != 0)
-                    query.Limit = queryFilters.Limit;
-                if (queryFilters.PostFilter != null)
+                using (var query = QueryBuilder.Select(SelectResult.Expression(Meta.ID))
+                                        .From(DataSource.Database(database))
+                                        .Where(Expression.Property("collection").EqualTo(Expression.String(CollectionName)))
+                                        .OrderBy(Ordering.Property("title").Ascending())
+                                        .Limit(Expression.Int(queryFilters.Skip)))
                 {
-                    query.PostFilter = (row) =>
-                    {
-                        var item = GetEntityFromDocument(row.Document);
-                        return queryFilters.PostFilter(item);
-                    };
-                }
-                using (var queryEnum = query.Run())
-                {
-                    return queryEnum.Select(row => GetEntityFromDocument(row.Document));
+                    return query.Execute().Select(row => GetById(row.GetString("id")));
                 }
             }
+
+            if (queryFilters.Skip != 0)
+            {
+                using (var query = QueryBuilder.Select(SelectResult.Expression(Meta.ID))
+                                        .From(DataSource.Database(database))
+                                        .Where(Expression.Property("collection").EqualTo(Expression.String(CollectionName))))
+                {
+                    return query.Execute().Select(row => GetById(row.GetString("id")));
+                }
+            }
+
+            return new List<INoSqlEntity<T>>();
         }
 
-        public override IEnumerable<T> GetAll()
+        public override IEnumerable<INoSqlEntity<T>> GetAll()
         {
             CheckOpenedConnection();
 
-            IView view = database.GetView(CollectionName);
-
-            using (IQuery query = view.CreateQuery())
+            using (var query = QueryBuilder.Select(SelectResult.Expression(Meta.ID))
+                                .From(DataSource.Database(database))
+                                .Where(Expression.Property("collection").EqualTo(Expression.String(CollectionName))))
             {
-                query.Prefetch = true;
-                query.AllDocsMode = QueryAllDocsMode.AllDocs;
-                query.IndexUpdateMode = IndexUpdateMode.Before;
-
-                using (var queryEnum = query.Run())
-                {
-                    return queryEnum.Where(row => !row.Document.Deleted)
-                        .Select(row => GetEntityFromDocument(row.Document));
-                }
+                return query.Execute().Select(row => GetById(row.GetString("id")));
             }
         }
 
@@ -605,78 +520,29 @@ namespace NoSqlRepositories.CouchBaseLite
         
         #region Views
 
-        public override IEnumerable<T> GetByField<TField>(string fieldName, TField value)
+        public override int Count()
         {
             CheckOpenedConnection();
 
-            IView view = database.GetExistingView(CollectionName + "-" + fieldName);
-
-            if (view == null)
-                throw new IndexNotFoundNoSQLException(string.Format("An index must be created on the fieldName '{0}' before calling GetByField", fieldName));
-
-            using (IQuery query = view.CreateQuery())
+            using (var query = QueryBuilder.Select(SelectResult.Expression(Meta.ID))
+                                .From(DataSource.Database(database))
+                                .Where(Expression.Property("collection").EqualTo(Expression.String(CollectionName))))
             {
-                query.Prefetch = true;
-                query.StartKey = value;
-                query.EndKey = value;
-                query.IndexUpdateMode = IndexUpdateMode.Before;
-
-                using (var queryEnum = query.Run())
-                {
-                    return queryEnum.Where(row => !row.Document.Deleted)
-                        .Select(doc => GetEntityFromDocument(doc.Document));
-                }
+                return query.Execute().Count();
             }
-        }
-
-        public override IEnumerable<T> GetByField<TField>(string fieldName, List<TField> values)
-        {
-            CheckOpenedConnection();
-
-            return values.SelectMany(v => GetByField(fieldName, v))
-                .GroupBy(e => e.Id)
-                .Select(g => g.First()); // Remove duplicates entities
         }
 
         public override IEnumerable<string> GetKeyByField<TField>(string fieldName, TField value)
         {
             CheckOpenedConnection();
 
-            IView view = database.GetExistingView(CollectionName + "-" + fieldName);
-
-            if (view == null)
-                throw new IndexNotFoundNoSQLException(string.Format("An index must be created on the fieldName '{0}' before calling GetByField", fieldName));
-
-            using (IQuery query = view.CreateQuery())
+            using (var query = QueryBuilder.Select(
+                                        SelectResult.Expression(Meta.ID),
+                                        SelectResult.Property(fieldName))
+                                    .From(DataSource.Database(database))
+                                    .Where(Expression.Property(fieldName).EqualTo(Expression.Value(value))))
             {
-                query.Prefetch = false;
-                query.StartKey = value;
-                query.EndKey = value;
-
-                using (var queryEnum = query.Run())
-                {
-                    return queryEnum.Select(doc => GetIdFromInternalCBLId(doc.DocumentId));
-                }
-            }
-        }
-
-        public override int Count()
-        {
-            CheckOpenedConnection();
-
-            IView view = database.GetView(CollectionName);
-
-            using (IQuery query = view.CreateQuery())
-            {
-                query.Prefetch = false;
-                query.AllDocsMode = QueryAllDocsMode.AllDocs;
-
-                using (var queryEnum = query.Run())
-                {
-                    return queryEnum.Where(row => !row.Document.Deleted)
-                        .Select(row => GetEntityFromDocument(row.Document))
-                        .Count();
-                }
+                return query.Execute().Select(e => e.GetString("id"));
             }
         }
 
@@ -693,70 +559,15 @@ namespace NoSqlRepositories.CouchBaseLite
         /// </summary>
         protected void CreateAllDocView()
         {
-            IView view = database.GetExistingView(CollectionName);
-            if (view == null)
-            {
-                view = database.GetView(CollectionName);
-            }
-
-            view.SetMap(
-            (doc, emit) =>
-            {
-                if (!doc.Keys.Contains("collection") || !doc.Keys.Contains("members"))
-                    return; // bad doc format, ignore it
-
-                var collection = (string)doc["collection"];
-                if (collection == null | !collection.Equals(CollectionName))
-                    return; // doc type is not the one of the current collection
-
-                emit(doc["_id"], doc["_id"]);
-            }
-        , "1");
-
+            CreateView("collection", "allDocView");
         }
 
-        public void CreateView<TField>(string fieldName, string version)
+        public void CreateView(string fieldName, string indexName)
         {
             CheckOpenedConnection();
 
             var viewName = CollectionName + "-" + fieldName; // view name = collectionName-fieldName
-            IView view = database.GetExistingView(viewName);
-
-            if (view == null)
-            {
-                view = database.GetView(viewName);
-            }
-
-            view.SetMap(
-                  (doc, emit) =>
-                  {
-                      if (!doc.Keys.Contains("collection") || !doc.Keys.Contains("members"))
-                          return; // bad doc format, ignore it
-
-                      var collection = (string)doc["collection"];
-                      if (collection == null | !collection.Equals(CollectionName))
-                          return; // doc type is not the one of the current collection
-
-                      JObject jObj = (JObject)doc["members"];
-
-                      string id = jObj.GetValue("Id").Value<string>();
-
-                      JToken jToken = jObj.GetValue(fieldName);
-                      if (jToken is JArray)
-                      {
-                          foreach (var arrayToken in (JArray)jToken)
-                          {
-                              TField fieldValue = arrayToken.Value<TField>();
-                              emit(fieldValue, id);
-                          }
-                      }
-                      else
-                      {
-                          TField fieldValue = jToken.Value<TField>();
-                          emit(fieldValue, id);
-                      }
-                  }
-              , version);
+            database.CreateIndex(viewName, IndexBuilder.ValueIndex(items: ValueIndexItem.Property(fieldName)));
         }
 
         #endregion
@@ -779,20 +590,6 @@ namespace NoSqlRepositories.CouchBaseLite
                 // Entity Id is user provided, add the suffix to the entityId to ensure Ic
                 cblId = string.Concat(CollectionName, "-", entityId);
             return cblId;
-        }
-
-
-        private string GetIdFromInternalCBLId(string cblId)
-        {
-            string id;
-
-            if (cblId.StartsWith(CollectionName + "-"))
-                // Entity Id has been generated by CouchBaseLite, entityId = CouchBaseLiteliteId
-                id = cblId.Substring(CollectionName.Length + 1);
-            else
-                // Entity Id is user provided, add the suffix to the entityId to ensure Ic
-                id = cblGeneratedIdPrefix + cblId;
-            return id;
         }
 
         private const string cblGeneratedIdPrefix = "$$CBL$$";

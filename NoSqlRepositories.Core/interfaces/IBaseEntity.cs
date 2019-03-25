@@ -3,7 +3,7 @@
 namespace NoSqlRepositories.Core
 {
     /// <summary>
-    /// Base interface for noSQL objects
+    /// Base interface for noSQL objects 
     /// </summary>
     public interface IBaseEntity
     {

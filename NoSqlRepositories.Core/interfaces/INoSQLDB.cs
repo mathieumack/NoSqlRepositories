@@ -1,9 +1,8 @@
-﻿using NoSqlRepositories.Core;
-using System;
+﻿using System;
 
 namespace NoSqlRepositories.Core
 {
-    public interface INoSQLDB<T> where T : IBaseEntity
+    public interface INoSQLDB
     {
         /// <summary>
         /// Type of the current engine

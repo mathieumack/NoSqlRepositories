@@ -2,7 +2,7 @@
 
 namespace NoSqlRepositories.Core.Queries
 {
-    public class NoSqlQuery<T> where T : IBaseEntity
+    public class NoSqlQuery<T> where T : class
     {        
         /// <summary>
         /// Gets or sets the maximum number of rows to return. 

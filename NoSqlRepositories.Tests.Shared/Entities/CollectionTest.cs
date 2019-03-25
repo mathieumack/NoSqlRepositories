@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace NoSqlRepositories.Test.Shared.Entities
 {
-    public class CollectionTest:IBaseEntity
+    public class CollectionTest : IBaseEntity
     {
 
         /// <summary>
