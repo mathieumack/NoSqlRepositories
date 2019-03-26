@@ -24,63 +24,12 @@ namespace NoSqlRepositories.CouchBaseLite
             }
         }
 
-        public T DomainEntity
-        {
-            get
-            {
-                return GetEntityDomain();
-            }
-            set
-            {
-                SetEntityDomain(value);
-            }
-        }
-
         private readonly string collectionName;
         public string CollectionName
         {
             get
             {
                 return collectionName;
-            }
-        }
-
-        public DateTime SystemCreationDate
-        {
-            get
-            {
-                return Document.Document.GetDate(nameof(SystemCreationDate)).Date;
-            }
-            set
-            {
-                Document.CheckMutable();
-                Document.MutableDocument.SetDate(nameof(SystemCreationDate), value);
-            }
-        }
-
-        public DateTime SystemLastUpdateDate
-        {
-            get
-            {
-                return Document.Document.GetDate(nameof(SystemLastUpdateDate)).Date;
-            }
-            set
-            {
-                Document.CheckMutable();
-                Document.MutableDocument.SetDate(nameof(SystemLastUpdateDate), value);
-            }
-        }
-
-        public bool Deleted
-        {
-            get
-            {
-                return Document.Document.GetBoolean(nameof(Deleted));
-            }
-            set
-            {
-                Document.CheckMutable();
-                Document.MutableDocument.SetBoolean(nameof(Deleted), value);
             }
         }
         
@@ -216,15 +165,15 @@ namespace NoSqlRepositories.CouchBaseLite
 
         #endregion
 
-        #region Domain entity helpers
+        #region Domain entity mapping
 
-        private T GetEntityDomain()
+        public T GetEntityDomain()
         {
             var simpleDictionary = Document.Document.ToDictionary();
             return ObjectToDictionaryHelper.DictionaryToObject<T>(simpleDictionary);
         }
 
-        private void SetEntityDomain(T entityModel)
+        public void SetEntityDomain(T entityModel)
         {
             var properties = ObjectToDictionaryHelper.ToDictionary(entityModel);
             foreach(var prop in properties)

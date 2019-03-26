@@ -73,7 +73,8 @@ namespace NoSqlRepositories.Core
         /// Create a new query on database.
         /// </summary>
         /// <returns></returns>
-        IEnumerable<INoSqlEntity<T>> DoQuery(NoSqlQuery<INoSqlEntity<T>> queryFilters);
+        // TODO : Reactivate queries
+        //IEnumerable<INoSqlEntity<T>> DoQuery(NoSqlQuery<INoSqlEntity<T>> queryFilters);
 
         /// <summary>
         /// Test if the entity key exists in the repository

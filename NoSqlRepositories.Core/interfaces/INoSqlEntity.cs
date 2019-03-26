@@ -13,15 +13,21 @@ namespace NoSqlRepositories.Core.interfaces
         string Id { get; }
 
         /// <summary>
-        /// POCO view of the document.
-        /// If you change properties, do not forget to set again the property in order to save updates on your object
-        /// </summary>
-        T DomainEntity { get; set; }
-
-        /// <summary>
         /// Name of the collection
         /// </summary>
         string CollectionName { get; }
+        
+        /// <summary>
+        /// Return a POCO object from database values
+        /// </summary>
+        /// <returns></returns>
+        T GetEntityDomain();
+
+        /// <summary>
+        /// Update values from the POCO object
+        /// </summary>
+        /// <param name="entityModel"></param>
+        void SetEntityDomain(T entityModel);
 
         //#region Get values
 

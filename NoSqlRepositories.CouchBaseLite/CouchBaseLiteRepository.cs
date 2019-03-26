@@ -125,7 +125,7 @@ namespace NoSqlRepositories.CouchBaseLite
 
             var result = new NoSqlEntity<T>(documentObjet);
 
-            if (result.Deleted)
+            if (result.GetBoolean("Deleted"))
                 throw new KeyNotFoundNoSQLException();
 
             return result;
@@ -181,6 +181,19 @@ namespace NoSqlRepositories.CouchBaseLite
             });
             
             return insertResult;
+        }
+
+        /// <summary>
+        /// Create a new empty document
+        /// The document is no inserted in database
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public override INoSqlEntity<T> CreateNewDocument(T entity)
+        {
+            var noSqlEntity = new NoSqlEntity<T>(this.CollectionName, new MutableDocument(entity.Id));
+            noSqlEntity.SetEntityDomain(entity);
+            return noSqlEntity;
         }
 
         /// <summary>
@@ -243,9 +256,9 @@ namespace NoSqlRepositories.CouchBaseLite
             // Normally, at this point, the document is deleted from database or an exception occured.
             // We can insert the new document :
 
-            nosqlEntity.SystemCreationDate = date;
-            nosqlEntity.SystemLastUpdateDate = date;
-
+            nosqlEntity.SetDate("SystemCreationDate", date);
+            nosqlEntity.SetDate("SystemLastUpdateDate", date);
+            
             database.Save(nosqlEntity.Document.MutableDocument);
 
             return InsertResult.inserted;
@@ -264,7 +277,8 @@ namespace NoSqlRepositories.CouchBaseLite
 
             // Update update date
             var date = NoSQLRepoHelper.DateTimeUtcNow();
-            nosqlEntity.SystemLastUpdateDate = date;
+            nosqlEntity.SetDate("SystemLastUpdateDate", date);
+
 
             database.Save(nosqlEntity.Document.MutableDocument);
             return UpdateResult.updated;
@@ -464,7 +478,7 @@ namespace NoSqlRepositories.CouchBaseLite
 
         #endregion
 
-        public override IEnumerable<INoSqlEntity<T>> DoQuery(NoSqlQuery<INoSqlEntity<T>> queryFilters)
+        public IEnumerable<INoSqlEntity<T>> DoQuery(NoSqlQuery<T> queryFilters)
         {
             // TODO : Review this method. Change documents query results ?
             CheckOpenedConnection();

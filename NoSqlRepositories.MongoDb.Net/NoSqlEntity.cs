@@ -1,32 +1,22 @@
 ﻿using NoSqlRepositories.Core;
 using NoSqlRepositories.Core.interfaces;
+using System;
 
 namespace NoSqlRepositories.MongoDb
 {
     public class NoSqlEntity<T> : INoSqlEntity<T> where T : class, IBaseEntity
     {
         #region Document
-        
-        internal T Document { get; private set; }
+
+        internal T document;
 
         #endregion
 
-        public string Id {
-            get
-            {
-                return Document.Id;
-            }
-        }
-
-        public T DomainEntity
+        public string Id
         {
             get
             {
-                return Document;
-            }
-            set
-            {
-                Document = value;
+                return document.Id;
             }
         }
 
@@ -38,6 +28,36 @@ namespace NoSqlRepositories.MongoDb
                 return collectionName;
             }
         }
+        
+        /// <summary>
+        /// Creation date of the object in the repository
+        /// </summary>
+        public DateTime SystemCreationDate
+        {
+            get
+            {
+                return document.SystemCreationDate;
+            }
+            set
+            {
+                document.SystemCreationDate = value;
+            }
+        }
+
+        /// <summary>
+        /// Last update date of the object in the repository
+        /// </summary>
+        public DateTime SystemLastUpdateDate
+        {
+            get
+            {
+                return document.SystemLastUpdateDate;
+            }
+            set
+            {
+                document.SystemLastUpdateDate = value;
+            }
+        }
 
         /// <summary>
         /// Allow you to create a new document
@@ -47,7 +67,21 @@ namespace NoSqlRepositories.MongoDb
         public NoSqlEntity(string collectionName, T document)
         {
             this.collectionName = collectionName;
-            Document = document;
+            this.document = document;
         }
+
+        #region Domain entity mapping
+
+        public T GetEntityDomain()
+        {
+            return document;
+        }
+
+        public void SetEntityDomain(T entityModel)
+        {
+            this.document = entityModel;
+        }
+
+        #endregion
     }
 }

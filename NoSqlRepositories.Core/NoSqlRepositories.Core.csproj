@@ -4,7 +4,7 @@
     <AssemblyName>NoSqlRepositories.Core</AssemblyName>
     <RootNamespace>NoSqlRepositories.Core</RootNamespace>
     <PackageId>NoSqlRepositories.Core</PackageId>
-    <TargetFramework>netstandard1.2</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <NeutralLanguage>en</NeutralLanguage>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Product>No sql repository project that let you use CosmosDb, MongoDb or json file storage</Product>
@@ -18,6 +18,8 @@
     <RepositoryUrl>https://github.com/mathieumack/NoSqlRepositories</RepositoryUrl>
     <PackageTags>repository;nosql</PackageTags>
     <PackageIconUrl />
+    <AssemblyVersion>2019.1.0.0</AssemblyVersion>
+    <FileVersion>2019.1.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

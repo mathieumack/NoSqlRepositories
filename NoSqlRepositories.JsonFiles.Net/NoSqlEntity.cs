@@ -1,5 +1,6 @@
 ﻿using NoSqlRepositories.Core;
 using NoSqlRepositories.Core.interfaces;
+using System;
 
 namespace NoSqlRepositories.JsonFiles
 {
@@ -7,7 +8,7 @@ namespace NoSqlRepositories.JsonFiles
     {
         #region Document
 
-        internal T Document { get; private set; }
+        internal T document;
 
         #endregion
 
@@ -15,28 +16,46 @@ namespace NoSqlRepositories.JsonFiles
         {
             get
             {
-                return Document.Id;
+                return document.Id;
             }
         }
-
-        public T DomainEntity
-        {
-            get
-            {
-                return Document;
-            }
-            set
-            {
-                Document = value;
-            }
-        }
-
+        
         private readonly string collectionName;
         public string CollectionName
         {
             get
             {
                 return collectionName;
+            }
+        }
+
+        /// <summary>
+        /// Creation date of the object in the repository
+        /// </summary>
+        public DateTime SystemCreationDate
+        {
+            get
+            {
+                return document.SystemCreationDate;
+            }
+            set
+            {
+                document.SystemCreationDate = value;
+            }
+        }
+
+        /// <summary>
+        /// Last update date of the object in the repository
+        /// </summary>
+        public DateTime SystemLastUpdateDate
+        {
+            get
+            {
+                return document.SystemLastUpdateDate;
+            }
+            set
+            {
+                document.SystemLastUpdateDate = value;
             }
         }
 
@@ -48,7 +67,21 @@ namespace NoSqlRepositories.JsonFiles
         public NoSqlEntity(string collectionName, T document)
         {
             this.collectionName = collectionName;
-            Document = document;
+            this.document = document;
         }
+
+        #region Domain entity mapping
+
+        public T GetEntityDomain()
+        {
+            return document;
+        }
+
+        public void SetEntityDomain(T entityModel)
+        {
+            this.document = entityModel;
+        }
+
+        #endregion
     }
 }

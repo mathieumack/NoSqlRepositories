@@ -42,8 +42,6 @@ namespace NoSqlRepositories.Tests.MongoDb
         [TestInitialize]
         public void TestInitialize()
         {
-            var dbName = "NoSQLTestMongoDb";
-
             entityRepo = new MongoDbRepository<TestEntity>(ConfigurationManager.AppSettings["mongoDB:ServiceUri"], ConfigurationManager.AppSettings["mongoDB:DatabaseName"]);
             entityRepo2 = new MongoDbRepository<TestEntity>(ConfigurationManager.AppSettings["mongoDB:ServiceUri"], ConfigurationManager.AppSettings["mongoDB:DatabaseName"]);
             collectionEntityRepo = new MongoDbRepository<CollectionTest>(ConfigurationManager.AppSettings["mongoDB:ServiceUri"], ConfigurationManager.AppSettings["mongoDB:DatabaseName"]);

@@ -4,7 +4,7 @@
     <AssemblyName>NoSqlRepositories.JsonFiles.Net</AssemblyName>
     <RootNamespace>NoSqlRepositories.JsonFiles.Net</RootNamespace>
     <PackageId>NoSqlRepositories.JsonFiles.Net</PackageId>
-    <TargetFramework>netstandard1.5</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <NeutralLanguage>en</NeutralLanguage>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Product>No sql repository project that let you use a Json file storage</Product>

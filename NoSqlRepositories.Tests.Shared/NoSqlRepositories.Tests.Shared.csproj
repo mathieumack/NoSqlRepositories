@@ -62,18 +62,17 @@
     <Compile Include="Extensions\TestContextExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NoSqlRepositories.Core\NoSqlRepositories.Core.csproj">
-      <Project>{49A4AB0F-5E00-46A4-8436-9FAA3C5D87DE}</Project>
-      <Name>NoSqlRepositories.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
     <None Include="Ressources\Images\RoNEX_brochure.pdf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\NoSqlRepositories.Core\NoSqlRepositories.Core.csproj">
+      <Project>{49a4ab0f-5e00-46a4-8436-9faa3c5d87de}</Project>
+      <Name>NoSqlRepositories.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Ressources\Images\TN_15.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

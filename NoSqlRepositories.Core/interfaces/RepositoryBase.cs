@@ -52,6 +52,8 @@ namespace NoSqlRepositories.Core
 
         public abstract INoSqlEntity<T> GetById(string id);
 
+        public abstract INoSqlEntity<T> CreateNewDocument(T entity);
+
         public abstract INoSqlEntity<T> CreateNewDocument();
 
         public abstract INoSqlEntity<T> CreateNewDocument(string id);
@@ -146,6 +148,6 @@ namespace NoSqlRepositories.Core
 
         public abstract int Count();
 
-        public abstract IEnumerable<INoSqlEntity<T>> DoQuery(NoSqlQuery<INoSqlEntity<T>> queryFilters);
+        //public abstract IEnumerable<INoSqlEntity<T>> DoQuery(NoSqlQuery<INoSqlEntity<T>> queryFilters);
     }
 }
