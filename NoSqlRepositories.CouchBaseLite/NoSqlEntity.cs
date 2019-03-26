@@ -1,4 +1,6 @@
 ﻿using Couchbase.Lite;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NoSqlRepositories.Core;
 using NoSqlRepositories.Core.interfaces;
 using NoSqlRepositories.Utils;
@@ -12,15 +14,62 @@ namespace NoSqlRepositories.CouchBaseLite
         
         internal NoSqlEntityDocument Document { get; private set; }
 
+        /// <summary>
+        /// Internal link to the entity model
+        /// This object is used to update base entity informations when the
+        /// repository do some changed on the object
+        /// </summary>
+        private T entityModel;
+
         #endregion
 
         public string Id {
             get
             {
-                if(Document != null)
+                if(Document != null && Document.Document != null)
                     return Document.Document.Id;
                 else
                     return Document.MutableDocument.Id;
+            }
+            set
+            {
+                SetString("Id", value);
+                if (entityModel != null)
+                    entityModel.Id = value;
+            }
+        }
+
+        /// <summary>
+        /// Creation date of the object in the repository
+        /// </summary>
+        public DateTime SystemCreationDate
+        {
+            get
+            {
+                return GetDate("SystemCreationDate");
+            }
+            set
+            {
+                SetDate("SystemCreationDate", value);
+                if (entityModel != null)
+                    entityModel.SystemCreationDate = value;
+            }
+        }
+
+        /// <summary>
+        /// Last update date of the object in the repository
+        /// </summary>
+        public DateTime SystemLastUpdateDate
+        {
+            get
+            {
+                return GetDate("SystemLastUpdateDate");
+            }
+            set
+            {
+                SetDate("SystemLastUpdateDate", value);
+                if (entityModel != null)
+                    entityModel.SystemLastUpdateDate = value;
             }
         }
 
@@ -170,11 +219,16 @@ namespace NoSqlRepositories.CouchBaseLite
         public T GetEntityDomain()
         {
             var simpleDictionary = Document.Document.ToDictionary();
-            return ObjectToDictionaryHelper.DictionaryToObject<T>(simpleDictionary);
+            JObject obj = JObject.FromObject(simpleDictionary);
+            return obj.ToObject<T>();
+
+            //return ObjectToDictionaryHelper.DictionaryToObject<T>(simpleDictionary);
         }
 
         public void SetEntityDomain(T entityModel)
         {
+            this.entityModel = entityModel;
+
             var properties = ObjectToDictionaryHelper.ToDictionary(entityModel);
             foreach(var prop in properties)
             {
@@ -185,7 +239,10 @@ namespace NoSqlRepositories.CouchBaseLite
                 else if (prop.Value is bool)
                     SetBoolean(prop.Key, (bool)prop.Value);
                 else if (prop.Value is DateTime)
-                    SetDate(prop.Key, (DateTime)prop.Value);
+                {
+                    if ((DateTime)prop.Value != default(DateTime))
+                        SetDate(prop.Key, (DateTime)prop.Value);
+                }
                 else if (prop.Value is double)
                     SetDouble(prop.Key, (double)prop.Value);
                 else if (prop.Value is float)

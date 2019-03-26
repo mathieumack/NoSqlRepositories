@@ -15,38 +15,38 @@ namespace NoSqlRepositories.Utils
     public static class ObjectToDictionaryHelper
     {
         #region POCO to Dictionnary
-        // Source : https://softwareproduction.eu/2018/02/28/fast-conversion-objects-dictionaries-c/
+        // Source : https://gist.github.com/jarrettmeyer/798667/a87f9bcac2ec68541511f17da3c244c0e05bdc49
 
-        private static readonly MethodInfo AddToDicitonaryMethod = typeof(IDictionary<string, object>).GetMethod("Add");
-        private static readonly ConcurrentDictionary<Type, Func<object, IDictionary<string, object>>> Converters = new ConcurrentDictionary<Type, Func<object, IDictionary<string, object>>>();
-        private static readonly ConstructorInfo DictionaryConstructor = typeof(Dictionary<string, object>).GetConstructors().FirstOrDefault(c => c.IsPublic && !c.GetParameters().Any());
-
-        public static IDictionary<string, object> ToDictionary(this object obj) => obj == null ? null : Converters.GetOrAdd(obj.GetType(), o =>
+        public static IDictionary<string, object> ToDictionary(this object source)
         {
-            var outputType = typeof(IDictionary<string, object>);
-            var inputType = obj.GetType();
-            var inputExpression = Expression.Parameter(typeof(object), "input");
-            var typedInputExpression = Expression.Convert(inputExpression, inputType);
-            var outputVariable = Expression.Variable(outputType, "output");
-            var returnTarget = Expression.Label(outputType);
-            var body = new List<Expression>
+            return source.ToDictionary<object>();
+        }
+
+        public static IDictionary<string, T> ToDictionary<T>(this object source)
+        {
+            if (source == null) ThrowExceptionWhenSourceArgumentIsNull();
+
+            var dictionary = new Dictionary<string, T>();
+            foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(source))
             {
-                Expression.Assign(outputVariable, Expression.New(DictionaryConstructor))
-            };
-            body.AddRange(
-                from prop in inputType.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy)
-                where prop.CanRead && (prop.PropertyType.IsPrimitive || prop.PropertyType == typeof(string))
-                let getExpression = Expression.Property(typedInputExpression, prop.GetMethod)
-                select Expression.Call(outputVariable, AddToDicitonaryMethod, Expression.Constant(prop.Name), getExpression));
-            body.Add(Expression.Return(returnTarget, outputVariable));
-            body.Add(Expression.Label(returnTarget, Expression.Constant(null, outputType)));
+                object value = property.GetValue(source);
+                if (IsOfType<T>(value))
+                {
+                    dictionary.Add(property.Name, (T)value);
+                }
+            }
+            return dictionary;
+        }
 
-            var lambdaExpression = Expression.Lambda<Func<object, IDictionary<string, object>>>(
-                Expression.Block(new[] { outputVariable }, body),
-                inputExpression);
+        private static bool IsOfType<T>(object value)
+        {
+            return value is T;
+        }
 
-            return lambdaExpression.Compile();
-        })(obj);
+        private static void ThrowExceptionWhenSourceArgumentIsNull()
+        {
+            throw new NullReferenceException("Unable to convert anonymous object to a dictionary. The source anonymous object is null.");
+        }
 
         #endregion
 

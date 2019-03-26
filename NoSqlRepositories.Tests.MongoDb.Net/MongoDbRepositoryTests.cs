@@ -59,66 +59,66 @@ namespace NoSqlRepositories.Tests.MongoDb
 
         [TestMethod]
 
-        public void InsertEntity()
+        public void MongoDb_InsertEntity()
         {
             test.InsertEntity();
         }
 
         [TestMethod]
 
-        public void DeleteEntity()
+        public void MongoDb_DeleteEntity()
         {
             test.DeleteEntity();
         }
 
         [TestMethod]
-        public void TimeZoneTest()
+        public void MongoDb_TimeZoneTest()
         {
             test.TimeZoneTest();
         }
 
         [TestMethod]
-        public void InsertExtraEltEntity()
+        public void MongoDb_InsertExtraEltEntity()
         {
             test.InsertExtraEltEntity();
         }
 
         //[TestMethod]
         // Limitation : couchtest repository doesn't handle polymorphism in attribute's entity of type List, Dictionary...
-        public void Polymorphism()
+        public void MongoDb_Polymorphism()
         {
             test.Polymorphism();
         }
 
         [TestMethod]
-        public void Attachments()
+        public void MongoDb_Attachments()
         {
             test.Attachments();
         }
 
         [TestMethod]
-        public void GetAll()
+        public void MongoDb_GetAll()
         {
             test.GetAll();
         }
 
 
         [TestMethod]
-        public void GetTests()
+        public void MongoDb_GetTests()
         {
             test.GetTests();
         }
 
         // Not supported for now
         //[TestMethod]
-        public void ConcurrentAccess()
+        public void MongoDb_ConcurrentAccess()
         {
             test.ConcurrentAccess(false);
         }
 
         // Not supported for now
         //[TestMethod]
-        public void ViewTests()
+        public void MongoDb_ViewTests()
         {
             test.ViewTests();
         }

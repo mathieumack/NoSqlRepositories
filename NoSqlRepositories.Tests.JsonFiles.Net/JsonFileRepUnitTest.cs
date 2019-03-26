@@ -40,91 +40,91 @@ namespace NoSqlRepositories.Tests.JsonFiles
         #region NoSQLCoreUnitTests test methods
 
         [TestMethod]
-        public void MvvX_JsonFiles_DatabaseName()
+        public void JsonFiles_DatabaseName()
         {
             test.DatabaseName();
         }
 
         [TestMethod]
-        public void MvvX_JsonFiles_ExpireAt()
+        public void JsonFiles_ExpireAt()
         {
             test.ExpireAt();
         }
 
         [TestMethod]
-        public void MvvX_JsonFiles_CompactDatabase()
+        public void JsonFiles_CompactDatabase()
         {
             test.CompactDatabase();
         }
 
         [TestMethod]
 
-        public void MvvX_JsonFiles_InsertEntity()
+        public void JsonFiles_InsertEntity()
         {
             test.InsertEntity();
         }
 
         [TestMethod]
 
-        public void MvvX_JsonFiles_DeleteEntity()
+        public void JsonFiles_DeleteEntity()
         {
             test.DeleteEntity();
         }
 
         [TestMethod]
-        public void MvvX_JsonFiles_TimeZoneTest()
+        public void JsonFiles_TimeZoneTest()
         {
             test.TimeZoneTest();
         }
 
         [TestMethod]
-        public void MvvX_JsonFiles_InsertExtraEltEntity()
+        public void JsonFiles_InsertExtraEltEntity()
         {
             test.InsertExtraEltEntity();
         }
 
         //[TestMethod]
         // Limitation : couchtest repository doesn't handle polymorphism in attribute's entity of type List, Dictionary...
-        public void MvvX_JsonFiles_Polymorphism()
+        public void JsonFiles_Polymorphism()
         {
             test.Polymorphism();
         }
 
         [TestMethod]
-        public void MvvX_JsonFiles_Attachments()
+        public void JsonFiles_Attachments()
         {
             test.Attachments();
         }
 
         [TestMethod]
-        public void MvvX_JsonFiles_GetAll()
+        public void JsonFiles_GetAll()
         {
             test.GetAll();
         }
 
 
         [TestMethod]
-        public void MvvX_JsonFiles_GetTests()
+        public void JsonFiles_GetTests()
         {
             test.GetTests();
         }
 
         [TestMethod]
-        public void Mvvx_JsonFiles_Count()
+        public void JsonFiles_Count()
         {
             test.Count();
         }
 
         // Not supported for now
         //[TestMethod]
-        public void MvvX_JsonFiles_ConcurrentAccess()
+        public void JsonFiles_ConcurrentAccess()
         {
             test.ConcurrentAccess(false);
         }
 
         // Not supported for now
         //[TestMethod]
-        public void MvvX_JsonFiles_ViewTests()
+        public void JsonFiles_ViewTests()
         {
             test.ViewTests();
         }

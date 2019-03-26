@@ -41,91 +41,91 @@ namespace NoSqlRepositories.Tests.CouchbaseLite
         #region NoSQLCoreUnitTests test methods
 
         [TestMethod]
-        public void MvvX_JsonFiles_DatabaseName()
+        public void CouchbaseLite_DatabaseName()
         {
             test.DatabaseName();
         }
 
         [TestMethod]
-        public void MvvX_JsonFiles_ExpireAt()
+        public void CouchbaseLite_ExpireAt()
         {
             test.ExpireAt();
         }
 
         [TestMethod]
-        public void MvvX_JsonFiles_CompactDatabase()
+        public void CouchbaseLite_CompactDatabase()
         {
             test.CompactDatabase();
         }
 
         [TestMethod]
 
-        public void MvvX_JsonFiles_InsertEntity()
+        public void CouchbaseLite_InsertEntity()
         {
             test.InsertEntity();
         }
 
         [TestMethod]
 
-        public void MvvX_JsonFiles_DeleteEntity()
+        public void CouchbaseLite_DeleteEntity()
         {
             test.DeleteEntity();
         }
 
         [TestMethod]
-        public void MvvX_JsonFiles_TimeZoneTest()
+        public void CouchbaseLite_TimeZoneTest()
         {
             test.TimeZoneTest();
         }
 
         [TestMethod]
-        public void MvvX_JsonFiles_InsertExtraEltEntity()
+        public void CouchbaseLite_InsertExtraEltEntity()
         {
             test.InsertExtraEltEntity();
         }
 
         //[TestMethod]
         // Limitation : couchtest repository doesn't handle polymorphism in attribute's entity of type List, Dictionary...
-        public void MvvX_JsonFiles_Polymorphism()
+        public void CouchbaseLite_Polymorphism()
         {
             test.Polymorphism();
         }
 
         [TestMethod]
-        public void MvvX_JsonFiles_Attachments()
+        public void CouchbaseLite_Attachments()
         {
             test.Attachments();
         }
 
         [TestMethod]
-        public void MvvX_JsonFiles_GetAll()
+        public void CouchbaseLite_GetAll()
         {
             test.GetAll();
         }
 
 
         [TestMethod]
-        public void MvvX_JsonFiles_GetTests()
+        public void CouchbaseLite_GetTests()
         {
             test.GetTests();
         }
 
         [TestMethod]
-        public void Mvvx_JsonFiles_Count()
+        public void CouchbaseLite_Count()
         {
             test.Count();
         }
 
         // Not supported for now
         //[TestMethod]
-        public void MvvX_JsonFiles_ConcurrentAccess()
+        public void CouchbaseLite_ConcurrentAccess()
         {
             test.ConcurrentAccess(false);
         }
 
         // Not supported for now
         //[TestMethod]
-        public void MvvX_JsonFiles_ViewTests()
+        public void CouchbaseLite_ViewTests()
         {
             test.ViewTests();
         }

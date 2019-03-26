@@ -118,7 +118,7 @@ namespace NoSqlRepositories.CouchBaseLite
         {
             CheckOpenedConnection();
                        
-            var documentObjet = this.database.GetDocument(GetInternalCBLId(id));
+            var documentObjet = this.database.GetDocument(id);
 
             if (documentObjet == null)
                 throw new KeyNotFoundNoSQLException();
@@ -160,7 +160,7 @@ namespace NoSqlRepositories.CouchBaseLite
         {
             CheckOpenedConnection();
 
-            var documentObjet = this.database.GetDocument(GetInternalCBLId(id));
+            var documentObjet = this.database.GetDocument(id);
             return documentObjet != null;
         }
 
@@ -191,7 +191,13 @@ namespace NoSqlRepositories.CouchBaseLite
         /// <returns></returns>
         public override INoSqlEntity<T> CreateNewDocument(T entity)
         {
-            var noSqlEntity = new NoSqlEntity<T>(this.CollectionName, new MutableDocument(entity.Id));
+            MutableDocument mutableDocument = null;
+            if (string.IsNullOrWhiteSpace(entity.Id))
+                mutableDocument = new MutableDocument();
+            else
+                mutableDocument = new MutableDocument(entity.Id);
+
+            var noSqlEntity = new NoSqlEntity<T>(this.CollectionName, mutableDocument);
             noSqlEntity.SetEntityDomain(entity);
             return noSqlEntity;
         }
@@ -229,12 +235,13 @@ namespace NoSqlRepositories.CouchBaseLite
             if (nosqlEntity == null || nosqlEntity.CollectionName != this.CollectionName)
                 throw new InvalidOperationException("the entity was created from an other repository");
 
-            var date = NoSQLRepoHelper.DateTimeUtcNow();
+            var createdDate = NoSQLRepoHelper.DateTimeUtcNow();
+            var updateddate = NoSQLRepoHelper.DateTimeUtcNow();
 
-            if (!string.IsNullOrEmpty(entity.Id))
+            if (!string.IsNullOrEmpty(nosqlEntity.Id))
             {
                 // Get an existing document or return a new one if not exists
-                var document = database.GetDocument(GetInternalCBLId(entity.Id));
+                var document = database.GetDocument(entity.Id);
                 if (document != null)
                 {
                     // Document already exists
@@ -243,6 +250,7 @@ namespace NoSqlRepositories.CouchBaseLite
                         case InsertMode.error_if_key_exists:
                             throw new DupplicateKeyNoSQLException();
                         case InsertMode.erase_existing:
+                            createdDate = document.GetDate("SystemCreationDate").Date;
                             database.Delete(document);
                             break;
                         case InsertMode.do_nothing_if_key_exists:
@@ -255,11 +263,13 @@ namespace NoSqlRepositories.CouchBaseLite
 
             // Normally, at this point, the document is deleted from database or an exception occured.
             // We can insert the new document :
-
-            nosqlEntity.SetDate("SystemCreationDate", date);
-            nosqlEntity.SetDate("SystemLastUpdateDate", date);
+            
+            nosqlEntity.SystemCreationDate = createdDate;
+            nosqlEntity.SystemLastUpdateDate = updateddate;
             
             database.Save(nosqlEntity.Document.MutableDocument);
+
+            nosqlEntity.Id = nosqlEntity.Document.MutableDocument.Id;
 
             return InsertResult.inserted;
         }
@@ -299,13 +309,13 @@ namespace NoSqlRepositories.CouchBaseLite
 
             var documents = new List<Document>();
 
-            using (var query = QueryBuilder.Select(SelectResult.Property("id"))
+            using (var query = QueryBuilder.Select(SelectResult.Expression(Meta.ID))
                                 .From(DataSource.Database(database))
                                 .Where(Expression.Property("collection").EqualTo(Expression.String(CollectionName))))
             {
                 foreach (var result in query.Execute())
                 {
-                    documents.Add(database.GetDocument(result.GetString("id")));
+                    documents.Add(database.GetDocument(result.GetString("_id")));
                 }
             }
 
@@ -366,7 +376,7 @@ namespace NoSqlRepositories.CouchBaseLite
             CheckOpenedConnection();
 
             long result = 0;
-            var document = database.GetDocument(GetInternalCBLId(id));
+            var document = database.GetDocument(id);
 
             // Document found
             if (document != null)
@@ -394,7 +404,7 @@ namespace NoSqlRepositories.CouchBaseLite
         {
             CheckOpenedConnection();
 
-            var existingEntity = this.database.GetDocument(GetInternalCBLId(id));
+            var existingEntity = this.database.GetDocument(id);
             if (existingEntity == null)
                 throw new KeyNotFoundNoSQLException();
 
@@ -414,7 +424,7 @@ namespace NoSqlRepositories.CouchBaseLite
         {
             CheckOpenedConnection();
 
-            using (var existingEntity = this.database.GetDocument(GetInternalCBLId(id)))
+            using (var existingEntity = this.database.GetDocument(id))
             {
                 if (existingEntity == null)
                     throw new KeyNotFoundNoSQLException(string.Format("Entity '{0}' not found", id));
@@ -469,7 +479,7 @@ namespace NoSqlRepositories.CouchBaseLite
 
         private Blob GetAttachmentCore(string id, string attachmentName)
         {
-            var document = this.database.GetDocument(GetInternalCBLId(id));
+            var document = this.database.GetDocument(id);
             if (document == null)
                 throw new KeyNotFoundNoSQLException();
 
@@ -512,19 +522,23 @@ namespace NoSqlRepositories.CouchBaseLite
         {
             CheckOpenedConnection();
 
+            IList<string> ids = null;
+
             using (var query = QueryBuilder.Select(SelectResult.Expression(Meta.ID))
                                 .From(DataSource.Database(database))
                                 .Where(Expression.Property("collection").EqualTo(Expression.String(CollectionName))))
             {
-                return query.Execute().Select(row => GetById(row.GetString("id")));
+                ids = query.Execute().Select(row => row.GetString("id")).ToList();
             }
+
+            return ids.Select(e => GetById(e));
         }
 
         public override IEnumerable<string> GetAttachmentNames(string id)
         {
             CheckOpenedConnection();
 
-            var document = this.database.GetDocument(GetInternalCBLId(id));
+            var document = this.database.GetDocument(id);
             if (document == null)
                 throw new KeyNotFoundNoSQLException();
 

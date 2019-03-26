@@ -182,8 +182,9 @@ namespace NoSqlRepositories.Test.Shared
             entityRepo.TruncateCollection();
 
             var entity1 = TestHelper.GetEntity1();
-            entityRepo.InsertOne(entityRepo.CreateNewDocument(entity1));
-            Assert.IsFalse(string.IsNullOrEmpty(entity1.Id), "DocId has not been set during insert");
+            var noSqlentity1 = entityRepo.CreateNewDocument(entity1);
+            entityRepo.InsertOne(noSqlentity1);
+            Assert.IsFalse(string.IsNullOrEmpty(noSqlentity1.Id), "DocId has not been set during insert");
 
             var t1 = new DateTime(2016, 01, 01, 0, 0, 0, DateTimeKind.Utc);
             var t2 = new DateTime(2017, 01, 01, 0, 0, 0, DateTimeKind.Utc);
@@ -235,7 +236,7 @@ namespace NoSqlRepositories.Test.Shared
                 var entity2 = TestHelper.GetEntity2();
                 entityRepo.InsertOne(entityRepo.CreateNewDocument(entity2), InsertMode.erase_existing); // Insert
                 var entity2_repo = entityRepo.GetById(entity2.Id);
-                AssertHelper.AreJsonEqual(entity2, entity2_repo);
+                AssertHelper.AreJsonEqual(entity2, entity2_repo.GetEntityDomain());
                 
                 // ABN: why this modification of unit test ?!
                 // Clone in order to get a new objet of type TestEntity because a cast is not suffisant
