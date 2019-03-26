@@ -46,11 +46,11 @@ namespace NoSqlRepositories.Tests.CouchbaseLite
             test.DatabaseName();
         }
 
-        [TestMethod]
-        public void CouchbaseLite_ExpireAt()
-        {
-            test.ExpireAt();
-        }
+        //[TestMethod]
+        //public void CouchbaseLite_ExpireAt()
+        //{
+        //    test.ExpireAt();
+        //}
 
         [TestMethod]
         public void CouchbaseLite_CompactDatabase()

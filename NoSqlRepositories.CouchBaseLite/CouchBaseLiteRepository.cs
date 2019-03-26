@@ -315,7 +315,7 @@ namespace NoSqlRepositories.CouchBaseLite
             {
                 foreach (var result in query.Execute())
                 {
-                    documents.Add(database.GetDocument(result.GetString("_id")));
+                    documents.Add(database.GetDocument(result.GetString("id")));
                 }
             }
 
