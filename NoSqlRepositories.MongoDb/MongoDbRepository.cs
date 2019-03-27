@@ -449,10 +449,10 @@ namespace NoSqlRepositories.MongoDb
             ConnectionOpened = true;
         }
 
-        //public override IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public override IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters)
+        {
+            throw new NotImplementedException();
+        }
 
         #endregion
     }

@@ -86,7 +86,7 @@
       <Project>{49a4ab0f-5e00-46a4-8436-9faa3c5d87de}</Project>
       <Name>NoSqlRepositories.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\NoSqlRepositories.MongoDb.Net\NoSqlRepositories.MongoDb.csproj">
+    <ProjectReference Include="..\NoSqlRepositories.MongoDb\NoSqlRepositories.MongoDb.csproj">
       <Project>{9da9b5c7-5c6b-46f9-8809-2dfb36369ca2}</Project>
       <Name>NoSqlRepositories.MongoDb</Name>
     </ProjectReference>

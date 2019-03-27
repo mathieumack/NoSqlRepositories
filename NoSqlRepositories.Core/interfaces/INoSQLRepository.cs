@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NoSqlRepositories.Core.Queries;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -71,8 +72,7 @@ namespace NoSqlRepositories.Core
         /// Create a new query on database.
         /// </summary>
         /// <returns></returns>
-        // TODO : Reactivate queries
-        //IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters);
+        IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters);
 
         /// <summary>
         /// Test if the entity key exists in the repository

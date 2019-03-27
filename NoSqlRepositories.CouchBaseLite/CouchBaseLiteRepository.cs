@@ -496,34 +496,27 @@ namespace NoSqlRepositories.CouchBaseLite
 
         #endregion
 
-        public IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters)
+        public override IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters)
         {
-            // TODO : Review this method. Change documents query results ?
             CheckOpenedConnection();
 
-            if (queryFilters.Skip != 0)
-            {
-                using (var query = QueryBuilder.Select(SelectResult.Expression(Meta.ID))
+            var queryBuilder = QueryBuilder.Select(SelectResult.Expression(Meta.ID))
                                         .From(DataSource.Database(database))
                                         .Where(Expression.Property("collection").EqualTo(Expression.String(CollectionName)))
-                                        .OrderBy(Ordering.Property("title").Ascending())
-                                        .Limit(Expression.Int(queryFilters.Skip)))
-                {
-                    return query.Execute().Select(row => GetById(row.GetString("id")));
-                }
-            }
+                                        .Limit(queryFilters.Limit > 0 ? Expression.Int(queryFilters.Limit) : Expression.Int(int.MaxValue));
 
-            if (queryFilters.Skip != 0)
+            IList<string> ids = null;
+            using (var query = queryBuilder)
             {
-                using (var query = QueryBuilder.Select(SelectResult.Expression(Meta.ID))
-                                        .From(DataSource.Database(database))
-                                        .Where(Expression.Property("collection").EqualTo(Expression.String(CollectionName))))
-                {
-                    return query.Execute().Select(row => GetById(row.GetString("id")));
-                }
+                ids = query.Execute().Select(row => row.GetString("id")).ToList();
             }
 
-            return new List<T>();
+            var resultSet = ids.Select(e => GetById(e));
+
+            if (queryFilters.PostFilter != null)
+                return resultSet.Where(e => queryFilters.PostFilter(e));
+
+            return resultSet;
         }
 
         public override IEnumerable<T> GetAll()

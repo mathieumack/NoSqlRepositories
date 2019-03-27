@@ -131,16 +131,12 @@ namespace NoSqlRepositories.Core
 
         public abstract void UseDatabase(string dbName);
 
-        //public abstract IEnumerable<IBaseEntity<T>> GetByField<TField>(string fieldName, List<TField> values);
-
-        //public abstract IEnumerable<IBaseEntity<T>> GetByField<TField>(string fieldName, TField value);
-
         public abstract IEnumerable<string> GetKeyByField<TField>(string fieldName, List<TField> values);
 
         public abstract IEnumerable<string> GetKeyByField<TField>(string fieldName, TField value);
 
         public abstract int Count();
 
-        //public abstract IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters);
+        public abstract IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters);
     }
 }

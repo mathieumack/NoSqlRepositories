@@ -14,7 +14,7 @@
     <Authors>MACK Mathieu</Authors>
     <Company></Company>
     <Version>2019.0.0.0</Version>
-    <Description>This package contains a memory cache manager for your application.</Description>
+    <Description>No sql repository project that let you use CosmosDb, MongoDb or json file storage</Description>
     <RepositoryUrl>https://github.com/mathieumack/NoSqlRepositories</RepositoryUrl>
     <PackageTags>repository;nosql</PackageTags>
     <PackageIconUrl />

@@ -62,7 +62,7 @@
       <Project>{49a4ab0f-5e00-46a4-8436-9faa3c5d87de}</Project>
       <Name>NoSqlRepositories.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\NoSqlRepositories.JsonFiles.Net\NoSqlRepositories.JsonFiles.csproj">
+    <ProjectReference Include="..\NoSqlRepositories.JsonFiles\NoSqlRepositories.JsonFiles.csproj">
       <Project>{A874E81B-5C5C-472C-9ECC-AA5B02840BBC}</Project>
       <Name>NoSqlRepositories.JsonFiles</Name>
     </ProjectReference>

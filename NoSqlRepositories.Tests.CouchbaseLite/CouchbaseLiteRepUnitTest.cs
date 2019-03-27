@@ -106,6 +106,12 @@ namespace NoSqlRepositories.Tests.CouchbaseLite
         }
 
         [TestMethod]
+        public void CouchbaseLite_DoQuery()
+        {
+            test.DoQuery();
+        }
+
+        [TestMethod]
         public void CouchbaseLite_Count()
         {
             test.Count();

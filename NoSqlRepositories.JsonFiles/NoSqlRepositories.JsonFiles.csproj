@@ -1,11 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>NoSqlRepositories.JsonFiles</AssemblyName>
+    <RootNamespace>NoSqlRepositories.JsonFiles</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>MACK Mathieu</Authors>
     <Company>MACK Mathieu</Company>
-    <Description>This package is designed for Couchbase lite</Description>
+    <Description>This package is designed for a Json files storage</Description>
     <Product>No sql repository project that let you use CosmosDb, MongoDb or json file storage</Product>
     <Copyright>Copyright 2019</Copyright>
     <PackageProjectUrl>https://github.com/mathieumack/NoSqlRepositories</PackageProjectUrl>
@@ -13,15 +15,16 @@
     <RepositoryUrl>https://github.com/mathieumack/NoSqlRepositories</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>repository;nosql</PackageTags>
+    <PackageId>NoSqlRepositories.JsonFiles</PackageId>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Couchbase.Lite" Version="2.1.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\NoSqlRepositories.Core\NoSqlRepositories.Core.csproj" />
-    <ProjectReference Include="..\NoSqlRepositories.Utils\NoSqlRepositories.Utils.csproj" />
   </ItemGroup>
 
 </Project>

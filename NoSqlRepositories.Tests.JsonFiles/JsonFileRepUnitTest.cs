@@ -52,6 +52,12 @@ namespace NoSqlRepositories.Tests.JsonFiles
         }
 
         [TestMethod]
+        public void JsonFiles_DoQuery()
+        {
+            test.DoQuery();
+        }
+
+        [TestMethod]
         public void JsonFiles_CompactDatabase()
         {
             test.CompactDatabase();

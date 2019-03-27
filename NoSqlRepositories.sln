@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoSqlRepositories.Core", "N
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Custom repositories", "Custom repositories", "{9BD0BD33-E424-4206-A12D-E9A8A2783867}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoSqlRepositories.JsonFiles", "NoSqlRepositories.JsonFiles.Net\NoSqlRepositories.JsonFiles.csproj", "{A874E81B-5C5C-472C-9ECC-AA5B02840BBC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoSqlRepositories.JsonFiles", "NoSqlRepositories.JsonFiles\NoSqlRepositories.JsonFiles.csproj", "{A874E81B-5C5C-472C-9ECC-AA5B02840BBC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Platforms", "Platforms", "{9582B178-8088-4D93-AB4E-B3AA60D90DB8}"
 EndProject
@@ -17,11 +17,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{C66EA697-7
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoSqlRepositories.Tests.Shared", "NoSqlRepositories.Tests.Shared\NoSqlRepositories.Tests.Shared.csproj", "{220B2F71-E18B-4530-8E59-1E3B694A50AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoSqlRepositories.Tests.JsonFiles", "NoSqlRepositories.Tests.JsonFiles.Net\NoSqlRepositories.Tests.JsonFiles.csproj", "{5B16F816-B454-45E9-A7F1-556C82A64B6B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoSqlRepositories.Tests.JsonFiles", "NoSqlRepositories.Tests.JsonFiles\NoSqlRepositories.Tests.JsonFiles.csproj", "{5B16F816-B454-45E9-A7F1-556C82A64B6B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoSqlRepositories.MongoDb", "NoSqlRepositories.MongoDb.Net\NoSqlRepositories.MongoDb.csproj", "{9DA9B5C7-5C6B-46F9-8809-2DFB36369CA2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoSqlRepositories.MongoDb", "NoSqlRepositories.MongoDb\NoSqlRepositories.MongoDb.csproj", "{9DA9B5C7-5C6B-46F9-8809-2DFB36369CA2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoSqlRepositories.Tests.MongoDb", "NoSqlRepositories.Tests.MongoDb.Net\NoSqlRepositories.Tests.MongoDb.csproj", "{FBF7A598-5F58-479F-AA8E-C53712B98AF0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoSqlRepositories.Tests.MongoDb", "NoSqlRepositories.Tests.MongoDb\NoSqlRepositories.Tests.MongoDb.csproj", "{FBF7A598-5F58-479F-AA8E-C53712B98AF0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoSqlRepositories.CouchBaseLite", "NoSqlRepositories.CouchBaseLite\NoSqlRepositories.CouchBaseLite.csproj", "{752BE308-DCC0-4582-8D73-7B7E003A11EA}"
 EndProject

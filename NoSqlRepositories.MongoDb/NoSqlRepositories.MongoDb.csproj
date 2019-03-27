@@ -1,7 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>NoSqlRepositories.MongoDb</AssemblyName>
+    <RootNamespace>NoSqlRepositories.MongoDb</RootNamespace>
+    <PackageId>NoSqlRepositories.MongoDb</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>MACK Mathieu</Authors>
     <Company>MACK Mathieu</Company>
@@ -16,12 +19,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Couchbase.Lite" Version="2.1.2" />
+    <PackageReference Include="MongoDB.Driver" Version="2.8.0" />
+    <PackageReference Include="MongoDB.Driver.GridFS" Version="2.8.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\NoSqlRepositories.Core\NoSqlRepositories.Core.csproj" />
-    <ProjectReference Include="..\NoSqlRepositories.Utils\NoSqlRepositories.Utils.csproj" />
   </ItemGroup>
 
 </Project>

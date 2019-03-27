@@ -137,32 +137,23 @@ namespace NoSqlRepositories.Test.Shared
             entityRepo.TruncateCollection();
 
             var entity1 = TestHelper.GetEntity1();
-            var entity2 = TestHelper.GetEntity2();
             var entity3 = TestHelper.GetEntity3();
             var entity4 = TestHelper.GetEntity4();
 
-            entityRepo.InsertMany(new List<TestEntity>() { entity1, entity2, entity3, entity4 });
+            entityRepo.InsertMany(new List<TestEntity>() { entity1, entity3, entity4 });
 
-            //// Now we will do some queries :
-            //var queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(3, 0, null);
-            //var query = entityRepo.DoQuery(queryOptions);
-            //Assert.AreEqual(3, query.Count(), "Query should contain three elements");
+            // Now we will do some queries :
+            var queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(2, 0, null);
+            var query = entityRepo.DoQuery(queryOptions);
+            Assert.AreEqual(2, query.Count(), "Query should contain three elements");
 
-            //// Now we will add a filter method :
-            //queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(0, 0, (filterItem) =>
-            //{
-            //    return filterItem.NumberOfChildenInt == 0;
-            //});
-            //query = entityRepo.DoQuery(queryOptions);
-            //Assert.AreEqual(2, query.Count(), "Query should contain two elements");
-
-            //// Now we will add a filter method and skip first results:
-            //queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(0, 1, (filterItem) =>
-            //{
-            //    return filterItem.NumberOfChildenInt == 0;
-            //});
-            //query = entityRepo.DoQuery(queryOptions);
-            //Assert.AreEqual(1, query.Count(), "Query should contain two elements");
+            // Now we will add a filter method :
+            queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(0, 0, (filterItem) =>
+            {
+                return filterItem.NumberOfChildenInt == 0;
+            });
+            query = entityRepo.DoQuery(queryOptions);
+            Assert.AreEqual(1, query.Count(), "Query should contain two elements");
         }
 
         public virtual void InsertEntity()
