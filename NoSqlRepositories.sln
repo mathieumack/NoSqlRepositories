@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoSqlRepositories.CouchBase
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoSqlRepositories.Tests.CouchbaseLite", "NoSqlRepositories.Tests.CouchbaseLite\NoSqlRepositories.Tests.CouchbaseLite.csproj", "{BEE9D23D-AFC3-4109-A370-EB04DE1F0BA7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoSqlRepositories.Utils", "NoSqlRepositories.Utils\NoSqlRepositories.Utils.csproj", "{4BB329AE-77AA-4CE6-AA6F-332EF60E989E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoSqlRepositories.Utils", "NoSqlRepositories.Utils\NoSqlRepositories.Utils.csproj", "{4BB329AE-77AA-4CE6-AA6F-332EF60E989E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
