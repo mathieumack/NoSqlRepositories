@@ -61,12 +61,12 @@ namespace NoSqlRepositories.CouchBaseLite
 
             Construct(directoryPath, dbName);
         }
-        
+
         private void Construct(string directoryPath, string dbName)
         {
             if (string.IsNullOrWhiteSpace(dbName))
                 throw new ArgumentNullException(nameof(dbName));
-            
+
             this.CollectionName = typeof(T).Name;
 
             ConnectToDatabase(directoryPath, dbName);
@@ -75,7 +75,7 @@ namespace NoSqlRepositories.CouchBaseLite
 
             ConnectAgainToDatabase = () => Construct(directoryPath, dbName);
         }
-        
+
         private void ConnectToDatabase(string directoryPath, string dbName)
         {
             if (Directory.Exists(directoryPath))
@@ -152,7 +152,6 @@ namespace NoSqlRepositories.CouchBaseLite
             var properties = ObjectToDictionaryHelper.ToDictionary(entity);
             foreach (var prop in properties)
             {
-                //mutableDocument.SetValue(prop.Key, prop.Value);
                 if (prop.Value is int)
                     mutableDocument.SetInt(prop.Key, (int)prop.Value);
                 else if (prop.Value is long)
@@ -175,11 +174,11 @@ namespace NoSqlRepositories.CouchBaseLite
             }
         }
 
-            /// <summary>
-            /// Get the entities that match given ids. The list is empty if no entities were found
-            /// </summary>
-            /// <param name="ids"></param>
-            /// <returns></returns>
+        /// <summary>
+        /// Get the entities that match given ids. The list is empty if no entities were found
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
         public override IEnumerable<T> GetByIds(IList<string> ids)
         {
             CheckOpenedConnection();
@@ -223,7 +222,7 @@ namespace NoSqlRepositories.CouchBaseLite
                     insertResult[entity.Id] = InsertResult.unknown;
                 }
             });
-            
+
             return insertResult;
         }
 
@@ -368,7 +367,7 @@ namespace NoSqlRepositories.CouchBaseLite
 
             CheckOpenedConnection();
 
-            foreach(var indexfield in indexFieldSelectors)
+            foreach (var indexfield in indexFieldSelectors)
             {
                 CreateView(indexfield, indexfield);
             }
@@ -391,7 +390,7 @@ namespace NoSqlRepositories.CouchBaseLite
             // Document found
             if (document != null)
             {
-                if(physical)
+                if (physical)
                     this.database.Purge(document);
                 else
                     this.database.Delete(document);
@@ -442,7 +441,7 @@ namespace NoSqlRepositories.CouchBaseLite
                 var blob = existingEntity.GetBlob(attachmentName);
                 if (blob == null)
                     throw new AttachmentNotFoundNoSQLException(string.Format("Attachement {0} not found on Entity '{1}'", attachmentName, id));
-                
+
                 using (var mutableDocument = existingEntity.ToMutable())
                 {
                     mutableDocument.SetBlob(attachmentName, null);
@@ -546,7 +545,7 @@ namespace NoSqlRepositories.CouchBaseLite
             var properties = document.Keys;
             return properties.Where(e => document.GetBlob(e) != null);
         }
-        
+
         #region Views
 
         public override int Count()

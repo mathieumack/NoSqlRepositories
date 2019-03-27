@@ -585,7 +585,7 @@ namespace NoSqlRepositories.JsonFiles
             var query = localDb.Values.Select(e => e);
 
             // Filters :
-            if(queryFilters.PostFilter != null)
+            if (queryFilters.PostFilter != null)
                 query = query.Where(e => queryFilters.PostFilter(e));
             if (queryFilters.Skip > 0)
                 query = query.Skip(queryFilters.Skip);
