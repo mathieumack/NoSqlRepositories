@@ -9,10 +9,10 @@ namespace NoSqlRepositories.Core.Helpers
     public static class NoSQLRepoHelper
     {
         // Datetime.UtcNow lambda, which can be overided to permit unit testing
-        public static Func<DateTime> DateTimeUtcNow { get; set; } = (() => DateTime.UtcNow);
+        public static Func<DateTimeOffset> DateTimeUtcNow { get; set; } = (() => { return new DateTimeOffset(DateTime.Now.ToUniversalTime()); });
 
         // Datetime.Now lambda, which can be overided to permit unit testing
-        public static Func<DateTime> DateTimeNow { get; set; } = (() => DateTime.Now);
+        public static Func<DateTimeOffset> DateTimeNow { get; set; } = (() => { return new DateTimeOffset(DateTime.Now.ToUniversalTime()); });
 
         /// <summary>
         /// List of the field that should be ingored when comparing two entity version to determine if the entity has been modified

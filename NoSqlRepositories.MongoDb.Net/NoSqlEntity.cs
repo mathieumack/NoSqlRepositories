@@ -32,7 +32,7 @@ namespace NoSqlRepositories.MongoDb
         /// <summary>
         /// Creation date of the object in the repository
         /// </summary>
-        public DateTime SystemCreationDate
+        public DateTimeOffset SystemCreationDate
         {
             get
             {
@@ -47,7 +47,7 @@ namespace NoSqlRepositories.MongoDb
         /// <summary>
         /// Last update date of the object in the repository
         /// </summary>
-        public DateTime SystemLastUpdateDate
+        public DateTimeOffset SystemLastUpdateDate
         {
             get
             {

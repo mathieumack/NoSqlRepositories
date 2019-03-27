@@ -15,12 +15,12 @@ namespace NoSqlRepositories.Core
         /// <summary>
         /// Creation date of the object in the repository
         /// </summary>
-        DateTime SystemCreationDate { get; set; }
+        DateTimeOffset SystemCreationDate { get; set; }
 
         /// <summary>
         /// Last update date of the object in the repository
         /// </summary>
-        DateTime SystemLastUpdateDate { get; set; }
+        DateTimeOffset SystemLastUpdateDate { get; set; }
 
         /// <summary>
         /// Logical delete status

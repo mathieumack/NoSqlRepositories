@@ -14,12 +14,12 @@ namespace NoSqlRepositories.Test.Shared.Entities
         /// <summary>
         /// Creation date of the object in the Viewer repository
         /// </summary>
-        public DateTime SystemCreationDate { get; set; }
+        public DateTimeOffset SystemCreationDate { get; set; }
 
         /// <summary>
         /// Last update date of the object in the Viewer repository
         /// </summary>
-        public DateTime SystemLastUpdateDate { get; set; }
+        public DateTimeOffset SystemLastUpdateDate { get; set; }
 
         /// <summary>
         /// Logical delete status
@@ -27,7 +27,7 @@ namespace NoSqlRepositories.Test.Shared.Entities
         public bool Deleted { get; set; }
 
         public string Name { get; set; }
-        public DateTime Birthday { get; set; }
+        public DateTimeOffset Birthday { get; set; }
         public float PoidsFloat { get; set; }
         public double PoidsDouble { get; set; }
         public bool IsAMan { get; set; }

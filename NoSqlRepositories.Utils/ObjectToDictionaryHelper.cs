@@ -22,6 +22,16 @@ namespace NoSqlRepositories.Utils
             return source.ToDictionary<object>();
         }
 
+        public static IList<string> ListOfFields<T>()
+        {
+            var result = new List<string>();
+            foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(typeof(T)))
+            {
+                result.Add(property.Name);
+            }
+            return result;
+        }
+
         public static IDictionary<string, T> ToDictionary<T>(this object source)
         {
             if (source == null) ThrowExceptionWhenSourceArgumentIsNull();

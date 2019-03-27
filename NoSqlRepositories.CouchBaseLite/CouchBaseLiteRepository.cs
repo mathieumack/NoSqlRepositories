@@ -250,7 +250,7 @@ namespace NoSqlRepositories.CouchBaseLite
                         case InsertMode.error_if_key_exists:
                             throw new DupplicateKeyNoSQLException();
                         case InsertMode.erase_existing:
-                            createdDate = document.GetDate("SystemCreationDate").Date;
+                            createdDate = document.GetDate("SystemCreationDate");
                             database.Delete(document);
                             break;
                         case InsertMode.do_nothing_if_key_exists:
@@ -266,7 +266,8 @@ namespace NoSqlRepositories.CouchBaseLite
             
             nosqlEntity.SystemCreationDate = createdDate;
             nosqlEntity.SystemLastUpdateDate = updateddate;
-            
+            nosqlEntity.Id = nosqlEntity.Document.MutableDocument.Id;
+
             database.Save(nosqlEntity.Document.MutableDocument);
 
             nosqlEntity.Id = nosqlEntity.Document.MutableDocument.Id;
