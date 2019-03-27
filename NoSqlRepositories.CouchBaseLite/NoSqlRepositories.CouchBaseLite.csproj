@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NoSqlRepositories.Core\NoSqlRepositories.Core.csproj" />
-    <ProjectReference Include="..\NoSqlRepositories.Utils\NoSqlRepositories.Utils.csproj" />
   </ItemGroup>
 
 </Project>

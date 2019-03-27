@@ -9,7 +9,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using NoSqlRepositories.Core.Queries;
 using Couchbase.Lite.Query;
-using NoSqlRepositories.Utils;
 using Newtonsoft.Json.Linq;
 
 namespace NoSqlRepositories.CouchBaseLite

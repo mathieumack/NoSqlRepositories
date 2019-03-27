@@ -27,8 +27,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoSqlRepositories.CouchBase
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoSqlRepositories.CouchbaseLite.UnitTest", "NoSqlRepositories.CouchbaseLite.UnitTest\NoSqlRepositories.CouchbaseLite.UnitTest.csproj", "{BEE9D23D-AFC3-4109-A370-EB04DE1F0BA7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoSqlRepositories.Utils", "NoSqlRepositories.Utils\NoSqlRepositories.Utils.csproj", "{4BB329AE-77AA-4CE6-AA6F-332EF60E989E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,10 +65,6 @@ Global
 		{BEE9D23D-AFC3-4109-A370-EB04DE1F0BA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BEE9D23D-AFC3-4109-A370-EB04DE1F0BA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BEE9D23D-AFC3-4109-A370-EB04DE1F0BA7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4BB329AE-77AA-4CE6-AA6F-332EF60E989E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4BB329AE-77AA-4CE6-AA6F-332EF60E989E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4BB329AE-77AA-4CE6-AA6F-332EF60E989E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4BB329AE-77AA-4CE6-AA6F-332EF60E989E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -85,7 +79,6 @@ Global
 		{FBF7A598-5F58-479F-AA8E-C53712B98AF0} = {C66EA697-7C85-4820-9348-D07C25EE1EE5}
 		{752BE308-DCC0-4582-8D73-7B7E003A11EA} = {9582B178-8088-4D93-AB4E-B3AA60D90DB8}
 		{BEE9D23D-AFC3-4109-A370-EB04DE1F0BA7} = {C66EA697-7C85-4820-9348-D07C25EE1EE5}
-		{4BB329AE-77AA-4CE6-AA6F-332EF60E989E} = {9E9FD058-38C5-4CB9-901B-A66AF547E802}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B9D3F0E7-DAB9-4DD7-98C3-55ADD4015978}
