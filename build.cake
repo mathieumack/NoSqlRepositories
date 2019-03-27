@@ -3,7 +3,7 @@
 
 #addin "nuget:?package=Cake.Figlet"
 
-var sln = new FilePath("./NoSqlRepositoriessln");
+var sln = new FilePath("./NoSqlRepositories.sln");
 var outputDir = new DirectoryPath("./artifacts");
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
