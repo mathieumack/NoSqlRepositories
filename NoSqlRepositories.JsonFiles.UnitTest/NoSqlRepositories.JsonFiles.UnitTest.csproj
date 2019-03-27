@@ -66,9 +66,9 @@
       <Project>{A874E81B-5C5C-472C-9ECC-AA5B02840BBC}</Project>
       <Name>NoSqlRepositories.JsonFiles</Name>
     </ProjectReference>
-    <ProjectReference Include="..\NoSqlRepositories.Tests.Shared\NoSqlRepositories.Tests.Shared.csproj">
+    <ProjectReference Include="..\NoSqlRepositories.Shared.UnitTest\NoSqlRepositories.Shared.UnitTest.csproj">
       <Project>{220B2F71-E18B-4530-8E59-1E3B694A50AE}</Project>
-      <Name>NoSqlRepositories.Tests.Shared</Name>
+      <Name>NoSqlRepositories.Shared.UnitTest</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>
