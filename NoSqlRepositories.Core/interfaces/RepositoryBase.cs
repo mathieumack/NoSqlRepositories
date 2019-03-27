@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using NoSqlRepositories.Core.interfaces;
 using NoSqlRepositories.Core.Queries;
 
 namespace NoSqlRepositories.Core
@@ -44,20 +43,14 @@ namespace NoSqlRepositories.Core
 
         public abstract bool Exist(string id);
 
-        public abstract IEnumerable<INoSqlEntity<T>> GetAll();
+        public abstract IEnumerable<T> GetAll();
 
         public abstract Stream GetAttachment(string id, string attachmentName);
 
         public abstract IEnumerable<string> GetAttachmentNames(string id);
 
-        public abstract INoSqlEntity<T> GetById(string id);
-
-        public abstract INoSqlEntity<T> CreateNewDocument(T entity);
-
-        public abstract INoSqlEntity<T> CreateNewDocument();
-
-        public abstract INoSqlEntity<T> CreateNewDocument(string id);
-
+        public abstract T GetById(string id);
+        
         /// <summary>
         /// Check if the connection is opened.
         /// Generate a InvalidOperationException if the connection if not opened
@@ -99,23 +92,23 @@ namespace NoSqlRepositories.Core
 
         public abstract void InitCollection(IList<string> indexFieldSelectors);
 
-        public BulkInsertResult<string> InsertMany(IEnumerable<INoSqlEntity<T>> entities)
+        public BulkInsertResult<string> InsertMany(IEnumerable<T> entities)
         {
             CheckOpenedConnection();
 
             return InsertMany(entities, InsertMode.db_implementation);
         }
 
-        public abstract BulkInsertResult<string> InsertMany(IEnumerable<INoSqlEntity<T>> entities, InsertMode insertMode);
+        public abstract BulkInsertResult<string> InsertMany(IEnumerable<T> entities, InsertMode insertMode);
 
-        public InsertResult InsertOne(INoSqlEntity<T> entity)
+        public InsertResult InsertOne(T entity)
         {
             CheckOpenedConnection();
 
             return InsertOne(entity, InsertMode.error_if_key_exists);
         }
 
-        public abstract InsertResult InsertOne(INoSqlEntity<T> entity, InsertMode insertMode);
+        public abstract InsertResult InsertOne(T entity, InsertMode insertMode);
 
         public abstract void RemoveAttachment(string id, string attachmentName);
 
@@ -123,18 +116,18 @@ namespace NoSqlRepositories.Core
 
         public abstract long TruncateCollection();
 
-        public abstract INoSqlEntity<T> TryGetById(string id);
+        public abstract T TryGetById(string id);
 
-        public abstract IEnumerable<INoSqlEntity<T>> GetByIds(IList<string> ids);
+        public abstract IEnumerable<T> GetByIds(IList<string> ids);
 
-        public UpdateResult Update(INoSqlEntity<T> entity)
+        public UpdateResult Update(T entity)
         {
             CheckOpenedConnection();
 
             return Update(entity, UpdateMode.db_implementation);
         }
 
-        public abstract UpdateResult Update(INoSqlEntity<T> entity, UpdateMode updateMode);
+        public abstract UpdateResult Update(T entity, UpdateMode updateMode);
 
         public abstract void UseDatabase(string dbName);
 
@@ -148,6 +141,6 @@ namespace NoSqlRepositories.Core
 
         public abstract int Count();
 
-        //public abstract IEnumerable<INoSqlEntity<T>> DoQuery(NoSqlQuery<INoSqlEntity<T>> queryFilters);
+        //public abstract IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters);
     }
 }

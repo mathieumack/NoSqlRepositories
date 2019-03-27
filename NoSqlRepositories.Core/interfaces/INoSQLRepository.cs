@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using NoSqlRepositories.Core.interfaces;
-using NoSqlRepositories.Core.Queries;
 
 namespace NoSqlRepositories.Core
 {
@@ -19,21 +17,21 @@ namespace NoSqlRepositories.Core
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        INoSqlEntity<T> GetById(string id);
+        T GetById(string id);
 
         /// <summary>
         /// Get the entity corresponding to the provided id. Return null if not found
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        INoSqlEntity<T> TryGetById(string id);
+        T TryGetById(string id);
 
         /// <summary>
         /// Get the entities that match given ids. The list is empty if no entities are found
         /// </summary>
         /// <param name="ids"></param>
         /// <returns></returns>
-        IEnumerable<INoSqlEntity<T>> GetByIds(IList<string> ids);
+        IEnumerable<T> GetByIds(IList<string> ids);
 
         /// <summary>
         /// Insert one entity
@@ -42,7 +40,7 @@ namespace NoSqlRepositories.Core
         /// <param name="entity"></param>
         /// <param name="insertMode"></param>
         /// <returns></returns>
-        InsertResult InsertOne(INoSqlEntity<T> entity);
+        InsertResult InsertOne(T entity);
 
         /// <summary>
         /// Insert one entity with the specified insert mode
@@ -50,7 +48,7 @@ namespace NoSqlRepositories.Core
         /// <param name="entity"></param>
         /// <param name="insertMode"></param>
         /// <returns></returns>
-        InsertResult InsertOne(INoSqlEntity<T> entity, InsertMode insertMode);
+        InsertResult InsertOne(T entity, InsertMode insertMode);
 
         /// <summary>
         /// Insert a set of entities
@@ -59,7 +57,7 @@ namespace NoSqlRepositories.Core
         /// <param name="entities"></param>
         /// <param name="insertMode"></param>
         /// <returns></returns>
-        BulkInsertResult<string> InsertMany(IEnumerable<INoSqlEntity<T>> entities);
+        BulkInsertResult<string> InsertMany(IEnumerable<T> entities);
 
         /// <summary>
         /// Insert a set of entities using the specified insert mode
@@ -67,14 +65,14 @@ namespace NoSqlRepositories.Core
         /// <param name="entities"></param>
         /// <param name="insertMode"></param>
         /// <returns></returns>
-        BulkInsertResult<string> InsertMany(IEnumerable<INoSqlEntity<T>> entities, InsertMode insertMode);
+        BulkInsertResult<string> InsertMany(IEnumerable<T> entities, InsertMode insertMode);
 
         /// <summary>
         /// Create a new query on database.
         /// </summary>
         /// <returns></returns>
         // TODO : Reactivate queries
-        //IEnumerable<INoSqlEntity<T>> DoQuery(NoSqlQuery<INoSqlEntity<T>> queryFilters);
+        //IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters);
 
         /// <summary>
         /// Test if the entity key exists in the repository
@@ -101,14 +99,14 @@ namespace NoSqlRepositories.Core
         /// <param name="entity">The new version of the entity</param>
         /// <param name="isUpsert">Behavor of the update</param>
         /// <returns>Return number of affected entities</returns>
-        UpdateResult Update(INoSqlEntity<T> entity, UpdateMode updateMode);
+        UpdateResult Update(T entity, UpdateMode updateMode);
 
         /// <summary>
         /// Update an entity using the default db implementation
         /// </summary>
         /// <param name="entity">The new version of the entity</param>
         /// <returns>Return number of affected entities</returns>
-        UpdateResult Update(INoSqlEntity<T> entity);
+        UpdateResult Update(T entity);
 
         /// <summary>
         /// Delete an entity
@@ -152,29 +150,7 @@ namespace NoSqlRepositories.Core
         /// <param name="id">Id of entity</param>
         /// <param name="attachmentName">Name of the file to attach. Unique identier of a file inside an entity.</param>
         void RemoveAttachment(string id, string attachmentName);
-
-        /// <summary>
-        /// Create a new memory document.
-        /// The created document is not inserted in database
-        /// </summary>
-        /// <returns></returns>
-        INoSqlEntity<T> CreateNewDocument(T entity);
-
-        /// <summary>
-        /// Create a new memory document.
-        /// The created document is not inserted in database
-        /// </summary>
-        /// <returns></returns>
-        INoSqlEntity<T> CreateNewDocument();
-
-        /// <summary>
-        /// Create a new memory document.
-        /// The created document is not inserted in database
-        /// </summary>
-        /// <param name="id">specified id</param>
-        /// <returns></returns>
-        INoSqlEntity<T> CreateNewDocument(string id);
-
+        
         /// <summary>
         /// Get one attachment of a document
         /// </summary>
@@ -200,7 +176,7 @@ namespace NoSqlRepositories.Core
         /// Return all entities of the repository
         /// </summary>
         /// <returns></returns>
-        IEnumerable<INoSqlEntity<T>> GetAll();
+        IEnumerable<T> GetAll();
 
         /// <summary>
         /// Get entities Ids that match de field = List of Value condition

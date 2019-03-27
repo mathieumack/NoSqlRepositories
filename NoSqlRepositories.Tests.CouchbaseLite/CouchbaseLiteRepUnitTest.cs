@@ -29,10 +29,10 @@ namespace NoSqlRepositories.Tests.CouchbaseLite
 
             var entityRepo = new CouchBaseLiteRepository<TestEntity>(NoSQLCoreUnitTests.testContext.DeploymentDirectory, dbName);
             var entityRepo2 = new CouchBaseLiteRepository<TestEntity>(NoSQLCoreUnitTests.testContext.DeploymentDirectory, dbName);
-            var collectionEntityRepo = new CouchBaseLiteRepository<CollectionTest>(NoSQLCoreUnitTests.testContext.DeploymentDirectory, dbName);
+            //var collectionEntityRepo = new CouchBaseLiteRepository<CollectionTest>(NoSQLCoreUnitTests.testContext.DeploymentDirectory, dbName);
             var entityExtraEltRepo = new CouchBaseLiteRepository<TestExtraEltEntity>(NoSQLCoreUnitTests.testContext.DeploymentDirectory, dbName);
             
-            test = new NoSQLCoreUnitTests(entityRepo, entityRepo2, entityExtraEltRepo, collectionEntityRepo,
+            test = new NoSQLCoreUnitTests(entityRepo, entityRepo2, entityExtraEltRepo,
                 NoSQLCoreUnitTests.testContext.DeploymentDirectory, dbName);
         }
 
@@ -78,19 +78,13 @@ namespace NoSqlRepositories.Tests.CouchbaseLite
             test.TimeZoneTest();
         }
 
-        // Polymorphisme is not correctly managed yet
-        //[TestMethod]
-        //public void CouchbaseLite_InsertExtraEltEntity()
-        //{
-        //    test.InsertExtraEltEntity();
-        //}
-
-        //[TestMethod]
-        // Limitation : couchtest repository doesn't handle polymorphism in attribute's entity of type List, Dictionary...
-        public void CouchbaseLite_Polymorphism()
+        //Polymorphisme is not correctly managed yet
+        [TestMethod]
+        public void CouchbaseLite_InsertExtraEltEntity()
         {
-            test.Polymorphism();
+            test.InsertExtraEltEntity();
         }
+
 
         [TestMethod]
         public void CouchbaseLite_Attachments()

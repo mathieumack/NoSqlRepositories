@@ -28,7 +28,6 @@ namespace NoSqlRepositories.Tests.MongoDb
         private MongoDbRepository<TestEntity> entityRepo;
         private MongoDbRepository<TestEntity> entityRepo2;
         private MongoDbRepository<TestExtraEltEntity> entityExtraEltRepo;
-        private MongoDbRepository<CollectionTest> collectionEntityRepo;
 
         [ClassInitialize()]
         public static void ClassInitialize(TestContext testContext)
@@ -36,7 +35,6 @@ namespace NoSqlRepositories.Tests.MongoDb
             NoSQLCoreUnitTests.ClassInitialize(testContext);
 
             RegisterMongoMapping<TestEntity>();
-            RegisterMongoMapping<CollectionTest>();
         }
 
         [TestInitialize]
@@ -44,14 +42,13 @@ namespace NoSqlRepositories.Tests.MongoDb
         {
             entityRepo = new MongoDbRepository<TestEntity>(ConfigurationManager.AppSettings["mongoDB:ServiceUri"], ConfigurationManager.AppSettings["mongoDB:DatabaseName"]);
             entityRepo2 = new MongoDbRepository<TestEntity>(ConfigurationManager.AppSettings["mongoDB:ServiceUri"], ConfigurationManager.AppSettings["mongoDB:DatabaseName"]);
-            collectionEntityRepo = new MongoDbRepository<CollectionTest>(ConfigurationManager.AppSettings["mongoDB:ServiceUri"], ConfigurationManager.AppSettings["mongoDB:DatabaseName"]);
             entityExtraEltRepo = new MongoDbRepository<TestExtraEltEntity>(ConfigurationManager.AppSettings["mongoDB:ServiceUri"], ConfigurationManager.AppSettings["mongoDB:DatabaseName"]);
 
             // Define mapping for polymorphism
             //entityRepo.PolymorphicTypes["TestExtraEltEntity"] = typeof(TestExtraEltEntity);
             //entityRepo2.PolymorphicTypes["TestExtraEltEntity"] = typeof(TestExtraEltEntity);
 
-            test = new NoSQLCoreUnitTests(entityRepo, entityRepo2, entityExtraEltRepo, collectionEntityRepo,
+            test = new NoSQLCoreUnitTests(entityRepo, entityRepo2, entityExtraEltRepo,
                 NoSQLCoreUnitTests.testContext.DeploymentDirectory, ConfigurationManager.AppSettings["mongoDB:DatabaseName"]);
         }
 
@@ -81,13 +78,6 @@ namespace NoSqlRepositories.Tests.MongoDb
         public void MongoDb_InsertExtraEltEntity()
         {
             test.InsertExtraEltEntity();
-        }
-
-        //[TestMethod]
-        // Limitation : couchtest repository doesn't handle polymorphism in attribute's entity of type List, Dictionary...
-        public void MongoDb_Polymorphism()
-        {
-            test.Polymorphism();
         }
 
         [TestMethod]

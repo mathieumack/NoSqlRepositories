@@ -1,5 +1,4 @@
-﻿using NoSqlRepositories.Core.interfaces;
-using System;
+﻿using System;
 
 namespace NoSqlRepositories.Core.Queries
 {

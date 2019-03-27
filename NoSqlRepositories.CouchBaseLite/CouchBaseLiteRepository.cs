@@ -9,7 +9,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using NoSqlRepositories.Core.Queries;
 using Couchbase.Lite.Query;
-using NoSqlRepositories.Core.interfaces;
+using NoSqlRepositories.Utils;
+using Newtonsoft.Json.Linq;
 
 namespace NoSqlRepositories.CouchBaseLite
 {
@@ -114,36 +115,79 @@ namespace NoSqlRepositories.CouchBaseLite
             //database.SetDocumentExpiration(id, dateLimit);
         }
 
-        public override INoSqlEntity<T> GetById(string id)
+        public override T GetById(string id)
         {
             CheckOpenedConnection();
-                       
-            var documentObjet = this.database.GetDocument(id);
 
-            if (documentObjet == null)
-                throw new KeyNotFoundNoSQLException();
+            using (var documentObjet = this.database.GetDocument(id))
+            {
+                if (documentObjet == null)
+                    throw new KeyNotFoundNoSQLException();
 
-            var result = new NoSqlEntity<T>(documentObjet);
+                var result = GetEntityDomain(documentObjet);
 
-            if (result.GetBoolean("Deleted"))
-                throw new KeyNotFoundNoSQLException();
+                if (result.Deleted)
+                    throw new KeyNotFoundNoSQLException();
 
-            return result;
+                return result;
+            }
         }
 
-        /// <summary>
-        /// Get the entities that match given ids. The list is empty if no entities were found
-        /// </summary>
-        /// <param name="ids"></param>
-        /// <returns></returns>
-        public override IEnumerable<INoSqlEntity<T>> GetByIds(IList<string> ids)
+        private T GetEntityDomain(Document document)
+        {
+            var simpleDictionary = document.ToDictionary();
+            var fields = ObjectToDictionaryHelper.ListOfFields<T>();
+            var objectFields = new Dictionary<string, object>();
+            foreach (var field in fields)
+            {
+                if (simpleDictionary.ContainsKey(field))
+                    objectFields.Add(field, simpleDictionary[field]);
+            }
+            JObject obj = JObject.FromObject(objectFields);
+            return obj.ToObject<T>();
+        }
+
+        private void SetDocument(T entity, MutableDocument mutableDocument)
+        {
+            var properties = ObjectToDictionaryHelper.ToDictionary(entity);
+            foreach (var prop in properties)
+            {
+                //mutableDocument.SetValue(prop.Key, prop.Value);
+                if (prop.Value is int)
+                    mutableDocument.SetInt(prop.Key, (int)prop.Value);
+                else if (prop.Value is long)
+                    mutableDocument.SetLong(prop.Key, (long)prop.Value);
+                else if (prop.Value is bool)
+                    mutableDocument.SetBoolean(prop.Key, (bool)prop.Value);
+                else if (prop.Value is DateTimeOffset)
+                {
+                    if ((DateTimeOffset)prop.Value != default(DateTimeOffset))
+                        mutableDocument.SetDate(prop.Key, (DateTimeOffset)prop.Value);
+                }
+                else if (prop.Value is double)
+                    mutableDocument.SetDouble(prop.Key, (double)prop.Value);
+                else if (prop.Value is float)
+                    mutableDocument.SetFloat(prop.Key, (float)prop.Value);
+                else if (prop.Value is string)
+                    mutableDocument.SetString(prop.Key, (string)prop.Value);
+                else
+                    mutableDocument.SetValue(prop.Key, prop.Value);
+            }
+        }
+
+            /// <summary>
+            /// Get the entities that match given ids. The list is empty if no entities were found
+            /// </summary>
+            /// <param name="ids"></param>
+            /// <returns></returns>
+        public override IEnumerable<T> GetByIds(IList<string> ids)
         {
             CheckOpenedConnection();
 
             return ids.Select(e => TryGetById(e)).Where(e => e != null);
         }
 
-        public override INoSqlEntity<T> TryGetById(string id)
+        public override T TryGetById(string id)
         {
             // Refactor to optimize this implementation
             try
@@ -164,7 +208,7 @@ namespace NoSqlRepositories.CouchBaseLite
             return documentObjet != null;
         }
 
-        public override BulkInsertResult<string> InsertMany(IEnumerable<INoSqlEntity<T>> entities, InsertMode insertMode)
+        public override BulkInsertResult<string> InsertMany(IEnumerable<T> entities, InsertMode insertMode)
         {
             CheckOpenedConnection();
 
@@ -183,62 +227,16 @@ namespace NoSqlRepositories.CouchBaseLite
             return insertResult;
         }
 
-        /// <summary>
-        /// Create a new empty document
-        /// The document is no inserted in database
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
-        public override INoSqlEntity<T> CreateNewDocument(T entity)
-        {
-            MutableDocument mutableDocument = null;
-            if (string.IsNullOrWhiteSpace(entity.Id))
-                mutableDocument = new MutableDocument();
-            else
-                mutableDocument = new MutableDocument(entity.Id);
-
-            var noSqlEntity = new NoSqlEntity<T>(this.CollectionName, mutableDocument);
-            noSqlEntity.SetEntityDomain(entity);
-            return noSqlEntity;
-        }
-
-        /// <summary>
-        /// Create a new empty document
-        /// The document is no inserted in database
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="insertMode"></param>
-        /// <returns></returns>
-        public override INoSqlEntity<T> CreateNewDocument(string id)
-        {
-            var entity = new NoSqlEntity<T>(this.CollectionName, new MutableDocument(cblGeneratedIdPrefix + id));
-            return entity;
-        }
-
-        /// <summary>
-        /// Create a new empty document
-        /// The document is no inserted in database
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="insertMode"></param>
-        /// <returns></returns>
-        public override INoSqlEntity<T> CreateNewDocument()
-        {
-            return new NoSqlEntity<T>(this.CollectionName, new MutableDocument());
-        }
-
-        public override InsertResult InsertOne(INoSqlEntity<T> entity, InsertMode insertMode)
+        public override InsertResult InsertOne(T entity, InsertMode insertMode)
         {
             CheckOpenedConnection();
-
-            var nosqlEntity = entity as NoSqlEntity<T>;
-            if (nosqlEntity == null || nosqlEntity.CollectionName != this.CollectionName)
-                throw new InvalidOperationException("the entity was created from an other repository");
 
             var createdDate = NoSQLRepoHelper.DateTimeUtcNow();
             var updateddate = NoSQLRepoHelper.DateTimeUtcNow();
 
-            if (!string.IsNullOrEmpty(nosqlEntity.Id))
+            MutableDocument mutabledocument = null;
+
+            if (!string.IsNullOrEmpty(entity.Id))
             {
                 // Get an existing document or return a new one if not exists
                 var document = database.GetDocument(entity.Id);
@@ -259,40 +257,51 @@ namespace NoSqlRepositories.CouchBaseLite
                             break;
                     }
                 }
+
+                mutabledocument = new MutableDocument(entity.Id);
             }
+            else
+                mutabledocument = new MutableDocument();
 
             // Normally, at this point, the document is deleted from database or an exception occured.
             // We can insert the new document :
-            
-            nosqlEntity.SystemCreationDate = createdDate;
-            nosqlEntity.SystemLastUpdateDate = updateddate;
-            nosqlEntity.Id = nosqlEntity.Document.MutableDocument.Id;
+            mutabledocument.SetString("collection", CollectionName);
 
-            database.Save(nosqlEntity.Document.MutableDocument);
+            entity.SystemCreationDate = createdDate;
+            entity.SystemLastUpdateDate = updateddate;
+            entity.Id = mutabledocument.Id;
 
-            nosqlEntity.Id = nosqlEntity.Document.MutableDocument.Id;
+            SetDocument(entity, mutabledocument);
+
+            database.Save(mutabledocument);
 
             return InsertResult.inserted;
         }
 
-        public override UpdateResult Update(INoSqlEntity<T> entity, UpdateMode updateMode)
+        public override UpdateResult Update(T entity, UpdateMode updateMode)
         {
             CheckOpenedConnection();
-
-            var nosqlEntity = entity as NoSqlEntity<T>;
-            if (nosqlEntity == null || nosqlEntity.CollectionName != this.CollectionName)
-                throw new InvalidOperationException("the entity was created from an other repository");
 
             if (updateMode != UpdateMode.db_implementation)
                 throw new NotImplementedException();
 
-            // Update update date
-            var date = NoSQLRepoHelper.DateTimeUtcNow();
-            nosqlEntity.SetDate("SystemLastUpdateDate", date);
+            using (var document = database.GetDocument(entity.Id))
+            {
+                if (document == null)
+                    throw new KeyNotFoundNoSQLException();
 
+                using (var mutabledocument = document.ToMutable())
+                {
+                    // Update update date
+                    var date = NoSQLRepoHelper.DateTimeUtcNow();
+                    entity.SystemLastUpdateDate = date;
 
-            database.Save(nosqlEntity.Document.MutableDocument);
-            return UpdateResult.updated;
+                    SetDocument(entity, mutabledocument);
+
+                    database.Save(mutabledocument);
+                    return UpdateResult.updated;
+                }
+            }
         }
 
         public override void UseDatabase(string dbName)
@@ -433,13 +442,11 @@ namespace NoSqlRepositories.CouchBaseLite
                 var blob = existingEntity.GetBlob(attachmentName);
                 if (blob == null)
                     throw new AttachmentNotFoundNoSQLException(string.Format("Attachement {0} not found on Entity '{1}'", attachmentName, id));
-
-                // TODO : Check how to remove blob from document !!
+                
                 using (var mutableDocument = existingEntity.ToMutable())
                 {
-                    //mutableDocument.blo
-                    //database.Delete()
-                    //newRevision.Save();
+                    mutableDocument.SetBlob(attachmentName, null);
+                    database.Save(mutableDocument);
                 }
             }
         }
@@ -489,7 +496,7 @@ namespace NoSqlRepositories.CouchBaseLite
 
         #endregion
 
-        public IEnumerable<INoSqlEntity<T>> DoQuery(NoSqlQuery<T> queryFilters)
+        public IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters)
         {
             // TODO : Review this method. Change documents query results ?
             CheckOpenedConnection();
@@ -516,10 +523,10 @@ namespace NoSqlRepositories.CouchBaseLite
                 }
             }
 
-            return new List<INoSqlEntity<T>>();
+            return new List<T>();
         }
 
-        public override IEnumerable<INoSqlEntity<T>> GetAll()
+        public override IEnumerable<T> GetAll()
         {
             CheckOpenedConnection();
 

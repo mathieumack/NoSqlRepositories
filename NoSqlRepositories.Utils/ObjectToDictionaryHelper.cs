@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -32,18 +33,28 @@ namespace NoSqlRepositories.Utils
             return result;
         }
 
-        public static IDictionary<string, T> ToDictionary<T>(this object source)
+        public static IDictionary<string, object> ToDictionary<T>(this object source)
         {
             if (source == null) ThrowExceptionWhenSourceArgumentIsNull();
 
-            var dictionary = new Dictionary<string, T>();
+            var dictionary = new Dictionary<string, object>();
             foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(source))
             {
                 object value = property.GetValue(source);
-                if (IsOfType<T>(value))
-                {
-                    dictionary.Add(property.Name, (T)value);
-                }
+                // TODO : Add management of Extra elements in a next release
+                //if(property.Attributes.OfType<JsonExtensionDataAttribute>().Any() && value is Dictionary<string, object>)
+                //{
+                //    var dict = value as Dictionary<string, object>;
+                //    foreach(var key in dict.Keys)
+                //    {
+                //        if(!dictionary.ContainsKey(key))
+                //            dictionary.Add(key, dict[key]);
+                //    }
+                //}
+                //else
+                //{
+                    dictionary.Add(property.Name, value);
+                //}
             }
             return dictionary;
         }

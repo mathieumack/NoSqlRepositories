@@ -12,7 +12,6 @@ using NoSqlRepositories.Core.NoSQLException;
 using NoSqlRepositories.Test.Shared.Extensions;
 using System.Threading;
 using NoSqlRepositories.Core.Queries;
-using NoSqlRepositories.Core.interfaces;
 
 namespace NoSqlRepositories.Test.Shared
 {
@@ -26,7 +25,6 @@ namespace NoSqlRepositories.Test.Shared
         protected INoSQLRepository<TestEntity> entityRepo;
         protected INoSQLRepository<TestEntity> entityRepo2;
         protected INoSQLRepository<TestExtraEltEntity> entityExtraEltRepo;
-        protected INoSQLRepository<CollectionTest> collectionEntityRepo;
 
         public static TestContext testContext;
 
@@ -35,18 +33,15 @@ namespace NoSqlRepositories.Test.Shared
         public NoSQLCoreUnitTests(INoSQLRepository<TestEntity> entityRepo,
                                     INoSQLRepository<TestEntity> entityRepo2,
                                     INoSQLRepository<TestExtraEltEntity> entityExtraEltRepo,
-                                    INoSQLRepository<CollectionTest> collectionEntityRepo,
                                     string baseFilePath,
                                     string dbName)
         {
             this.entityRepo = entityRepo;
             this.entityRepo2 = entityRepo2;
             this.entityExtraEltRepo = entityExtraEltRepo;
-            this.collectionEntityRepo = collectionEntityRepo;
 
             this.entityRepo.TruncateCollection();
             this.entityExtraEltRepo.TruncateCollection();
-            this.collectionEntityRepo.TruncateCollection();
 
             this.baseFilePath = baseFilePath;
             this.dbName = dbName;
@@ -56,7 +51,7 @@ namespace NoSqlRepositories.Test.Shared
         {
             // Overide datetime.now function
             var now = new DateTime(2016, 01, 01, 0, 0, 0, DateTimeKind.Utc);
-            NoSQLRepoHelper.DateTimeUtcNow = (() => new DateTimeOffset(now));
+            NoSQLRepoHelper.DateTimeUtcNow = (() => now);
 
             NoSQLCoreUnitTests.testContext = testContext;
         }
@@ -73,7 +68,7 @@ namespace NoSqlRepositories.Test.Shared
             entityRepo.TruncateCollection();
 
             var entity1 = TestHelper.GetEntity1();
-            entityRepo.InsertOne(entityRepo.CreateNewDocument(entity1));
+            entityRepo.InsertOne(entity1);
             Assert.IsFalse(string.IsNullOrEmpty(entity1.Id), "DocId has not been set during insert");
 
             var itemsInDatabase = entityRepo.GetAll();
@@ -100,11 +95,12 @@ namespace NoSqlRepositories.Test.Shared
             entityRepo.TruncateCollection();
 
             var entity1 = TestHelper.GetEntity1();
-            entityRepo.InsertOne(entityRepo.CreateNewDocument(entity1));
+            entityRepo.InsertOne(entity1);
             Assert.IsFalse(string.IsNullOrEmpty(entity1.Id), "DocId has not been set during insert");
 
             var itemsInDatabase = entityRepo.GetAll();
             var itemsInDatabaseCount = itemsInDatabase.Count();
+
             // We try to delete the item :
             entityRepo.Delete(entity1.Id, false);
 
@@ -112,8 +108,9 @@ namespace NoSqlRepositories.Test.Shared
             entityRepo.CompactDatabase();
 
             var itemsInDatabaseAfterCompact = entityRepo.GetAll();
+            var itemsInDatabaseAfterCompactCount = itemsInDatabaseAfterCompact.Count();
 
-            Assert.IsTrue(itemsInDatabaseAfterCompact.Count() == itemsInDatabaseCount - 1, "entityRepo has not been physically deleted after compact");
+            Assert.IsTrue(itemsInDatabaseAfterCompactCount == itemsInDatabaseCount - 1, "entityRepo has not been physically deleted after compact");
         }
 
         public void Count()
@@ -122,79 +119,69 @@ namespace NoSqlRepositories.Test.Shared
             Assert.AreEqual(0, entityRepo.Count(), "Repo should be empty");
 
             var entity1 = TestHelper.GetEntity1();
-            entityRepo.InsertOne(entityRepo.CreateNewDocument(entity1));
+            entityRepo.InsertOne(entity1);
             Assert.AreEqual(1, entityRepo.Count(), "Repo should contain one element");
 
             var entity2 = TestHelper.GetEntity2();
-            entityRepo.InsertOne(entityRepo2.CreateNewDocument(entity2));
+            entityRepo.InsertOne(entity2);
             Assert.AreEqual(2, entityRepo.Count(), "Repo should contain two elements");
 
             var entity3 = TestHelper.GetEntity3();
             var entity4 = TestHelper.GetEntity4();
-            entityRepo.InsertMany(new List<INoSqlEntity<TestEntity>>(){
-                entityRepo.CreateNewDocument(entity3),
-                entityRepo.CreateNewDocument(entity4)
-            });
+            entityRepo.InsertMany(new List<TestEntity>() { entity3, entity4 });
             Assert.AreEqual(4, entityRepo.Count(), "Repo should contain four elements");
         }
 
-        //public void DoQuery()
-        //{
-        //    entityRepo.TruncateCollection();
+        public void DoQuery()
+        {
+            entityRepo.TruncateCollection();
 
-        //    var entity1 = TestHelper.GetEntity1();
-        //    var entity2 = TestHelper.GetEntity2();
-        //    var entity3 = TestHelper.GetEntity3();
-        //    var entity4 = TestHelper.GetEntity4();
+            var entity1 = TestHelper.GetEntity1();
+            var entity2 = TestHelper.GetEntity2();
+            var entity3 = TestHelper.GetEntity3();
+            var entity4 = TestHelper.GetEntity4();
 
-        //    entityRepo.InsertMany(new List<INoSqlEntity<TestEntity>>()
-        //    {
-        //        entityRepo.CreateNewDocument(entity1),
-        //        entityRepo.CreateNewDocument(entity2),
-        //        entityRepo.CreateNewDocument(entity3),
-        //        entityRepo.CreateNewDocument(entity4)
-        //    });
-            
-        //    // Now we will do some queries :
-        //    var queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(3, 0, null);
-        //    var query = entityRepo.DoQuery(queryOptions);
-        //    Assert.AreEqual(3, query.Count(), "Query should contain three elements");
+            entityRepo.InsertMany(new List<TestEntity>() { entity1, entity2, entity3, entity4 });
 
-        //    // Now we will add a filter method :
-        //    queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(0, 0, (filterItem) =>
-        //    {
-        //        return filterItem.NumberOfChildenInt == 0;
-        //    });
-        //    query = entityRepo.DoQuery(queryOptions);
-        //    Assert.AreEqual(2, query.Count(), "Query should contain two elements");
+            //// Now we will do some queries :
+            //var queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(3, 0, null);
+            //var query = entityRepo.DoQuery(queryOptions);
+            //Assert.AreEqual(3, query.Count(), "Query should contain three elements");
 
-        //    // Now we will add a filter method and skip first results:
-        //    queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(0, 1, (filterItem) =>
-        //    {
-        //        return filterItem.NumberOfChildenInt == 0;
-        //    });
-        //    query = entityRepo.DoQuery(queryOptions);
-        //    Assert.AreEqual(1, query.Count(), "Query should contain two elements");
-        //}
+            //// Now we will add a filter method :
+            //queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(0, 0, (filterItem) =>
+            //{
+            //    return filterItem.NumberOfChildenInt == 0;
+            //});
+            //query = entityRepo.DoQuery(queryOptions);
+            //Assert.AreEqual(2, query.Count(), "Query should contain two elements");
+
+            //// Now we will add a filter method and skip first results:
+            //queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(0, 1, (filterItem) =>
+            //{
+            //    return filterItem.NumberOfChildenInt == 0;
+            //});
+            //query = entityRepo.DoQuery(queryOptions);
+            //Assert.AreEqual(1, query.Count(), "Query should contain two elements");
+        }
 
         public virtual void InsertEntity()
         {
             entityRepo.TruncateCollection();
 
             var entity1 = TestHelper.GetEntity1();
-            var noSqlentity1 = entityRepo.CreateNewDocument(entity1);
-            entityRepo.InsertOne(noSqlentity1);
-            Assert.IsFalse(string.IsNullOrEmpty(noSqlentity1.Id), "DocId has not been set during insert");
+            entityRepo.InsertOne(entity1);
+            Assert.IsFalse(string.IsNullOrEmpty(entity1.Id), "DocId has not been set during insert");
 
             var t1 = new DateTime(2016, 01, 01, 0, 0, 0, DateTimeKind.Utc);
             var t2 = new DateTime(2017, 01, 01, 0, 0, 0, DateTimeKind.Utc);
 
-            NoSQLRepoHelper.DateTimeUtcNow = (() => new DateTimeOffset(t1)); // Set the current time to t1
+            NoSQLRepoHelper.DateTimeUtcNow = (() => t1); // Set the current time to t1
 
             Exception e = null;
             try
             {
-                entityRepo.InsertOne(entityRepo.CreateNewDocument(entity1));
+                entityRepo.InsertOne(entity1);
             }
             catch (Exception ex)
             {
@@ -203,41 +190,40 @@ namespace NoSqlRepositories.Test.Shared
 
             Assert.IsInstanceOfType(e, typeof(DupplicateKeyNoSQLException), "InsertOne should raise DupplicateKeyException if id already exists");
 
-            var insertResult = entityRepo.InsertOne(entityRepo.CreateNewDocument(entity1), InsertMode.do_nothing_if_key_exists); // Do Nothing
+            var insertResult = entityRepo.InsertOne(entity1, InsertMode.do_nothing_if_key_exists); // Do Nothing
             Assert.AreEqual(InsertResult.not_affected, insertResult, "Expecting not_affected result");
-            
+
             var entity1_repo = entityRepo.GetById(entity1.Id);
             Assert.IsNotNull(entity1_repo);
-            AssertHelper.AreJsonEqual(entity1, entity1_repo.GetEntityDomain());
+            AssertHelper.AreJsonEqual(entity1, entity1_repo);
             Assert.AreEqual(t1, entity1.SystemCreationDate, "SystemCreationDate should be defined during insert");
             Assert.AreEqual(t1, entity1.SystemLastUpdateDate, "SystemLastUpdateDate should be defined during insert");
 
             // Replace first version
             {
-                NoSQLRepoHelper.DateTimeUtcNow = (() => new DateTimeOffset(t2)); // Set the current time to t2
+                NoSQLRepoHelper.DateTimeUtcNow = (() => t2); // Set the current time to t2
 
                 var entity1V2 = TestHelper.GetEntity1();
                 entity1V2.Id = entity1.Id;
 
                 entity1V2.Name = "Balan2";
-                entityRepo.InsertOne(entityRepo.CreateNewDocument(entity1V2), InsertMode.erase_existing); // Erase
+                entityRepo.InsertOne(entity1V2, InsertMode.erase_existing); // Erase
 
                 var entity1V2_fromRepo = entityRepo.GetById(entity1.Id);
-                var entityv2 = entity1V2_fromRepo.GetEntityDomain();
-                Assert.AreEqual(entityv2.Name, "Balan2", "The insert with erase_existing mode should erase the previous version of the entity");
+                Assert.AreEqual(entity1V2_fromRepo.Name, "Balan2", "The insert with erase_existing mode should erase the previous version of the entity");
                 Assert.AreEqual(t1, entity1V2.SystemCreationDate, "SystemCreationDate should be the date of the erased entity version");
                 Assert.AreEqual(t2, entity1V2.SystemLastUpdateDate, "SystemLastUpdateDate should the date of the update of the entity version");
 
-                AssertHelper.AreJsonEqual(entity1V2, entityv2);
+                AssertHelper.AreJsonEqual(entity1V2, entity1V2_fromRepo);
             }
 
             // Erase while doc not exists
             {
                 //var entity2 = TestHelper.GetEntity2();
-                //entityRepo.InsertOne(entityRepo.CreateNewDocument(entity2), InsertMode.erase_existing); // Insert
+                //entityRepo.InsertOne(entity2, InsertMode.erase_existing); // Insert
                 //var entity2_repo = entityRepo.GetById(entity2.Id);
-                //AssertHelper.AreJsonEqual(entity2, entity2_repo.GetEntityDomain());
-                
+                //AssertHelper.AreJsonEqual(entity2, entity2_repo);
+
                 // ABN: why this modification of unit test ?!
                 // Clone in order to get a new objet of type TestEntity because a cast is not suffisant
                 //var entity2Casted = entity2.CloneToTestEntity();
@@ -250,14 +236,14 @@ namespace NoSqlRepositories.Test.Shared
             entityRepo.TruncateCollection();
 
             var entity1 = TestHelper.GetEntity1();
-            entityRepo.InsertOne(entityRepo.CreateNewDocument(entity1));
+            entityRepo.InsertOne(entity1);
 
             entity1.Name = "NewName";
 
             var entity1_repo = entityRepo.GetById(entity1.Id);
 
             Assert.IsNotNull(entity1_repo);
-            Assert.AreEqual(entity1_repo.GetEntityDomain().Name, "NewName");
+            Assert.AreEqual(entity1_repo.Name, "NewName");
             AssertHelper.AreJsonEqual(entity1, entity1_repo);
         }
 
@@ -271,12 +257,12 @@ namespace NoSqlRepositories.Test.Shared
             var entity1 = TestHelper.GetEntity1();
             entity1.Id = "1";
 
-            var insertResult = entityRepo.InsertOne(entityRepo.CreateNewDocument(entity1));
+            var insertResult = entityRepo.InsertOne(entity1);
             Assert.AreEqual(InsertResult.inserted, insertResult, "Expecting inserted result");
 
             entityRepo.Delete(entity1.Id);
 
-            insertResult = entityRepo.InsertOne(entityRepo.CreateNewDocument(entity1));
+            insertResult = entityRepo.InsertOne(entity1);
             Assert.AreEqual(InsertResult.inserted, insertResult, "Expecting inserted result");
         }
 
@@ -290,12 +276,12 @@ namespace NoSqlRepositories.Test.Shared
             var entity1 = TestHelper.GetEntity1();
             entity1.Id = "1";
 
-            var insertResult = entityRepo.InsertOne(entityRepo.CreateNewDocument(entity1));
+            var insertResult = entityRepo.InsertOne(entity1);
             Assert.AreEqual(InsertResult.inserted, insertResult, "Expecting inserted result");
 
             entityRepo.Delete(entity1.Id, true);
 
-            insertResult = entityRepo.InsertOne(entityRepo.CreateNewDocument(entity1));
+            insertResult = entityRepo.InsertOne(entity1);
             Assert.AreEqual(InsertResult.inserted, insertResult, "Expecting inserted result");
         }
 
@@ -304,15 +290,15 @@ namespace NoSqlRepositories.Test.Shared
             entityExtraEltRepo.TruncateCollection();
 
             var entity = TestHelper.GetEntity2();
-            entityExtraEltRepo.InsertOne(entityExtraEltRepo.CreateNewDocument(entity));
+            entityExtraEltRepo.InsertOne(entity);
             Assert.IsFalse(string.IsNullOrEmpty(entity.Id));
 
             var entity_repo = entityExtraEltRepo.GetById(entity.Id);
 
             //entity_repo.LookLikeEachOther(entity);
 
-            AssertHelper.AreJsonEqual(entity, entity_repo.GetEntityDomain());
-            //Assert.AreEqual<TestEntity>(entity1, entity1_repo);
+            AssertHelper.AreJsonEqual(entity, entity_repo);
+            //Assert.AreEqual<TestEntity>(entity1, entity1_repo);           
         }
 
         /// <summary>
@@ -321,27 +307,27 @@ namespace NoSqlRepositories.Test.Shared
         public virtual void TimeZoneTest()
         {
             entityRepo.TruncateCollection();
-            { 
+            {
                 // Insert local timezone, check if we get same value but in utc format
                 var entity1 = TestHelper.GetEntity1();
                 entity1.Birthday = new DateTime(1985, 12, 08, 0, 5, 30, DateTimeKind.Local);
-                entityRepo.InsertOne(entityRepo.CreateNewDocument(entity1));
+                entityRepo.InsertOne(entity1);
                 var entity1_repo = entityRepo.GetById(entity1.Id);
-                
+
                 //Assert.AreEqual(DateTimeKind.Utc, entity1_repo.Birthday.Kind, "Returned DB value is not UTC");
 
-                Assert.AreEqual(entity1.Birthday, entity1_repo.GetEntityDomain().Birthday.ToLocalTime(), "Returned DB value is not correct");
+                Assert.AreEqual(entity1.Birthday, entity1_repo.Birthday.ToLocalTime(), "Returned DB value is not correct");
             }
 
             {
                 // Insert utc, check if we get local timezone from db
                 var entity1 = TestHelper.GetEntity1();
                 entity1.Birthday = new DateTime(1985, 12, 08, 0, 0, 0, DateTimeKind.Utc);
-                entityRepo.InsertOne(entityRepo.CreateNewDocument(entity1));
+                entityRepo.InsertOne(entity1);
                 var entity1_repo = entityRepo.GetById(entity1.Id);
-                Assert.AreEqual(entity1.Birthday, entity1_repo.GetEntityDomain().Birthday, "Returned DB value is not correct");  
+                Assert.AreEqual(entity1.Birthday, entity1_repo.Birthday, "Returned DB value is not correct");
             }
-            
+
         }
 
         public virtual void GetTests()
@@ -370,49 +356,48 @@ namespace NoSqlRepositories.Test.Shared
             var entity1 = TestHelper.GetEntity1();
             var entity2 = TestHelper.GetEntity2();
 
-            entityRepo.InsertOne(entityRepo.CreateNewDocument(entity1));
-            entityRepo.InsertOne(entityRepo.CreateNewDocument(entity2));
+            entityRepo.InsertOne(entity1);
+            entityRepo.InsertOne(entity2);
 
-            List<string> ids = new List<string>() { entity1.Id, entity2.Id , "unknown_id"};
+            List<string> ids = new List<string>() { entity1.Id, entity2.Id, "unknown_id" };
             var results = entityRepo.GetByIds(ids);
 
             Assert.AreEqual(2, results.Count(), "GetByIds should return 2 entities");
-            Assert.IsTrue(results.Any(i => i.GetEntityDomain().Name.Equals("Balan")));
-            Assert.IsTrue(results.Any(i => i.GetEntityDomain().Name.Equals("Mack")));
+            Assert.IsTrue(results.Any(i => i.Name.Equals("Balan")));
+            Assert.IsTrue(results.Any(i => i.Name.Equals("Mack")));
         }
 
-        public virtual void Polymorphism()
-        {
-            entityRepo.TruncateCollection();
-            collectionEntityRepo.TruncateCollection();
+        //public virtual void Polymorphism()
+        //{
+        //    entityRepo.TruncateCollection();
+        //    collectionEntityRepo.TruncateCollection();
 
-            var entity2 = TestHelper.GetEntity2();
-            entityRepo.InsertOne(entityRepo.CreateNewDocument(entity2));
-            Assert.IsFalse(string.IsNullOrEmpty(entity2.Id));
+        //    TestExtraEltEntity entity2 = TestHelper.GetEntity2();
+        //    entityRepo.InsertOne(entity2);
+        //    Assert.IsFalse(string.IsNullOrEmpty(entity2.Id));
 
-            var entity2_repo = entityRepo.GetById(entity2.Id);
-            
-            //entity_repo.LookLikeEachOther(entity);
+        //    var entity2_repo = entityRepo.GetById(entity2.Id);
 
-            AssertHelper.AreJsonEqual(entity2, entity2_repo, ErrorMsg: "Get of a TestExtraEltEntity instance from a TestEntity repo should return TestExtraEltEntity");
-            //Assert.AreEqual<TestEntity>(entity1, entity1_repo);
+        //    //entity_repo.LookLikeEachOther(entity);
 
-            // TODO : Check polymorphism
-            //var collectionTest = new CollectionTest();
-            //collectionTest.PolymorphCollection.Add(entity2); // TestExtraEltEntity instance
-            //collectionTest.PolymorphCollection.Add(TestHelper.GetEntity1()); // TestEntity instance
+        //    AssertHelper.AreJsonEqual(entity2, entity2_repo, ErrorMsg: "Get of a TestExtraEltEntity instance from a TestEntity repo should return TestExtraEltEntity");
+        //    //Assert.AreEqual<TestEntity>(entity1, entity1_repo);
 
-            //collectionEntityRepo.InsertOne(entityRepo.CreateNewDocument(collectionTest));
-            //var collectionTest_fromRepo = collectionEntityRepo.GetById(collectionTest.Id);
+        //    var collectionTest = new CollectionTest();
+        //    collectionTest.PolymorphCollection.Add(entity2); // TestExtraEltEntity instance
+        //    collectionTest.PolymorphCollection.Add(TestHelper.GetEntity1()); // TestEntity instance
 
-            //AssertHelper.AreJsonEqual(collectionTest, collectionTest_fromRepo, ErrorMsg: "Check if collection elements has the good type");
-        }
+        //    collectionEntityRepo.InsertOne(collectionTest);
+        //    var collectionTest_fromRepo = collectionEntityRepo.GetById(collectionTest.Id);
+
+        //    AssertHelper.AreJsonEqual(collectionTest, collectionTest_fromRepo, ErrorMsg: "Check if collection elements has the good type");
+        //}
 
         private string getFullpath(string filepath)
         {
             return Path.Combine(this.baseFilePath, filepath);
         }
-        
+
         public virtual void Attachments()
         {
             // Prepare test
@@ -433,8 +418,7 @@ namespace NoSqlRepositories.Test.Shared
             //
             {
                 entity1 = TestHelper.GetEntity1();
-                var noSqlEntity1 = entityRepo.CreateNewDocument(entity1);
-                entityRepo.InsertOne(noSqlEntity1, InsertMode.erase_existing);
+                entityRepo.InsertOne(entity1, InsertMode.erase_existing);
                 Assert.IsFalse(string.IsNullOrEmpty(entity1.Id), "Id has been defined during insert");
 
                 using (var fileStream = File.Open(getFullpath(attach1FilePath), FileMode.Open))
@@ -454,46 +438,44 @@ namespace NoSqlRepositories.Test.Shared
                 Assert.IsTrue(attachNames.Contains(attach1FileName), "First attachment not found in the list");
                 Assert.IsTrue(attachNames.Contains(attach2FileName), "2nd attachment not found in the list");
 
-                noSqlEntity1 = entityRepo.GetById(entity1.Id);
-                entity1 = noSqlEntity1.GetEntityDomain();
                 entity1.Name = "NewName";
-                noSqlEntity1.SetEntityDomain(entity1);
-                entityRepo.Update(noSqlEntity1);
-
+                entityRepo.Update(entity1);
                 var attachNames2 = entityRepo.GetAttachmentNames(entity1.Id);
                 Assert.AreEqual(2, attachNames.Count(), "An update of an entity should not alter its attachments");
                 Assert.IsTrue(attachNames.Contains(attach1FileName), "An update of an entity should not alter its attachments");
                 Assert.IsTrue(attachNames.Contains(attach2FileName), "An update of an entity should not alter its attachments");
+
+
             }
 
             //
             // Test add of the same file to a 2nd entity
             //
             {
-                var entity2 = TestHelper.GetEntity2();
-                entityRepo.InsertOne(entityRepo.CreateNewDocument(entity2), InsertMode.erase_existing);
-                Assert.IsFalse(string.IsNullOrEmpty(entity2.Id), "Id has been defined during insert");
+                //var entity2 = TestHelper.GetEntity2();
+                //entityRepo.InsertOne(entity2, InsertMode.erase_existing);
+                //Assert.IsFalse(string.IsNullOrEmpty(entity2.Id), "Id has been defined during insert");
 
-                using (var fileStream = File.Open(getFullpath(attach1FilePath), FileMode.Open))
-                {
-                    entityRepo.AddAttachment(entity2.Id, fileStream, "image/jpg", attach1FileName);
-                }
+                //using (var fileStream = File.Open(getFullpath(attach1FilePath), FileMode.Open))
+                //{
+                //    entityRepo.AddAttachment(entity2.Id, fileStream, "image/jpg", attach1FileName);
+                //}
             }
-            
+
             //
             // Test get an attachement
             //
-            //{
-                //using (var fileRepoStream = entityRepo.GetAttachment(entity1.Id, attach1FileName))
-                //{
-                //    Assert.IsNotNull(fileRepoStream, "The stream returned by GetAttachment should not be null");
+            {
+                using (var fileRepoStream = entityRepo.GetAttachment(entity1.Id, attach1FileName))
+                {
+                    Assert.IsNotNull(fileRepoStream, "The steam returned by GetAttachment should not be null");
 
-                //    using (var sourceFileSteam = File.Open(getFullpath(attach1FilePath), FileMode.Open))
-                //    {
-                //        Assert.IsTrue(CompareStreams(sourceFileSteam, fileRepoStream), "File content is different");
-                //    }
-                //}
-            //}
+                    using (var sourceFileSteam = File.Open(getFullpath(attach1FilePath), FileMode.Open))
+                    {
+                        Assert.IsTrue(sourceFileSteam.Length > 0, "File content is empty");
+                    }
+                }
+            }
 
             //
             // Test remove of an attachement
@@ -512,13 +494,13 @@ namespace NoSqlRepositories.Test.Shared
                 }
 
                 Assert.IsInstanceOfType(notfoundEx, typeof(AttachmentNotFoundNoSQLException), "The get should return exception because the attachement has been deleted");
-                
+
                 var attachNames3 = entityRepo.GetAttachmentNames(entity1.Id);
                 Assert.AreEqual(1, attachNames3.Count());
 
                 entityRepo.Delete(entity1.Id);
-                entityRepo.InsertOne(entityRepo.CreateNewDocument(entity1));
-                
+                entityRepo.InsertOne(entity1);
+
                 var attachNames4 = entityRepo.GetAttachmentNames(entity1.Id);
                 Assert.AreEqual(0, attachNames4.Count(), "Delete of an entity should delete its attachemnts");
             }
@@ -550,11 +532,11 @@ namespace NoSqlRepositories.Test.Shared
             entityRepo.TruncateCollection();
 
             var entity1 = TestHelper.GetEntity1();
-            entityRepo.InsertOne(entityRepo.CreateNewDocument(entity1));
+            entityRepo.InsertOne(entity1);
 
             var entitylist = entityRepo.GetAll();
             Assert.AreEqual(1, entitylist.Count(), "Invalide number. The expected result is " + entitylist.Count());
-            
+
             var task = Task.Run(() => entityRepo.Close());
             task.Wait();
 
@@ -584,7 +566,7 @@ namespace NoSqlRepositories.Test.Shared
             entityRepo.TruncateCollection();
 
             var entity1 = TestHelper.GetEntity1();
-            entityRepo.InsertOne(entityRepo.CreateNewDocument(entity1));
+            entityRepo.InsertOne(entity1);
 
             var entitylist = entityRepo.GetAll();
             Assert.AreEqual(1, entitylist.Count(), "Invalide number. The expected result is " + entitylist.Count());
@@ -622,16 +604,16 @@ namespace NoSqlRepositories.Test.Shared
             entityRepo.TruncateCollection();
 
             var entity1 = TestHelper.GetEntity1();
-            entityRepo.InsertOne(entityRepo.CreateNewDocument(entity1));
+            entityRepo.InsertOne(entity1);
 
             var entity2 = TestHelper.GetEntity2();
-            entityRepo.InsertOne(entityRepo.CreateNewDocument(entity2));
+            entityRepo.InsertOne(entity2);
 
             var entity3 = TestHelper.GetEntity3();
-            entityRepo.InsertOne(entityRepo.CreateNewDocument(entity3));
+            entityRepo.InsertOne(entity3);
 
             var entity4 = TestHelper.GetEntity4();
-            entityRepo.InsertOne(entityRepo.CreateNewDocument(entity4));
+            entityRepo.InsertOne(entity4);
 
             entityRepo.Delete(entity3.Id);
 
@@ -643,16 +625,14 @@ namespace NoSqlRepositories.Test.Shared
                 Assert.IsNotNull(e, "Entity returned should not be null");
             }
 
-            // TODO : Check polymorphism
-
             //var collectionTest = new CollectionTest();
             //collectionTest.PolymorphCollection.Add(entity1); // TestExtraEltEntity instance
 
             //var collectionTest2 = new CollectionTest();
             //collectionTest2.PolymorphCollection.Add(entity2); // TestExtraEltEntity instance
 
-            //collectionEntityRepo.InsertOne(entityRepo.CreateNewDocument(collectionTest));
-            //collectionEntityRepo.InsertOne(entityRepo.CreateNewDocument(collectionTest2));
+            //collectionEntityRepo.InsertOne(collectionTest);
+            //collectionEntityRepo.InsertOne(collectionTest2);
 
             //var entityCollectionlist = collectionEntityRepo.GetAll();
             //Assert.AreEqual(2, entityCollectionlist.Count(), "Bad number of doc. We should not return entities of an other collection");
@@ -663,6 +643,7 @@ namespace NoSqlRepositories.Test.Shared
             //collectionEntityRepo.TruncateCollection();
             //entitylist2 = entityRepo.GetAll();
             //Assert.AreEqual(3, entitylist2.Count(), "Truncate of a collection should not affect other collections");
+
         }
 
         public virtual void ConcurrentAccess(bool parallel)
@@ -686,12 +667,12 @@ namespace NoSqlRepositories.Test.Shared
 
             var t2 = Task.Run(
                 () => InsertEntities(nbDoc, nbDoc, repo2));
-            
+
             if (!parallel)
                 t2.Wait();
 
             var t3 = Task.Run(
-                () => InsertEntities(nbDoc, nbDoc*2, repo2));
+                () => InsertEntities(nbDoc, nbDoc * 2, repo2));
 
             if (!parallel)
                 t3.Wait();
@@ -737,19 +718,16 @@ namespace NoSqlRepositories.Test.Shared
             var entity2FromRepo1 = repo1.GetById("2");
             var entity2FromRepo2 = repo2.GetById("2");
 
-            var domainEntity2 = entity2FromRepo1.GetEntityDomain();
-            domainEntity2.Name = "NameUpdatedInRepo1";
-            entity2FromRepo1.SetEntityDomain(domainEntity2);
-
+            entity2FromRepo1.Name = "NameUpdatedInRepo1";
             repo1.Update(entity2FromRepo1);
 
             Assert.AreNotEqual("NameUpdatedInRepo1", entity2FromRepo2, "Object instance from Repo 2 should not be affected");
-            
+
             var entity2FromRepo2AfterUpdate = repo2.GetById("2");
-            Assert.AreEqual("NameUpdatedInRepo1", entity2FromRepo2AfterUpdate.GetEntityDomain().Name, "Object instance from Repo 2 should have been updated with Repo 1 modification");
+            Assert.AreEqual("NameUpdatedInRepo1", entity2FromRepo2AfterUpdate.Name, "Object instance from Repo 2 should have been updated with Repo 1 modification");
 
         }
-        
+
         public virtual void ViewTests()
         {
             entityRepo.TruncateCollection();
@@ -759,47 +737,45 @@ namespace NoSqlRepositories.Test.Shared
             //
             var entity1 = TestHelper.GetEntity1();
             entity1.Id = "1";
-            entityRepo.InsertOne(entityRepo.CreateNewDocument(entity1));
+            entityRepo.InsertOne(entity1);
 
             var entity2 = TestHelper.GetEntity2();
             entity2.Id = "2";
-            entityRepo.InsertOne(entityRepo.CreateNewDocument(entity2));
+            entityRepo.InsertOne(entity2);
 
             // Add the 3td et 4th entities to en secondary repo to ensure insert are visible throw all repositories
             var entity3 = TestHelper.GetEntity3();
             entity3.Id = "3";
-            entityRepo.InsertOne(entityRepo.CreateNewDocument(entity3));
+            entityRepo.InsertOne(entity3);
 
             var entity4 = TestHelper.GetEntity4();
             entity4.Id = "4";
-            entityRepo.InsertOne(entityRepo.CreateNewDocument(entity4));
+            entityRepo.InsertOne(entity4);
 
             //
             // Get data from an "Int" field
             //
 
-            // TODO : Enable again this test
-            //// Try on an other repo
-            //var res12 = entityRepo2.GetKeyByField<int>(nameof(TestEntity.NumberOfChildenInt), 0).OrderBy(e => e.Id).ToList();
+            // Try on an other repo
+            //var res12 = entityRepo2.GetByField<int>(nameof(TestEntity.NumberOfChildenInt), 0).OrderBy(e => e.Id).ToList();
 
             //// Filter on 1 value
-            //var res1 = entityRepo.GetKeyByField<int>(nameof(TestEntity.NumberOfChildenInt), 0).OrderBy(e => e.Id).ToList();
+            //var res1 = entityRepo.GetByField<int>(nameof(TestEntity.NumberOfChildenInt), 0).OrderBy(e => e.Id).ToList();
 
-            
-            //Assert.AreEqual(2, res1.Count());
+
+            //Assert.AreEqual(2, res1.Count);
             //Assert.AreEqual("2", res1[0].Id);
             //Assert.AreEqual("3", res1[1].Id);
             //AssertHelper.AreJsonEqual(entity2, res1[0]);
             //AssertHelper.AreJsonEqual(entity3, res1[1]);
 
-            //var res2 = entityRepo.GetKeyByField<int>(nameof(TestEntity.NumberOfChildenInt), 0).OrderBy(e => e.Id).ToList();
-            //Assert.AreEqual(2, res2.Count(), "Check the an error not occured after a 2 call (the object entities are in memory)");
+            //var res2 = entityRepo.GetByField<int>(nameof(TestEntity.NumberOfChildenInt), 0).OrderBy(e => e.Id).ToList();
+            //Assert.AreEqual(2, res2.Count, "Check the an error not occured after a 2 call (the object entities are in memory)");
 
             //List<string> res3 = entityRepo.GetKeyByField<int>(nameof(TestEntity.NumberOfChildenInt), 0).OrderBy(e => e).ToList();
             //Assert.AreEqual("2", res3[0]);
             //Assert.AreEqual("3", res3[1]);
 
-            // TODO : Check this code, useless ?
             //Exception expectedEx = null;
             //try
             //{
@@ -820,7 +796,7 @@ namespace NoSqlRepositories.Test.Shared
 
             //List<string> res5 = entityRepo.GetKeyByField<int>(nameof(TestEntity.NumberOfChildenInt), searchedValues).OrderBy(e => e).ToList();
             //Assert.AreEqual(3, res5.Count);
-            
+
             ////
             //// Get data from a "List<string>" field
             ////
@@ -832,7 +808,7 @@ namespace NoSqlRepositories.Test.Shared
             //Assert.AreEqual(3, res7.Count, "Dupplicate entries should be removed");
             //Assert.AreEqual(3, res7.Where(e => e.Cities.Contains("Grenoble")).Count());
             //Assert.AreEqual(1, res7.Where(e => e.Cities.Contains("Andernos")).Count());
-            
+
             //var res8 = entityRepo.GetByField<string>(nameof(TestEntity.Cities), "Grenoble").OrderBy(e => e.Id).ToList();
             //Assert.AreEqual(3, res8.Count);
 
@@ -882,7 +858,7 @@ namespace NoSqlRepositories.Test.Shared
                     Name = Faker.Name.FullName()
                 };
 
-                repo.InsertOne(repo.CreateNewDocument(e));
+                repo.InsertOne(e);
             }
         }
 

@@ -28,10 +28,10 @@ namespace NoSqlRepositories.Tests.JsonFiles
 
             var entityRepo = new JsonFileRepository<TestEntity>(NoSQLCoreUnitTests.testContext.DeploymentDirectory, dbName);
             var entityRepo2 = new JsonFileRepository<TestEntity>(NoSQLCoreUnitTests.testContext.DeploymentDirectory, dbName);
-            var collectionEntityRepo = new JsonFileRepository<CollectionTest>(NoSQLCoreUnitTests.testContext.DeploymentDirectory, dbName);
+            //var collectionEntityRepo = new JsonFileRepository<CollectionTest>(NoSQLCoreUnitTests.testContext.DeploymentDirectory, dbName);
             var entityExtraEltRepo = new JsonFileRepository<TestExtraEltEntity>(NoSQLCoreUnitTests.testContext.DeploymentDirectory, dbName);
             
-            test = new NoSQLCoreUnitTests(entityRepo, entityRepo2, entityExtraEltRepo, collectionEntityRepo,
+            test = new NoSQLCoreUnitTests(entityRepo, entityRepo2, entityExtraEltRepo,
                 NoSQLCoreUnitTests.testContext.DeploymentDirectory, dbName);
         }
 
@@ -82,14 +82,7 @@ namespace NoSqlRepositories.Tests.JsonFiles
         {
             test.InsertExtraEltEntity();
         }
-
-        //[TestMethod]
-        // Limitation : couchtest repository doesn't handle polymorphism in attribute's entity of type List, Dictionary...
-        public void JsonFiles_Polymorphism()
-        {
-            test.Polymorphism();
-        }
-
+        
         [TestMethod]
         public void JsonFiles_Attachments()
         {

@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using NoSqlRepositories.Core.interfaces;
 
 namespace NoSqlRepositories.JsonFiles
 {
@@ -92,7 +91,7 @@ namespace NoSqlRepositories.JsonFiles
             ConnectAgainToDatabase();
         }
 
-        public override INoSqlEntity<T> GetById(string id)
+        public override T GetById(string id)
         {
             CheckOpenedConnection();
 
@@ -113,14 +112,14 @@ namespace NoSqlRepositories.JsonFiles
                 throw new KeyNotFoundNoSQLException(string.Format("Id '{0}' not found in the repository '{1}'", id, DbFilePath));
             }
 
-            return new NoSqlEntity<T>(CollectionName, elt);
+            return elt;
         }
 
-        public override IEnumerable<INoSqlEntity<T>> GetByIds(IList<string> ids)
+        public override IEnumerable<T> GetByIds(IList<string> ids)
         {
             CheckOpenedConnection();
 
-            var elts = new List<INoSqlEntity<T>>();
+            var elts = new List<T>();
 
             foreach (string id in ids)
             {
@@ -132,52 +131,12 @@ namespace NoSqlRepositories.JsonFiles
             return elts;
         }
 
-        /// <summary>
-        /// Create a new empty document
-        /// The document is no inserted in database
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
-        public override INoSqlEntity<T> CreateNewDocument(T entity)
-        {
-            return new NoSqlEntity<T>(this.CollectionName, entity);
-        }
-
-        /// <summary>
-        /// Create a new empty document
-        /// The document is no inserted in database
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public override INoSqlEntity<T> CreateNewDocument(string id)
-        {
-            var entity = new T();
-            entity.Id = id;
-            var noSqlEntity = new NoSqlEntity<T>(this.CollectionName, entity);
-            return noSqlEntity;
-        }
-
-        /// <summary>
-        /// Create a new empty document
-        /// The document is no inserted in database
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="insertMode"></param>
-        /// <returns></returns>
-        public override INoSqlEntity<T> CreateNewDocument()
-        {
-            return new NoSqlEntity<T>(this.CollectionName, new T());
-        }
-
-        public override InsertResult InsertOne(INoSqlEntity<T> entity, InsertMode insertMode)
+        public override InsertResult InsertOne(T entity, InsertMode insertMode)
         {
             CheckOpenedConnection();
 
-            var nosqlEntity = entity as NoSqlEntity<T>;
-            if (nosqlEntity == null || nosqlEntity.CollectionName != this.CollectionName)
-                throw new InvalidOperationException("the entity was created from an other repository");
+            var entitydomain = entity;
 
-            var entitydomain = nosqlEntity.GetEntityDomain();
             NoSQLRepoHelper.SetIds(entitydomain);
 
             var updateddate = NoSQLRepoHelper.DateTimeUtcNow();
@@ -223,7 +182,7 @@ namespace NoSqlRepositories.JsonFiles
             return InsertResult.inserted;
         }
 
-        public override BulkInsertResult<string> InsertMany(IEnumerable<INoSqlEntity<T>> entities, InsertMode insertMode)
+        public override BulkInsertResult<string> InsertMany(IEnumerable<T> entities, InsertMode insertMode)
         {
             CheckOpenedConnection();
 
@@ -249,24 +208,18 @@ namespace NoSqlRepositories.JsonFiles
             return localDb.ContainsKey(id);
         }
 
-        public override UpdateResult Update(INoSqlEntity<T> entity, UpdateMode updateMode)
+        public override UpdateResult Update(T entity, UpdateMode updateMode)
         {
             CheckOpenedConnection();
-
-            var nosqlEntity = entity as NoSqlEntity<T>;
-            if (nosqlEntity == null || nosqlEntity.CollectionName != this.CollectionName)
-                throw new InvalidOperationException("the entity was created from an other repository");
 
             if (updateMode == UpdateMode.upsert_if_missing_key)
                 throw new NotImplementedException();
 
             // Update update date
             var date = NoSQLRepoHelper.DateTimeUtcNow();
-            var entityToStore = nosqlEntity.GetEntityDomain();
+            var entityToStore = entity;
 
             entityToStore.SystemLastUpdateDate = date;
-
-            nosqlEntity.SetEntityDomain(entityToStore);
 
             if (!localDb.ContainsKey(entity.Id))
             {
@@ -314,7 +267,7 @@ namespace NoSqlRepositories.JsonFiles
             }
         }
 
-        public override INoSqlEntity<T> TryGetById(string id)
+        public override T TryGetById(string id)
         {
             CheckOpenedConnection();
 
@@ -579,17 +532,16 @@ namespace NoSqlRepositories.JsonFiles
         /// Return all entities of repository
         /// </summary>
         /// <returns></returns>
-        public override IEnumerable<INoSqlEntity<T>> GetAll()
+        public override IEnumerable<T> GetAll()
         {
             CheckOpenedConnection();
 
             if (this.localDb != null)
             {
-                return localDb.Values.Where(e => !config.IsExpired(e.Id))
-                                        .Select(e => new NoSqlEntity<T>(CollectionName, e));
+                return localDb.Values.Where(e => !config.IsExpired(e.Id));
             }
 
-            return new List<INoSqlEntity<T>>();
+            return new List<T>();
         }
 
         /// <summary>
@@ -627,7 +579,7 @@ namespace NoSqlRepositories.JsonFiles
 
         #region Queries
 
-        //public IEnumerable<INoSqlEntity<T>> DoQuery(NoSqlQuery<T> queryFilters)
+        //public IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters)
         //{
         //    throw new NotImplementedException();
         //}
