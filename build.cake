@@ -18,7 +18,7 @@ Setup(context => {
 
     var cakeVersion = typeof(ICakeContext).Assembly.GetName().Version.ToString();
 
-    Information(Figlet("NoSqlrepository"));
+    Information(Figlet("NoSqlRepository"));
     Information("Building version {0}, ({1}, {2}) using version {3} of Cake.",
         version,
         configuration,
