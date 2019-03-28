@@ -58,13 +58,6 @@ Task("ResolveBuildTools")
         Information("Found MSBuild at {0}", msBuildPath.ToString());
 });
 
-Task("NuGet-Restore")
-    .IsDependentOn("Clean")
-    .Does(() =>
-    {
-        NuGetRestore(solutionFile);
-    });
-
 Task("Restore")
     .IsDependentOn("ResolveBuildTools")
     .Does(() => 
@@ -77,7 +70,6 @@ Task("Restore")
 Task("Build")
     .IsDependentOn("ResolveBuildTools")
     .IsDependentOn("Clean")
-    .IsDependentOn("NuGet-Restore")
     .IsDependentOn("Restore")
     .Does(() => 
 {
