@@ -1,0 +1,22 @@
+﻿<Project Sdk="MSBuild.Sdk.Extras" ToolsVersion="15.0">
+  <PropertyGroup>
+    <RootNamespace>NoSqlRepositories.CouchBaseLite.UnitTest</RootNamespace>
+    <AssemblyName>NoSqlRepositories.CouchBaseLite.UnitTest</AssemblyName>
+    <TargetFramework>net461</TargetFramework>
+    <FileUpgradeFlags>40</FileUpgradeFlags>
+    <UpgradeBackupLocation>C:\Sources\NoSqlRepositories\Backup1\</UpgradeBackupLocation>
+    <OldToolsVersion>15.0</OldToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Couchbase.Lite.Support.NetDesktop" Version="2.1.2" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NoSqlRepositories.Core\NoSqlRepositories.Core.csproj" />
+    <ProjectReference Include="..\NoSqlRepositories.CouchBaseLite\NoSqlRepositories.CouchBaseLite.csproj" />
+    <ProjectReference Include="..\NoSqlRepositories.Tests.Shared\NoSqlRepositories.Tests.Shared.csproj" />
+  </ItemGroup>
+</Project>
