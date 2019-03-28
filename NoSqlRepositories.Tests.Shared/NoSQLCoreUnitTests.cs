@@ -386,7 +386,7 @@ namespace NoSqlRepositories.Tests.Shared
 
         private string getFullpath(string filepath)
         {
-            return Path.Combine(this.baseFilePath, filepath);
+            return Path.Combine(Directory.GetCurrentDirectory(), filepath);
         }
 
         public virtual void Attachments()

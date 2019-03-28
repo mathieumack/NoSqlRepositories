@@ -59,7 +59,5 @@ namespace NoSqlRepositories.Tests.Shared.Extensions
 
             CopyFolder(inputDirPath, outputDirPath);
         }
-
-
     }
 }
