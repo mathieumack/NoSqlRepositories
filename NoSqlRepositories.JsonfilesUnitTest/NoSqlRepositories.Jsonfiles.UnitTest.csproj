@@ -17,7 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\NoSqlRepositories.Core\NoSqlRepositories.Core.csproj" />
     <ProjectReference Include="..\NoSqlRepositories.JsonFiles\NoSqlRepositories.JsonFiles.csproj" />
-    <ProjectReference Include="..\NoSqlRepositories.Tests.Shared\NoSqlRepositories.Tests.Shared.csproj" />
+    <ProjectReference Include="..\NoSqlRepositories.Tests.Shared\NoSqlRepositories.UnitTest.Shared.csproj" />
   </ItemGroup>
 
 </Project>

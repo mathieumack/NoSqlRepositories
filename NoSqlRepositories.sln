@@ -19,13 +19,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoSqlRepositories.MongoDb",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoSqlRepositories.CouchBaseLite", "NoSqlRepositories.CouchBaseLite\NoSqlRepositories.CouchBaseLite.csproj", "{752BE308-DCC0-4582-8D73-7B7E003A11EA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoSqlRepositories.JsonfilesUnitTest", "NoSqlRepositories.JsonfilesUnitTest\NoSqlRepositories.JsonfilesUnitTest.csproj", "{94C4047D-3E9E-46A4-B7C1-929C3EBB0C87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoSqlRepositories.Jsonfiles.UnitTest", "NoSqlRepositories.JsonfilesUnitTest\NoSqlRepositories.Jsonfiles.UnitTest.csproj", "{94C4047D-3E9E-46A4-B7C1-929C3EBB0C87}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoSqlRepositories.Tests.Shared", "NoSqlRepositories.Tests.Shared\NoSqlRepositories.Tests.Shared.csproj", "{69401833-08ED-49AF-8212-FC2A87A1FFE8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoSqlRepositories.UnitTest.Shared", "NoSqlRepositories.Tests.Shared\NoSqlRepositories.UnitTest.Shared.csproj", "{69401833-08ED-49AF-8212-FC2A87A1FFE8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoSqlRepositories.CouchBaseLite.UnitTest", "NoSqlRepositories.CouchBaseLite.UnitTest\NoSqlRepositories.CouchBaseLite.UnitTest.csproj", "{BEE9D23D-AFC3-4109-A370-EB04DE1F0BA7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoSqlRepositories.CouchBaseLite.UnitTest", "NoSqlRepositories.CouchBaseLite.UnitTest\NoSqlRepositories.CouchBaseLite.UnitTest.csproj", "{BEE9D23D-AFC3-4109-A370-EB04DE1F0BA7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoSqlRepositories.MongoDb.UnitTest", "NoSqlRepositories.MongoDb.UnitTest\NoSqlRepositories.MongoDb.UnitTest.csproj", "{C5501540-33DC-4DBA-A675-75D36520D2B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoSqlRepositories.MongoDb.UnitTest", "NoSqlRepositories.MongoDb.UnitTest\NoSqlRepositories.MongoDb.UnitTest.csproj", "{C5501540-33DC-4DBA-A675-75D36520D2B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
