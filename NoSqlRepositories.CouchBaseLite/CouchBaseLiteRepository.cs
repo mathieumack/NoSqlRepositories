@@ -108,10 +108,9 @@ namespace NoSqlRepositories.CouchBaseLite
 
         public override void ExpireAt(string id, DateTime? dateLimit)
         {
-            throw new NotImplementedException("TTL feature will be available only in v2.5. More informations : https://github.com/couchbase/couchbase-lite-net/issues/1129");
-            //CheckOpenedConnection();
+            CheckOpenedConnection();
 
-            //database.SetDocumentExpiration(id, dateLimit);
+            database.SetDocumentExpiration(id, dateLimit);
         }
 
         public override T GetById(string id)
