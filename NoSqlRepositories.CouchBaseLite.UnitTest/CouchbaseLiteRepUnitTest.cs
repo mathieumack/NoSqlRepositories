@@ -2,6 +2,7 @@
 using NoSqlRepositories.CouchBaseLite;
 using NoSqlRepositories.Tests.Shared;
 using NoSqlRepositories.Tests.Shared.Entities;
+using System.IO;
 
 namespace NoSqlRepositories.Tests.CouchbaseLite
 {
@@ -27,13 +28,12 @@ namespace NoSqlRepositories.Tests.CouchbaseLite
             //CouchBaseLite.Lite.Storage.SystemSQLite.Plugin.Register();
             Couchbase.Lite.Support.NetDesktop.Activate();
 
-            var entityRepo = new CouchBaseLiteRepository<TestEntity>(NoSQLCoreUnitTests.testContext.DeploymentDirectory, dbName);
-            var entityRepo2 = new CouchBaseLiteRepository<TestEntity>(NoSQLCoreUnitTests.testContext.DeploymentDirectory, dbName);
-            //var collectionEntityRepo = new CouchBaseLiteRepository<CollectionTest>(NoSQLCoreUnitTests.testContext.DeploymentDirectory, dbName);
-            var entityExtraEltRepo = new CouchBaseLiteRepository<TestExtraEltEntity>(NoSQLCoreUnitTests.testContext.DeploymentDirectory, dbName);
+            var entityRepo = new CouchBaseLiteRepository<TestEntity>(Directory.GetCurrentDirectory(), dbName);
+            var entityRepo2 = new CouchBaseLiteRepository<TestEntity>(Directory.GetCurrentDirectory(), dbName);
+            //var collectionEntityRepo = new CouchBaseLiteRepository<CollectionTest>(Directory.GetCurrentDirectory(), dbName);
+            var entityExtraEltRepo = new CouchBaseLiteRepository<TestExtraEltEntity>(Directory.GetCurrentDirectory(), dbName);
             
-            test = new NoSQLCoreUnitTests(entityRepo, entityRepo2, entityExtraEltRepo,
-                NoSQLCoreUnitTests.testContext.DeploymentDirectory, dbName);
+            test = new NoSQLCoreUnitTests(entityRepo, entityRepo2, entityExtraEltRepo, Directory.GetCurrentDirectory(), dbName);
         }
 
         #endregion
