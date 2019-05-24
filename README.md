@@ -19,3 +19,4 @@ Some of the best ways to contribute are to try things out, file bugs, join in de
 ## License
 
 NoSqlRepositories is licensed under the [MIT license](LICENSE.TXT).
+
