@@ -43,6 +43,12 @@ namespace NoSqlRepositories.Tests.MongoDb
             runner = MongoDbRunner.Start();
         }
 
+        [ClassCleanup()]
+        public static void ClassCleanup()
+        {
+            runner.Dispose();
+        }
+
         [TestInitialize]
         public void TestInitialize()
         {
