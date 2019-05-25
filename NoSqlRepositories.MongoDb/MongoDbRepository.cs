@@ -341,7 +341,7 @@ namespace NoSqlRepositories.MongoDb
         /// <summary>
         /// Create a database with the specified name if it doesn't exist. 
         /// </summary>
-        /// <param name="databaseName">The name/ID of the database.</param>
+        /// <param name="dbName">The name/ID of the database.</param>
         /// <returns>The Task for asynchronous execution.</returns>
         public override void UseDatabase(string dbName)
         {
