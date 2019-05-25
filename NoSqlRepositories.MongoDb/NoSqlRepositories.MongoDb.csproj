@@ -1,6 +1,7 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
+    <ProjectGuid>{49A4AB0F-5E33-46A4-8436-9FAA3C5D87DE}</ProjectGuid>
     <AssemblyName>NoSqlRepositories.MongoDb</AssemblyName>
     <RootNamespace>NoSqlRepositories.MongoDb</RootNamespace>
     <PackageId>NoSqlRepositories.MongoDb</PackageId>
