@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>NoSqlRepositories.JsonFiles</AssemblyName>
     <RootNamespace>NoSqlRepositories.JsonFiles</RootNamespace>
+    <PackageId>NoSqlRepositories.JsonFiles</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>MACK Mathieu</Authors>
     <Company>MACK Mathieu</Company>
@@ -15,7 +16,6 @@
     <RepositoryUrl>https://github.com/mathieumack/NoSqlRepositories</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>repository;nosql</PackageTags>
-    <PackageId>NoSqlRepositories.JsonFiles</PackageId>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects> 
   </PropertyGroup>
 
