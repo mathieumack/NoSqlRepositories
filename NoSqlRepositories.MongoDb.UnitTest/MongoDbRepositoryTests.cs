@@ -7,6 +7,7 @@ using MongoDB.Bson.Serialization;
 using NoSqlRepositories.Core;
 using MongoDB.Bson.Serialization.IdGenerators;
 using System.IO;
+using Mongo2Go;
 
 namespace NoSqlRepositories.Tests.MongoDb
 {
@@ -30,23 +31,32 @@ namespace NoSqlRepositories.Tests.MongoDb
         private MongoDbRepository<TestEntity> entityRepo2;
         private MongoDbRepository<TestExtraEltEntity> entityExtraEltRepo;
 
+        internal static MongoDbRunner runner;
+
         [ClassInitialize()]
         public static void ClassInitialize(TestContext testContext)
         {
             NoSQLCoreUnitTests.ClassInitialize(testContext);
 
             RegisterMongoMapping<TestEntity>();
+
+            runner = MongoDbRunner.Start();
+        }
+
+        [ClassCleanup()]
+        public static void ClassCleanup()
+        {
+            runner.Dispose();
         }
 
         [TestInitialize]
         public void TestInitialize()
         {
-            var serviceUri = "mongodb://localhost:27017";
             var databaseName = "UnitTstsNoSqlRepo";
 
-            entityRepo = new MongoDbRepository<TestEntity>(serviceUri, databaseName);
-            entityRepo2 = new MongoDbRepository<TestEntity>(serviceUri, databaseName);
-            entityExtraEltRepo = new MongoDbRepository<TestExtraEltEntity>(serviceUri, databaseName);
+            entityRepo = new MongoDbRepository<TestEntity>(runner.ConnectionString, databaseName);
+            entityRepo2 = new MongoDbRepository<TestEntity>(runner.ConnectionString, databaseName);
+            entityExtraEltRepo = new MongoDbRepository<TestExtraEltEntity>(runner.ConnectionString, databaseName);
 
             // Define mapping for polymorphism
             //entityRepo.PolymorphicTypes["TestExtraEltEntity"] = typeof(TestExtraEltEntity);

@@ -1,10 +1,11 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <ProjectGuid>{49A4AB0F-5E33-46A4-8436-9FAA3C5D87DE}</ProjectGuid>
     <AssemblyName>NoSqlRepositories.MongoDb</AssemblyName>
     <RootNamespace>NoSqlRepositories.MongoDb</RootNamespace>
     <PackageId>NoSqlRepositories.MongoDb</PackageId>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>MACK Mathieu</Authors>
     <Company>MACK Mathieu</Company>
@@ -16,6 +17,7 @@
     <RepositoryUrl>https://github.com/mathieumack/NoSqlRepositories</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>repository;nosql</PackageTags>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
 
   <ItemGroup>

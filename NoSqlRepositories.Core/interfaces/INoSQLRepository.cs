@@ -56,7 +56,6 @@ namespace NoSqlRepositories.Core
         /// Default db implementation behavor if key exists 
         /// </summary>
         /// <param name="entities"></param>
-        /// <param name="insertMode"></param>
         /// <returns></returns>
         BulkInsertResult<string> InsertMany(IEnumerable<T> entities);
 
@@ -97,7 +96,7 @@ namespace NoSqlRepositories.Core
         /// Update an entity with the specify behavor
         /// </summary>
         /// <param name="entity">The new version of the entity</param>
-        /// <param name="isUpsert">Behavor of the update</param>
+        /// <param name="updateMode">Behavor of the update</param>
         /// <returns>Return number of affected entities</returns>
         UpdateResult Update(T entity, UpdateMode updateMode);
 

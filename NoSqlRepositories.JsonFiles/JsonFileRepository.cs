@@ -548,7 +548,7 @@ namespace NoSqlRepositories.JsonFiles
         /// <summary>
         /// Return the list of name of all attachements of a given entity
         /// </summary>
-        /// <param name="idDocument"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
         public override IEnumerable<string> GetAttachmentNames(string id)
         {

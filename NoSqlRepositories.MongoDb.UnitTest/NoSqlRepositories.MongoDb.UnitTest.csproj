@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <ProjectGuid>{49A4AB0F-5E14-46A4-8436-9FAA3C5D87DE}</ProjectGuid>
     <TargetFramework>netcoreapp2.1</TargetFramework>
 
     <IsPackable>false</IsPackable>
@@ -9,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="Faker.Net" Version="1.1.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
+    <PackageReference Include="Mongo2Go" Version="2.2.11" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
     <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />

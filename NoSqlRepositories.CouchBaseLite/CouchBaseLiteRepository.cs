@@ -49,8 +49,8 @@ namespace NoSqlRepositories.CouchBaseLite
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="couchBaseLiteLite"></param>
-        /// <param name="fileStore"></param>
+        /// <param name="directoryPath"></param>
+        /// <param name="dbName"></param>
         public CouchBaseLiteRepository(string directoryPath, string dbName)
         {
             if (string.IsNullOrWhiteSpace(directoryPath))
@@ -404,7 +404,7 @@ namespace NoSqlRepositories.CouchBaseLite
         /// Add an attachment to an entity
         /// </summary>
         /// <param name="id">id of entity</param>
-        /// <param name="filePathAttachment">file path of the file to attach</param>
+        /// <param name="fileStream">file path of the file to attach</param>
         /// <param name="contentType">type of the file to attach</param>
         /// <param name="attachmentName">identify of the file to attach</param>
         public override void AddAttachment(string id, Stream fileStream, string contentType, string attachmentName)

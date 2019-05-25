@@ -1,25 +1,23 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
+    <ProjectGuid>{49A4AB0F-5E00-46A4-8436-9FAA3C5D87DE}</ProjectGuid>
     <AssemblyName>NoSqlRepositories.Core</AssemblyName>
     <RootNamespace>NoSqlRepositories.Core</RootNamespace>
     <PackageId>NoSqlRepositories.Core</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <NeutralLanguage>en</NeutralLanguage>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Product>No sql repository project that let you use CosmosDb, MongoDb or json file storage</Product>
-    <RepositoryType>git</RepositoryType>
-    <PackageLicenseUrl>https://github.com/mathieumack/NoSqlRepositories</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/mathieumack/NoSqlRepositories</PackageProjectUrl>
     <Authors>MACK Mathieu</Authors>
-    <Company></Company>
-    <Version>2019.0.0.0</Version>
+    <Company>MACK Mathieu</Company>
     <Description>No sql repository project that let you use CosmosDb, MongoDb or json file storage</Description>
+    <Product>No sql repository project that let you use CosmosDb, MongoDb or json file storage</Product>
+    <Copyright>Copyright 2019</Copyright>
+    <PackageProjectUrl>https://github.com/mathieumack/NoSqlRepositories</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/mathieumack/NoSqlRepositories</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/mathieumack/NoSqlRepositories</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <PackageTags>repository;nosql</PackageTags>
-    <PackageIconUrl />
-    <AssemblyVersion>2019.1.0.0</AssemblyVersion>
-    <FileVersion>2019.1.0.0</FileVersion>
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
   <ItemGroup>
