@@ -56,7 +56,6 @@ namespace NoSqlRepositories.Core
         /// Default db implementation behavor if key exists 
         /// </summary>
         /// <param name="entities"></param>
-        /// <param name="insertMode"></param>
         /// <returns></returns>
         BulkInsertResult<string> InsertMany(IEnumerable<T> entities);
 
