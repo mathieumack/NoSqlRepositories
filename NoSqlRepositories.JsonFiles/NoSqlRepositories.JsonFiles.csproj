@@ -16,7 +16,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>repository;nosql</PackageTags>
     <PackageId>NoSqlRepositories.JsonFiles</PackageId>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects> 
   </PropertyGroup>
 
   <ItemGroup>
