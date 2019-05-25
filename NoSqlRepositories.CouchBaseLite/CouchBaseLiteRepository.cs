@@ -49,8 +49,8 @@ namespace NoSqlRepositories.CouchBaseLite
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="couchBaseLiteLite"></param>
-        /// <param name="fileStore"></param>
+        /// <param name="directoryPath"></param>
+        /// <param name="dbName"></param>
         public CouchBaseLiteRepository(string directoryPath, string dbName)
         {
             if (string.IsNullOrWhiteSpace(directoryPath))
