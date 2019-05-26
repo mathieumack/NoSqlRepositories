@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoSqlRepositories.MongoDb",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoSqlRepositories.CouchBaseLite", "NoSqlRepositories.CouchBaseLite\NoSqlRepositories.CouchBaseLite.csproj", "{752BE308-DCC0-4582-8D73-7B7E003A11EA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoSqlRepositories.Jsonfiles.UnitTest", "NoSqlRepositories.JsonfilesUnitTest\NoSqlRepositories.Jsonfiles.UnitTest.csproj", "{94C4047D-3E9E-46A4-B7C1-929C3EBB0C87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoSqlRepositories.Jsonfiles.UnitTest", "NoSqlRepositories.Jsonfiles.UnitTest\NoSqlRepositories.Jsonfiles.UnitTest.csproj", "{94C4047D-3E9E-46A4-B7C1-929C3EBB0C87}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoSqlRepositories.UnitTest.Shared", "NoSqlRepositories.Tests.Shared\NoSqlRepositories.UnitTest.Shared.csproj", "{69401833-08ED-49AF-8212-FC2A87A1FFE8}"
 EndProject
