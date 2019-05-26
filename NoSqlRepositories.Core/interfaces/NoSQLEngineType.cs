@@ -5,6 +5,7 @@
         JsonFile = 0,
         CouchBaseLiteLite,
         AzureDocumentDb,
-        MongoDb
+        MongoDb,
+        LiteDb
     }
 }

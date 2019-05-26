@@ -7,17 +7,7 @@
     <PackageId>NoSqlRepositories.Core</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Authors>MACK Mathieu</Authors>
-    <Company>MACK Mathieu</Company>
-    <Description>No sql repository project that let you use CosmosDb, MongoDb or json file storage</Description>
-    <Product>No sql repository project that let you use CosmosDb, MongoDb or json file storage</Product>
-    <Copyright>Copyright 2019</Copyright>
-    <PackageProjectUrl>https://github.com/mathieumack/NoSqlRepositories</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/mathieumack/NoSqlRepositories</PackageLicenseUrl>
-    <RepositoryUrl>https://github.com/mathieumack/NoSqlRepositories</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
     <PackageTags>repository;nosql</PackageTags>
-    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
   <ItemGroup>

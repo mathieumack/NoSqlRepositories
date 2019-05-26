@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <ProjectGuid>{88407F88-EFB4-48DF-BD8A-41B113980B92}</ProjectGuid>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.msbuild" Version="2.6.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Faker.Net" Version="1.1.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NoSqlRepositories.Core\NoSqlRepositories.Core.csproj" />
+    <ProjectReference Include="..\NoSqlRepositories.LiteDb\NoSqlRepositories.LiteDb.csproj" />
+    <ProjectReference Include="..\NoSqlRepositories.Tests.Shared\NoSqlRepositories.UnitTest.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,17 +1,19 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
-    <ProjectGuid>{49A4AB0F-5E22-46A4-8436-9FAA3C5D87DE}</ProjectGuid>
+    <ProjectGuid>{27912C6C-DD71-4EB2-9803-3C1F1E0FFBF7}</ProjectGuid>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>NoSqlRepositories.JsonFiles</AssemblyName>
-    <RootNamespace>NoSqlRepositories.JsonFiles</RootNamespace>
-    <PackageId>NoSqlRepositories.JsonFiles</PackageId>
+    <AssemblyName>NoSqlRepositories.LiteDb</AssemblyName>
+    <RootNamespace>NoSqlRepositories.LiteDb</RootNamespace>
+    <PackageId>NoSqlRepositories.LiteDb</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageTags>repository;nosql</PackageTags>
+    <Description>This package is designed for LiteDb</Description>
+    <PackageTags>repository;nosql;litedb</PackageTags>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects> 
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="LiteDB" Version="4.1.4" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>
 
