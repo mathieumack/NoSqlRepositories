@@ -36,29 +36,58 @@ namespace NoSqlRepositories.LiteDb
         }
 
         private string dbPath;
-        private readonly LiteDatabase localDb;
+        private LiteDatabase localDb;
+        private LiteRepository localRepository;
+        private LiteRepository expirationRepository;
 
         #endregion
 
-        public LiteDbRepository(string dbDirectoryPath, string dbName)
+        public LiteDbRepository(string directoryPath, string dbName)
         {
-            if (string.IsNullOrWhiteSpace(dbDirectoryPath))
-                throw new ArgumentNullException("dbDirectoryPath");
+            if (string.IsNullOrWhiteSpace(directoryPath))
+                throw new ArgumentNullException(nameof(directoryPath));
+            if (string.IsNullOrWhiteSpace(dbName))
+                throw new ArgumentNullException(nameof(dbName));
 
-            dbPath = Path.Combine(dbDirectoryPath, dbName + ".db");
+            Construct(directoryPath, dbName);
+        }
+
+        private void Construct(string directoryPath, string dbName)
+        {
+            if (string.IsNullOrWhiteSpace(dbName))
+                throw new ArgumentNullException(nameof(dbName));
+
+            this.CollectionName = typeof(T).Name;
+
+            ConnectToDatabase(directoryPath, dbName);
+
+            ConnectAgainToDatabase = () => Construct(directoryPath, dbName);
+        }
+
+
+        private void ConnectToDatabase(string directoryPath, string dbName)
+        {
+            if (Directory.Exists(directoryPath))
+                Directory.CreateDirectory(directoryPath);
+
+            var dbPath = Path.Combine(directoryPath, dbName + ".db");
             localDb = new LiteDatabase(dbPath);
+            localRepository = new LiteRepository(localDb);
+            expirationRepository = new LiteRepository(localDb);
 
-            this.dbName = dbName;
-            CollectionName = typeof(T).Name;
-
-            ConnectAgainToDatabase = () => LoadJSONFile();
+            ConnectionOpened = true;
         }
 
         #region INoSQLRepository
 
         public override async Task Close()
         {
-            SaveJSONFile();
+            if(localRepository != null)
+                localRepository.Dispose();
+            if (expirationRepository != null)
+                expirationRepository.Dispose();
+            if (localDb != null)
+                localDb.Dispose();
             ConnectionOpened = false;
         }
 
@@ -71,7 +100,7 @@ namespace NoSqlRepositories.LiteDb
         {
             CheckOpenedConnection();
 
-            T elt = localDb.GetCollection<T>(CollectionName).FindOne(Query.EQ(nameof(elt.Id), id));
+            T elt = localRepository.Single<T>(Query.EQ("Id", id));
 
             if(elt != null)
             {
@@ -83,7 +112,7 @@ namespace NoSqlRepositories.LiteDb
                 throw new KeyNotFoundNoSQLException(string.Format("Id '{0}' not found in the repository '{1}'", id, dbPath));
             }
 
-            if (config.IsExpired(id))
+            if (IsExpired(id))
             {
                 throw new KeyNotFoundNoSQLException(string.Format("Id '{0}' not found in the repository '{1}'", id, dbPath));
             }
@@ -91,20 +120,17 @@ namespace NoSqlRepositories.LiteDb
             return elt;
         }
 
+        private bool IsExpired(string id)
+        {
+            var entity = expirationRepository.Single<ExpirationEntry>(Query.EQ("Id", id));
+            return entity != null && entity.ExpirationDate.HasValue && entity.ExpirationDate >= DateTime.UtcNow;
+        }
+
         public override IEnumerable<T> GetByIds(IList<string> ids)
         {
             CheckOpenedConnection();
 
-            var elts = new List<T>();
-
-            foreach (string id in ids)
-            {
-                var elt = TryGetById(id);
-                if (elt != null)
-                    elts.Add(elt);
-            }
-
-            return elts;
+            return ids.Select(e => TryGetById(e)).Where(e => e != null);
         }
 
         public override InsertResult InsertOne(T entity, InsertMode insertMode)
@@ -146,14 +172,9 @@ namespace NoSqlRepositories.LiteDb
             // UTC : Ensure to store only utc datetime
             var entityToStore = NewtonJsonHelper.CloneJson(entitydomain, DateTimeZoneHandling.Utc);
 
-            if (localDb.ContainsKey(entity.Id))
-                localDb[entity.Id] = entityToStore;
-            else
-                localDb.Add(entity.Id, entityToStore);
+            localRepository.Insert<T>(entityToStore);
 
-            config.ExpireAt(entity.Id, null);
-
-            SaveJSONFile();
+            ExpireAt(entity.Id, null);
 
             return InsertResult.inserted;
         }
@@ -213,11 +234,9 @@ namespace NoSqlRepositories.LiteDb
                     return UpdateResult.not_affected;
             }
 
-            localDb[entity.Id] = entityToStore;
+            localRepository.Update(entity);
 
-            config.ExpireAt(entity.Id, null);
-
-            SaveJSONFile();
+            ExpireAt(entity.Id, null);
 
             return UpdateResult.updated;
         }
@@ -228,21 +247,21 @@ namespace NoSqlRepositories.LiteDb
 
             if (Exist(id))
             {
-                foreach (var attachmentName in GetAttachmentNames(id))
-                {
-                    RemoveAttachment(id, attachmentName);
-                }
+                //foreach (var attachmentName in GetAttachmentNames(id))
+                //{
+                //    RemoveAttachment(id, attachmentName);
+                //}
 
                 if (physical)
                 {
-                    localDb.Remove(id);
-                    config.Delete(id);
+                    return localRepository.Delete<T>(Query.EQ("Id", id));
                 }
                 else
                 {
-                    localDb[id].Deleted = true;
+                    var entity = GetById(id);
+                    entity.Deleted = true;
+                    localRepository.Update(entity);
                 }
-                SaveJSONFile();
                 return 1;
             }
             else
@@ -271,7 +290,7 @@ namespace NoSqlRepositories.LiteDb
 
             if (this.localDb != null)
             {
-                return localDb.Keys.Count(e => !config.IsExpired(e));
+                return localDb.GetCollection<T>().Count(Query.All());
             }
 
             return 0;
@@ -290,8 +309,18 @@ namespace NoSqlRepositories.LiteDb
         {
             CheckOpenedConnection();
 
-            config.ExpireAt(id, dateLimit);
-            SavedDbConfig();
+            var entity = expirationRepository.Single<ExpirationEntry>(Query.EQ("Id", id));
+            if (entity == null)
+                expirationRepository.Insert(new ExpirationEntry()
+                {
+                    Id = id,
+                    ExpirationDate = dateLimit
+                });
+            else
+            {
+                entity.ExpirationDate = dateLimit;
+                expirationRepository.Update(entity);
+            }
         }
 
         public override bool CompactDatabase()
@@ -300,10 +329,7 @@ namespace NoSqlRepositories.LiteDb
 
             if (this.localDb != null)
             {
-                foreach (var item in localDb.Values.Where(e => e.Deleted || config.IsExpired(e.Id)))
-                {
-                    Delete(item.Id, true);
-                }
+                localDb.Shrink();
             }
             return true;
         }
@@ -312,11 +338,14 @@ namespace NoSqlRepositories.LiteDb
         {
             CheckOpenedConnection();
 
-            var count = localDb.Keys.Count;
-            localDb = new ConcurrentDictionary<string, T>();
-            config.TruncateCollection();
-            SaveJSONFile();
-            return count;
+            if (this.localDb != null)
+            {
+                var count = localDb.GetCollection<T>(CollectionName).Count(Query.EQ("Deleted", false));
+                localDb.DropCollection(CollectionName);
+                return (long)count;
+            }
+
+            return 0;
         }
 
         public override void SetCollectionName(string typeName)
@@ -324,7 +353,6 @@ namespace NoSqlRepositories.LiteDb
             CheckOpenedConnection();
 
             CollectionName = typeName;
-            LoadJSONFile();
         }
 
         public override void InitCollection()
@@ -353,81 +381,6 @@ namespace NoSqlRepositories.LiteDb
             CheckOpenedConnection();
 
             localDb.DropCollection(CollectionName);
-        }
-
-        #endregion
-
-        #region Private methods
-
-        private void LoadJSONFile()
-        {
-
-            ConnectionOpened = true;
-        }
-
-        private void SaveJSONFile()
-        {
-            var settings = new JsonSerializerSettings()
-            {
-                TypeNameHandling = TypeNameHandling.Auto,
-                NullValueHandling = NullValueHandling.Ignore,
-                DefaultValueHandling = DefaultValueHandling.Ignore,
-                // TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple
-            };
-
-            string content = JsonConvert.SerializeObject(this.localDb, Formatting.Indented, settings);
-            if (!Directory.Exists(dbDirectoryPath))
-                Directory.CreateDirectory(dbDirectoryPath);
-
-            File.WriteAllText(DbFilePath, content);
-
-            SavedDbConfig();
-        }
-
-        private void LoadDbConfigFile()
-        {
-            if (File.Exists(DbConfigFilePath))
-            {
-                string content = null;
-                try
-                {
-                    content = File.ReadAllText(DbConfigFilePath);
-                    var settings = new JsonSerializerSettings()
-                    {
-                        TypeNameHandling = TypeNameHandling.Objects,
-                        DefaultValueHandling = DefaultValueHandling.Populate
-                    };
-
-                    this.config = JsonConvert.DeserializeObject<DbConfiguration>(content, settings);
-
-                    if (this.config == null)
-                        this.config = new DbConfiguration(); // Empty file
-                }
-                catch
-                {
-                    throw new IOException(string.Format("Cannot read config repository file '{0}'", DbFilePath));
-                }
-            }
-            else
-            {
-                this.config = new DbConfiguration();
-            }
-        }
-
-        private void SavedDbConfig()
-        {
-            var settings = new JsonSerializerSettings()
-            {
-                TypeNameHandling = TypeNameHandling.Auto,
-                NullValueHandling = NullValueHandling.Ignore,
-                DefaultValueHandling = DefaultValueHandling.Ignore
-            };
-
-            string content = JsonConvert.SerializeObject(this.config, Formatting.Indented, settings);
-            if (!Directory.Exists(dbDirectoryPath))
-                Directory.CreateDirectory(dbDirectoryPath);
-
-            File.WriteAllText(DbConfigFilePath, content);
         }
 
         #endregion
@@ -492,7 +445,7 @@ namespace NoSqlRepositories.LiteDb
 
             if (this.localDb != null)
             {
-                return localDb.Values.Where(e => !config.IsExpired(e.Id));
+                return localDb.GetCollection<T>(CollectionName).Find(Query.EQ("Deleted", false)); //.Where(e => !config.IsExpired(e.Id));
             }
 
             return new List<T>();
@@ -535,17 +488,25 @@ namespace NoSqlRepositories.LiteDb
 
         public override IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters)
         {
-            var query = localDb.Values.Select(e => e);
+            CheckOpenedConnection();
 
-            // Filters :
-            if (queryFilters.PostFilter != null)
-                query = query.Where(e => queryFilters.PostFilter(e));
-            if (queryFilters.Skip > 0)
-                query = query.Skip(queryFilters.Skip);
-            if (queryFilters.Limit > 0)
-                query = query.Take(queryFilters.Limit);
+            //var queryBuilder = QueryBuilder.Select(SelectResult.Expression(Meta.ID))
+            //                            .From(DataSource.Database(database))
+            //                            .Where(Expression.Property("collection").EqualTo(Expression.String(CollectionName)))
+            //                            .Limit(queryFilters.Limit > 0 ? Expression.Int(queryFilters.Limit) : Expression.Int(int.MaxValue));
 
-            return query;
+            //IList<string> ids = null;
+            //using (var query = queryBuilder)
+            //{
+            //    ids = query.Execute().Select(row => row.GetString("id")).ToList();
+            //}
+
+            //var resultSet = ids.Select(e => GetById(e));
+
+            //if (queryFilters.PostFilter != null)
+            //    return resultSet.Where(e => queryFilters.PostFilter(e));
+
+            return null;
         }
 
         #endregion
