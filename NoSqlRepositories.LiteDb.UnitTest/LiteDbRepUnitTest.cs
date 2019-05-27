@@ -24,9 +24,6 @@ namespace NoSqlRepositories.Tests.LiteDb
         {
             var dbName = "NoSQLTestDb";
 
-            // Add Sqlite plugin register. Do it only for unit tests (https://github.com/CouchBaseLite/CouchBaseLite-lite-net/wiki/Error-Dictionary#cblcs0001)
-            //CouchBaseLite.Lite.Storage.SystemSQLite.Plugin.Register();
-
             var entityRepo = new LiteDbRepository<TestEntity>(Directory.GetCurrentDirectory(), dbName);
             var entityRepo2 = new LiteDbRepository<TestEntity>(Directory.GetCurrentDirectory(), dbName);
             //var collectionEntityRepo = new JsonFileRepository<CollectionTest>(NoSQLCoreUnitTests.testContext.DeploymentDirectory, dbName);
@@ -41,90 +38,90 @@ namespace NoSqlRepositories.Tests.LiteDb
         #region NoSQLCoreUnitTests test methods
 
         [TestMethod]
-        public void JsonFiles_DatabaseName()
+        public void LiteDb_DatabaseName()
         {
             test.DatabaseName();
         }
 
         [TestMethod]
-        public void JsonFiles_ExpireAt()
+        public void LiteDb_ExpireAt()
         {
             test.ExpireAt();
         }
 
         [TestMethod]
-        public void JsonFiles_DoQuery()
+        public void LiteDb_DoQuery()
         {
             test.DoQuery();
         }
 
         [TestMethod]
-        public void JsonFiles_CompactDatabase()
+        public void LiteDb_CompactDatabase()
         {
             test.CompactDatabase();
         }
 
         [TestMethod]
 
-        public void JsonFiles_InsertEntity()
+        public void LiteDb_InsertEntity()
         {
             test.InsertEntity();
         }
 
         [TestMethod]
 
-        public void JsonFiles_DeleteEntity()
+        public void LiteDb_DeleteEntity()
         {
             test.DeleteEntity();
         }
 
         [TestMethod]
-        public void JsonFiles_TimeZoneTest()
+        public void LiteDb_TimeZoneTest()
         {
             test.TimeZoneTest();
         }
 
         [TestMethod]
-        public void JsonFiles_InsertExtraEltEntity()
+        public void LiteDb_InsertExtraEltEntity()
         {
             test.InsertExtraEltEntity();
         }
         
         [TestMethod]
-        public void JsonFiles_Attachments()
+        public void LiteDb_Attachments()
         {
             test.Attachments();
         }
 
         [TestMethod]
-        public void JsonFiles_GetAll()
+        public void LiteDb_GetAll()
         {
             test.GetAll();
         }
 
 
         [TestMethod]
-        public void JsonFiles_GetTests()
+        public void LiteDb_GetTests()
         {
             test.GetTests();
         }
 
         [TestMethod]
-        public void JsonFiles_Count()
+        public void LiteDb_Count()
         {
             test.Count();
         }
 
         // Not supported for now
         //[TestMethod]
-        public void JsonFiles_ConcurrentAccess()
+        public void LiteDb_ConcurrentAccess()
         {
             test.ConcurrentAccess(false);
         }
 
         // Not supported for now
         //[TestMethod]
-        public void JsonFiles_ViewTests()
+        public void LiteDb_ViewTests()
         {
             test.ViewTests();
         }

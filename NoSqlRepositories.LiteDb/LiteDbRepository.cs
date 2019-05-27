@@ -57,6 +57,7 @@ namespace NoSqlRepositories.LiteDb
             if (string.IsNullOrWhiteSpace(dbName))
                 throw new ArgumentNullException(nameof(dbName));
 
+            this.dbName = dbName;
             this.CollectionName = typeof(T).Name;
 
             ConnectToDatabase(directoryPath, dbName);
@@ -309,7 +310,7 @@ namespace NoSqlRepositories.LiteDb
         {
             CheckOpenedConnection();
 
-            var entity = expirationRepository.Single<ExpirationEntry>(Query.EQ("Id", id));
+            var entity = expirationRepository.FirstOrDefault<ExpirationEntry>(Query.EQ("Id", id));
             if (entity == null)
                 expirationRepository.Insert(new ExpirationEntry()
                 {
@@ -391,48 +392,34 @@ namespace NoSqlRepositories.LiteDb
         {
             CheckOpenedConnection();
 
-            var entityAttachmentDir = Path.Combine(AttachmentsDirectoryPath, id);
-            var attachmentFilePath = Path.Combine(entityAttachmentDir, attachmentName);
-
-            if (!Directory.Exists(entityAttachmentDir))
-                Directory.CreateDirectory(entityAttachmentDir);
-
-            using (var file = File.OpenWrite(attachmentFilePath))
-            {
-                fileStream.CopyTo(file);
-            }
+            string fileIdentifier = id + "_" + CollectionName + "_" + attachmentName;
+            localDb.FileStorage.Upload(fileIdentifier, attachmentName, fileStream);
         }
 
         public override void RemoveAttachment(string id, string attachmentName)
         {
             CheckOpenedConnection();
 
-            var entityAttachmentDir = AttachmentsDirectoryPath + "/" + id;
-            var attachmentFilePath = entityAttachmentDir + "/" + attachmentName;
+            string fileIdentifier = id + "_" + CollectionName + "_" + attachmentName;
 
-            if (!Exist(id))
+            var fileInfo = localDb.FileStorage.FindById(fileIdentifier);
+            if (fileInfo == null)
                 throw new KeyNotFoundNoSQLException();
 
-            if (!File.Exists(attachmentFilePath))
-                throw new AttachmentNotFoundNoSQLException();
-
-            File.Delete(attachmentFilePath);
+            localDb.FileStorage.Delete(fileIdentifier);
         }
 
         public override Stream GetAttachment(string id, string attachmentName)
         {
             CheckOpenedConnection();
 
-            var entityAttachmentDir = AttachmentsDirectoryPath + "/" + id;
-            var attachmentFilePath = entityAttachmentDir + "/" + attachmentName;
+            string fileIdentifier = id + "_" + CollectionName + "_" + attachmentName;
 
-            if (!Exist(id))
+            var fileInfo = localDb.FileStorage.FindById(fileIdentifier);
+            if(fileInfo == null)
                 throw new KeyNotFoundNoSQLException();
 
-            if (!File.Exists(attachmentFilePath))
-                throw new AttachmentNotFoundNoSQLException();
-
-            return File.OpenRead(attachmentFilePath);
+            return fileInfo.OpenRead();
         }
 
         /// <summary>
@@ -460,14 +447,9 @@ namespace NoSqlRepositories.LiteDb
         {
             CheckOpenedConnection();
 
-            var entityAttachmentDir = Path.Combine(AttachmentsDirectoryPath, id);
+            string fileNamePrefix = id + "_" + CollectionName + "_";
 
-            if (Directory.Exists(entityAttachmentDir))
-            {
-                var fullFilePath = Directory.GetFiles(entityAttachmentDir);
-                return fullFilePath.Select(file => file.Substring(file.LastIndexOf("\\", StringComparison.Ordinal) + 1));
-            }
-            return new List<string>();
+            return localDb.FileStorage.Find(fileNamePrefix).Select(e => e.Id.Replace(fileNamePrefix, ""));
         }
 
         public override IEnumerable<string> GetKeyByField<TField>(string fieldName, List<TField> values)
