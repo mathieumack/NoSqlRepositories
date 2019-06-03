@@ -37,7 +37,7 @@ namespace NoSqlRepositories.LiteDb
 
         private string dbPath;
         private LiteDatabase localDb;
-        private LiteRepository localRepository;
+        private LiteCollection<T> collection;
         private LiteRepository expirationRepository;
 
         #endregion
@@ -73,7 +73,9 @@ namespace NoSqlRepositories.LiteDb
 
             var dbPath = Path.Combine(directoryPath, dbName + ".db");
             localDb = new LiteDatabase(dbPath);
-            localRepository = new LiteRepository(localDb);
+            collection = localDb.GetCollection<T>();
+            collection.EnsureIndex("Id");
+            collection.EnsureIndex("Deleted");
             expirationRepository = new LiteRepository(localDb);
 
             ConnectionOpened = true;
@@ -83,8 +85,6 @@ namespace NoSqlRepositories.LiteDb
 
         public override async Task Close()
         {
-            if(localRepository != null)
-                localRepository.Dispose();
             if (expirationRepository != null)
                 expirationRepository.Dispose();
             if (localDb != null)
@@ -101,9 +101,10 @@ namespace NoSqlRepositories.LiteDb
         {
             CheckOpenedConnection();
 
-            T elt = localRepository.Single<T>(Query.EQ("Id", id));
+            var customers = localDb.GetCollection<T>();
+            T elt = customers.FindOne(e => !e.Deleted && e.Id.Equals(id));
 
-            if(elt != null)
+            if (elt == null)
             {
                 throw new KeyNotFoundNoSQLException(string.Format("Id '{0}' not found in the repository '{1}'", id, dbPath));
             }
@@ -123,7 +124,7 @@ namespace NoSqlRepositories.LiteDb
 
         private bool IsExpired(string id)
         {
-            var entity = expirationRepository.Single<ExpirationEntry>(Query.EQ("Id", id));
+            var entity = expirationRepository.FirstOrDefault<ExpirationEntry>(Query.EQ("Id", id));
             return entity != null && entity.ExpirationDate.HasValue && entity.ExpirationDate >= DateTime.UtcNow;
         }
 
@@ -173,7 +174,7 @@ namespace NoSqlRepositories.LiteDb
             // UTC : Ensure to store only utc datetime
             var entityToStore = NewtonJsonHelper.CloneJson(entitydomain, DateTimeZoneHandling.Utc);
 
-            localRepository.Insert<T>(entityToStore);
+            collection.Insert(entityToStore);
 
             ExpireAt(entity.Id, null);
 
@@ -208,7 +209,7 @@ namespace NoSqlRepositories.LiteDb
                 GetById(id);
                 return true;
             }
-            catch
+            catch(Exception ex)
             {
                 return false;
             }
@@ -235,7 +236,7 @@ namespace NoSqlRepositories.LiteDb
                     return UpdateResult.not_affected;
             }
 
-            localRepository.Update(entity);
+            collection.Update(entity);
 
             ExpireAt(entity.Id, null);
 
@@ -248,20 +249,20 @@ namespace NoSqlRepositories.LiteDb
 
             if (Exist(id))
             {
-                //foreach (var attachmentName in GetAttachmentNames(id))
-                //{
-                //    RemoveAttachment(id, attachmentName);
-                //}
+                foreach (var attachmentName in GetAttachmentNames(id))
+                {
+                    RemoveAttachment(id, attachmentName);
+                }
 
                 if (physical)
                 {
-                    return localRepository.Delete<T>(Query.EQ("Id", id));
+                    return collection.Delete(e => e.Id.Equals(id));
                 }
                 else
                 {
                     var entity = GetById(id);
                     entity.Deleted = true;
-                    localRepository.Update(entity);
+                    collection.Update(entity);
                 }
                 return 1;
             }
@@ -291,7 +292,7 @@ namespace NoSqlRepositories.LiteDb
 
             if (this.localDb != null)
             {
-                return localDb.GetCollection<T>().Count(Query.All());
+                return collection.Count(e => !e.Deleted);
             }
 
             return 0;
@@ -330,6 +331,11 @@ namespace NoSqlRepositories.LiteDb
 
             if (this.localDb != null)
             {
+                var deleteds = collection.Find(e => e.Deleted);
+                foreach(var deleted in deleteds)
+                {
+                    Delete(deleted.Id, true);
+                }
                 localDb.Shrink();
             }
             return true;
@@ -432,7 +438,7 @@ namespace NoSqlRepositories.LiteDb
 
             if (this.localDb != null)
             {
-                return localDb.GetCollection<T>(CollectionName).Find(Query.EQ("Deleted", false)); //.Where(e => !config.IsExpired(e.Id));
+                return localDb.GetCollection<T>().Find(Query.EQ("Deleted", false)); //.Where(e => !config.IsExpired(e.Id));
             }
 
             return new List<T>();

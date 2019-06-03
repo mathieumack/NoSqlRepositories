@@ -1,8 +1,13 @@
 <Project>
   <PropertyGroup>
-    <Copyright>Copyright (c) MACK Mathieu</Copyright>
+    <Copyright>Copyright (c) 2017 MACK Mathieu</Copyright>
     <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/mathieumack/MvvX.Plugins.Caching</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/mathieumack/NoSqlRepositories</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/mathieumack/NoSqlRepositories</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Authors>MACK Mathieu</Authors>
+    <Company>MACK Mathieu</Company>
+    <Product>No sql repository project that let you use CosmosDb, MongoDb, LiteDb or json file storage</Product>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
     <NeutralLanguage>en</NeutralLanguage>
     

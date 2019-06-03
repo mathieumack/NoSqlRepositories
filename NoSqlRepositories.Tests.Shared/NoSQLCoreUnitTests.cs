@@ -609,7 +609,7 @@ namespace NoSqlRepositories.Tests.Shared
             entityRepo.Delete(entity3.Id);
 
             var entitylist = entityRepo.GetAll();
-            Assert.AreEqual(3, entitylist.Count(), "Invalide number. The expected result is " + entitylist.Count());
+            Assert.AreEqual(3, entitylist.Count(), "Invalid count items.");
 
             foreach (var e in entitylist)
             {
