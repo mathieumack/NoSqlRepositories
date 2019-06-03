@@ -70,24 +70,22 @@ namespace NoSqlRepositories.Tests.Shared
             var entity1 = TestHelper.GetEntity1();
             entityRepo.InsertOne(entity1);
             Assert.IsFalse(string.IsNullOrEmpty(entity1.Id), "DocId has not been set during insert");
-
-            var itemsInDatabase = entityRepo.GetAll();
-
+            
             // We try to delete the item :
             entityRepo.ExpireAt(entity1.Id, DateTime.Now.AddSeconds(2));
 
-            var itemsInDatabase2 = entityRepo.GetAll();
+            var itemsInDatabase = entityRepo.Count();
 
-            Assert.IsTrue(itemsInDatabase.Count() == itemsInDatabase2.Count(), "entityRepo has not been physically deleted after compact");
-
+            Assert.AreEqual(1, itemsInDatabase, "entityRepo has not been physically deleted after compact");
+            
             Thread.Sleep(4000);
 
             // We compact the database :
             entityRepo.CompactDatabase();
 
-            var itemsInDatabaseAfterCompact = entityRepo.GetAll();
+            itemsInDatabase = entityRepo.Count();
 
-            Assert.IsTrue(itemsInDatabaseAfterCompact.Count() == itemsInDatabase.Count() - 1, "entityRepo has not been physically deleted after compact");
+            Assert.AreEqual(0, itemsInDatabase, "entityRepo has not been physically deleted after compact");
         }
 
         public virtual void CompactDatabase()
@@ -404,114 +402,92 @@ namespace NoSqlRepositories.Tests.Shared
 
             TestEntity entity1;
 
-            //
             // Test add of attachements on a First entity
-            //
+            entity1 = TestHelper.GetEntity1();
+            entityRepo.InsertOne(entity1, InsertMode.erase_existing);
+            Assert.IsFalse(string.IsNullOrEmpty(entity1.Id), "Id has been defined during insert");
+
+            using (var fileStream = File.Open(getFullpath(attach1FilePath), FileMode.Open))
             {
-                entity1 = TestHelper.GetEntity1();
-                entityRepo.InsertOne(entity1, InsertMode.erase_existing);
-                Assert.IsFalse(string.IsNullOrEmpty(entity1.Id), "Id has been defined during insert");
-
-                using (var fileStream = File.Open(getFullpath(attach1FilePath), FileMode.Open))
-                {
-                    entityRepo.AddAttachment(entity1.Id, fileStream, "image/jpg", attach1FileName);
-                }
-
-                using (var fileStream = File.Open(getFullpath(attach2FilePath), FileMode.Open))
-                {
-                    entityRepo.AddAttachment(entity1.Id, fileStream, "application/pdf", attach2FileName);
-                }
-
-                // Try to get the list of attachments
-                var attachNames = entityRepo.GetAttachmentNames(entity1.Id);
-
-                Assert.AreEqual(2, attachNames.Count(), "Invalid number of attachments names found");
-                Assert.IsTrue(attachNames.Contains(attach1FileName), "First attachment not found in the list");
-                Assert.IsTrue(attachNames.Contains(attach2FileName), "2nd attachment not found in the list");
-
-                entity1.Name = "NewName";
-                entityRepo.Update(entity1);
-                var attachNames2 = entityRepo.GetAttachmentNames(entity1.Id);
-                Assert.AreEqual(2, attachNames.Count(), "An update of an entity should not alter its attachments");
-                Assert.IsTrue(attachNames.Contains(attach1FileName), "An update of an entity should not alter its attachments");
-                Assert.IsTrue(attachNames.Contains(attach2FileName), "An update of an entity should not alter its attachments");
-
-
+                entityRepo.AddAttachment(entity1.Id, fileStream, "image/jpg", attach1FileName);
             }
 
-            //
+            using (var fileStream = File.Open(getFullpath(attach2FilePath), FileMode.Open))
+            {
+                entityRepo.AddAttachment(entity1.Id, fileStream, "application/pdf", attach2FileName);
+            }
+
+            // Try to get the list of attachments
+            var attachNames = entityRepo.GetAttachmentNames(entity1.Id);
+
+            Assert.AreEqual(2, attachNames.Count(), "Invalid number of attachments names found");
+            Assert.IsTrue(attachNames.Contains(attach1FileName), "First attachment not found in the list");
+            Assert.IsTrue(attachNames.Contains(attach2FileName), "2nd attachment not found in the list");
+
+            entity1.Name = "NewName";
+            entityRepo.Update(entity1);
+            var attachNames2 = entityRepo.GetAttachmentNames(entity1.Id);
+            Assert.AreEqual(2, attachNames.Count(), "An update of an entity should not alter its attachments");
+            Assert.IsTrue(attachNames.Contains(attach1FileName), "An update of an entity should not alter its attachments");
+            Assert.IsTrue(attachNames.Contains(attach2FileName), "An update of an entity should not alter its attachments");
+
             // Test add of the same file to a 2nd entity
-            //
-            {
-                //var entity2 = TestHelper.GetEntity2();
-                //entityRepo.InsertOne(entity2, InsertMode.erase_existing);
-                //Assert.IsFalse(string.IsNullOrEmpty(entity2.Id), "Id has been defined during insert");
+            //var entity2 = TestHelper.GetEntity2();
+            //entityRepo.InsertOne(entity2, InsertMode.erase_existing);
+            //Assert.IsFalse(string.IsNullOrEmpty(entity2.Id), "Id has been defined during insert");
 
-                //using (var fileStream = File.Open(getFullpath(attach1FilePath), FileMode.Open))
-                //{
-                //    entityRepo.AddAttachment(entity2.Id, fileStream, "image/jpg", attach1FileName);
-                //}
-            }
+            //using (var fileStream = File.Open(getFullpath(attach1FilePath), FileMode.Open))
+            //{
+            //    entityRepo.AddAttachment(entity2.Id, fileStream, "image/jpg", attach1FileName);
+            //}
 
-            //
             // Test get an attachement
-            //
+            using (var fileRepoStream = entityRepo.GetAttachment(entity1.Id, attach1FileName))
             {
-                using (var fileRepoStream = entityRepo.GetAttachment(entity1.Id, attach1FileName))
-                {
-                    Assert.IsNotNull(fileRepoStream, "The steam returned by GetAttachment should not be null");
+                Assert.IsNotNull(fileRepoStream, "The steam returned by GetAttachment should not be null");
 
-                    using (var sourceFileSteam = File.Open(getFullpath(attach1FilePath), FileMode.Open))
-                    {
-                        Assert.IsTrue(sourceFileSteam.Length > 0, "File content is empty");
-                    }
+                using (var sourceFileSteam = File.Open(getFullpath(attach1FilePath), FileMode.Open))
+                {
+                    Assert.IsTrue(sourceFileSteam.Length > 0, "File content is empty");
                 }
             }
 
-            //
             // Test remove of an attachement
-            //
+            entityRepo.RemoveAttachment(entity1.Id, attach1FileName);
+
+            AttachmentNotFoundNoSQLException notfoundEx = null;
+            try
+            {
+                var fileRepoStream = entityRepo.GetAttachment(entity1.Id, attach1FileName);
+            }
+            catch (AttachmentNotFoundNoSQLException ex)
+            {
+                notfoundEx = ex;
+            }
+
+            Assert.IsInstanceOfType(notfoundEx, typeof(AttachmentNotFoundNoSQLException), "The get should return exception because the attachement has been deleted");
+
+            var attachNames3 = entityRepo.GetAttachmentNames(entity1.Id);
+            Assert.AreEqual(1, attachNames3.Count());
+
+            entityRepo.Delete(entity1.Id);
+            entityRepo.InsertOne(entity1);
+
+            var attachNames4 = entityRepo.GetAttachmentNames(entity1.Id);
+            Assert.AreEqual(0, attachNames4.Count(), "Delete of an entity should delete its attachemnts");
+
+            // Test remove of a missing attachement
+            notfoundEx = null;
+            try
             {
                 entityRepo.RemoveAttachment(entity1.Id, attach1FileName);
-
-                AttachmentNotFoundNoSQLException notfoundEx = null;
-                try
-                {
-                    var fileRepoStream = entityRepo.GetAttachment(entity1.Id, attach1FileName);
-                }
-                catch (AttachmentNotFoundNoSQLException ex)
-                {
-                    notfoundEx = ex;
-                }
-
-                Assert.IsInstanceOfType(notfoundEx, typeof(AttachmentNotFoundNoSQLException), "The get should return exception because the attachement has been deleted");
-
-                var attachNames3 = entityRepo.GetAttachmentNames(entity1.Id);
-                Assert.AreEqual(1, attachNames3.Count());
-
-                entityRepo.Delete(entity1.Id);
-                entityRepo.InsertOne(entity1);
-
-                var attachNames4 = entityRepo.GetAttachmentNames(entity1.Id);
-                Assert.AreEqual(0, attachNames4.Count(), "Delete of an entity should delete its attachemnts");
             }
-
-            //
-            // Test remove of a missing attachement
-            //
+            catch (AttachmentNotFoundNoSQLException ex)
             {
-                AttachmentNotFoundNoSQLException notfoundEx = null;
-                try
-                {
-                    entityRepo.RemoveAttachment(entity1.Id, attach1FileName);
-                }
-                catch (AttachmentNotFoundNoSQLException ex)
-                {
-                    notfoundEx = ex;
-                }
-
-                Assert.IsInstanceOfType(notfoundEx, typeof(AttachmentNotFoundNoSQLException), "The RemoveAttachment should return exception because the attachement doesn't exists");
+                notfoundEx = ex;
             }
+
+            Assert.IsInstanceOfType(notfoundEx, typeof(AttachmentNotFoundNoSQLException), "The RemoveAttachment should return exception because the attachement doesn't exists");
         }
 
         /// <summary>

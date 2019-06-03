@@ -38,7 +38,7 @@ namespace NoSqlRepositories.LiteDb
         private string dbPath;
         private LiteDatabase localDb;
         private LiteCollection<T> collection;
-        private LiteRepository expirationRepository;
+        private LiteCollection<ExpirationEntry> expiredCollection;
 
         #endregion
 
@@ -76,7 +76,10 @@ namespace NoSqlRepositories.LiteDb
             collection = localDb.GetCollection<T>();
             collection.EnsureIndex("Id");
             collection.EnsureIndex("Deleted");
-            expirationRepository = new LiteRepository(localDb);
+
+            expiredCollection = localDb.GetCollection<ExpirationEntry>();
+            expiredCollection.EnsureIndex("Id");
+            expiredCollection.EnsureIndex("ExpirationDate");
 
             ConnectionOpened = true;
         }
@@ -85,8 +88,6 @@ namespace NoSqlRepositories.LiteDb
 
         public override async Task Close()
         {
-            if (expirationRepository != null)
-                expirationRepository.Dispose();
             if (localDb != null)
                 localDb.Dispose();
             ConnectionOpened = false;
@@ -101,8 +102,7 @@ namespace NoSqlRepositories.LiteDb
         {
             CheckOpenedConnection();
 
-            var customers = localDb.GetCollection<T>();
-            T elt = customers.FindOne(e => !e.Deleted && e.Id.Equals(id));
+            T elt = collection.FindOne(e => !e.Deleted && e.Id.Equals(id));
 
             if (elt == null)
             {
@@ -124,7 +124,7 @@ namespace NoSqlRepositories.LiteDb
 
         private bool IsExpired(string id)
         {
-            var entity = expirationRepository.FirstOrDefault<ExpirationEntry>(Query.EQ("Id", id));
+            var entity = expiredCollection.FindOne(e => e.Id == id);
             return entity != null && entity.ExpirationDate.HasValue && entity.ExpirationDate >= DateTime.UtcNow;
         }
 
@@ -256,6 +256,7 @@ namespace NoSqlRepositories.LiteDb
 
                 if (physical)
                 {
+                    expiredCollection.Delete(e => e.Id.Equals(id));
                     return collection.Delete(e => e.Id.Equals(id));
                 }
                 else
@@ -311,9 +312,9 @@ namespace NoSqlRepositories.LiteDb
         {
             CheckOpenedConnection();
 
-            var entity = expirationRepository.FirstOrDefault<ExpirationEntry>(Query.EQ("Id", id));
+            var entity = expiredCollection.FindOne(e => e.Id == id);
             if (entity == null)
-                expirationRepository.Insert(new ExpirationEntry()
+                expiredCollection.Insert(new ExpirationEntry()
                 {
                     Id = id,
                     ExpirationDate = dateLimit
@@ -321,7 +322,7 @@ namespace NoSqlRepositories.LiteDb
             else
             {
                 entity.ExpirationDate = dateLimit;
-                expirationRepository.Update(entity);
+                expiredCollection.Update(entity);
             }
         }
 
@@ -331,6 +332,14 @@ namespace NoSqlRepositories.LiteDb
 
             if (this.localDb != null)
             {
+                // Delete expired items
+                var expiredEntities = expiredCollection.Find(e => e.ExpirationDate <= DateTime.UtcNow);
+                foreach (var entity in expiredEntities)
+                {
+                    Delete(entity.Id, true);
+                }
+
+                // Delete all deleted items
                 var deleteds = collection.Find(e => e.Deleted);
                 foreach(var deleted in deleteds)
                 {
@@ -410,7 +419,7 @@ namespace NoSqlRepositories.LiteDb
 
             var fileInfo = localDb.FileStorage.FindById(fileIdentifier);
             if (fileInfo == null)
-                throw new KeyNotFoundNoSQLException();
+                throw new AttachmentNotFoundNoSQLException();
 
             localDb.FileStorage.Delete(fileIdentifier);
         }
@@ -423,7 +432,7 @@ namespace NoSqlRepositories.LiteDb
 
             var fileInfo = localDb.FileStorage.FindById(fileIdentifier);
             if(fileInfo == null)
-                throw new KeyNotFoundNoSQLException();
+                throw new AttachmentNotFoundNoSQLException();
 
             return fileInfo.OpenRead();
         }
@@ -438,7 +447,7 @@ namespace NoSqlRepositories.LiteDb
 
             if (this.localDb != null)
             {
-                return localDb.GetCollection<T>().Find(Query.EQ("Deleted", false)); //.Where(e => !config.IsExpired(e.Id));
+                return collection.Find(e => !e.Deleted && !IsExpired(e.Id));
             }
 
             return new List<T>();
