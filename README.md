@@ -6,7 +6,7 @@ NoSqlRepositories contains predefined noSql repositories for your applications. 
 ## Quality and packaging
 
 [![Build status](https://dev.azure.com/mackmathieu/Github/_apis/build/status/NoSqlRepository)](https://dev.azure.com/mackmathieu/Github/_build/latest?definitionId=1)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=github-nosqlrepository&metric=alert_status)](https://sonarcloud.io/dashboard?id=github-nosqlrepository)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=github-NoSqlRepositories&metric=alert_status)](https://sonarcloud.io/dashboard?id=github-nosqlrepository)
 
 ![Nuget](https://img.shields.io/nuget/dt/NoSqlRepositories.Core.svg?label=NoSqlRepositories.Core&logo=nuget)
 ![Nuget](https://img.shields.io/nuget/dt/NoSqlRepositories.CouchBaseLite.svg?label=NoSqlRepositories.CouchBaseLite&logo=nuget)
