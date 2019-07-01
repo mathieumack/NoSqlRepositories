@@ -1,15 +1,15 @@
 ﻿using Couchbase.Lite;
+using Couchbase.Lite.Query;
+using Newtonsoft.Json.Linq;
 using NoSqlRepositories.Core;
 using NoSqlRepositories.Core.Helpers;
 using NoSqlRepositories.Core.NoSQLException;
+using NoSqlRepositories.Core.Queries;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using NoSqlRepositories.Core.Queries;
-using Couchbase.Lite.Query;
-using Newtonsoft.Json.Linq;
 
 namespace NoSqlRepositories.CouchBaseLite
 {
@@ -186,14 +186,19 @@ namespace NoSqlRepositories.CouchBaseLite
 
         public override T TryGetById(string id)
         {
-            // Refactor to optimize this implementation
-            try
+            CheckOpenedConnection();
+
+            using (var documentObjet = this.database.GetDocument(id))
             {
-                return GetById(id);
-            }
-            catch (KeyNotFoundNoSQLException)
-            {
-                return null;
+                if (documentObjet == null)
+                    return null;
+
+                var result = GetEntityDomain(documentObjet);
+
+                if (result.Deleted)
+                    return null;
+
+                return result;
             }
         }
 
