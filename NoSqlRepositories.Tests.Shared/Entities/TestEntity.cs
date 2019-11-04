@@ -34,8 +34,16 @@ namespace NoSqlRepositories.Tests.Shared.Entities
         public int NumberOfChildenInt { get; set; }
         public long NumberOfChildenLong { get; set; }
 
+        public TestEnum TestEnumValue { get; set; }
+
         public List<string> Cities { get; set; } = new List<string>();
 
         public List<TestEntity> Childs { get; set; } = new List<TestEntity>();
+    }
+
+    public enum TestEnum
+    {
+        Value1,
+        Value2
     }
 }

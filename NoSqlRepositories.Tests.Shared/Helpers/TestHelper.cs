@@ -17,6 +17,7 @@ namespace NoSqlRepositories.Tests.Shared.Helpers
                 PoidsDouble = 70.15,
                 NumberOfChildenInt = 5,
                 NumberOfChildenLong = 9999999999999999,
+                TestEnumValue = TestEnum.Value2,
                 Cities = new List<string> { "Andernos", "Grenoble" }
             };
         }

@@ -36,6 +36,11 @@ namespace NoSqlRepositories.CouchBaseLite
             foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(source))
             {
                 object value = property.GetValue(source);
+
+                if (property.PropertyType.BaseType == typeof(System.Enum))
+                    value = (int)value;
+
+                //Enum.ToObject(property.PropertyType, value);
                 // TODO : Add management of Extra elements in a next release
                 //if(property.Attributes.OfType<JsonExtensionDataAttribute>().Any() && value is Dictionary<string, object>)
                 //{

@@ -131,6 +131,6 @@ namespace NoSqlRepositories.Tests.CouchbaseLite
             test.ViewTests();
         }
 
-        #endregion  
+        #endregion
     }
 }
