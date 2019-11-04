@@ -149,7 +149,15 @@ namespace NoSqlRepositories.Core
         /// <param name="id">Id of entity</param>
         /// <param name="attachmentName">Name of the file to attach. Unique identier of a file inside an entity.</param>
         void RemoveAttachment(string id, string attachmentName);
-        
+
+        /// <summary>
+        /// Get attachment detail
+        /// </summary>
+        /// <param name="id">Id of entity</param>
+        /// <param name="attachmentName">Name of the file to attach. Unique identier of a file inside an entity.</param>
+        /// <returns></returns>
+        AttachmentDetail GetAttachmentDetail(string id, string attachmentName);
+
         /// <summary>
         /// Get one attachment of a document
         /// </summary>

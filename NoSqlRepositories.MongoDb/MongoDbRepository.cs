@@ -312,6 +312,26 @@ namespace NoSqlRepositories.MongoDb
                 throw new AttachmentNotFoundNoSQLException();
         }
 
+        public override AttachmentDetail GetAttachmentDetail(string id, string attachmentName)
+        {
+            var bucket = new GridFSBucket(database, new GridFSBucketOptions()
+            {
+                BucketName = "attachments"
+            });
+
+            var document = bucket.Find(Builders<GridFSFileInfo>.Filter.Eq(e => e.Metadata["attachment-id"], id + "-" + attachmentName)).FirstOrDefault();
+            if (document != null)
+            {
+                return new AttachmentDetail()
+                {
+                    FileName = attachmentName,
+                    ContentType = document.Metadata.GetValue("content-type").AsString
+                };
+            }
+            else
+                throw new AttachmentNotFoundNoSQLException();
+        }
+
         public override IEnumerable<string> GetAttachmentNames(string id)
         {
             var bucket = new GridFSBucket(database, new GridFSBucketOptions()

@@ -537,6 +537,21 @@ namespace NoSqlRepositories.CouchBaseLite
             return ids.Select(e => GetById(e));
         }
 
+        public override AttachmentDetail GetAttachmentDetail(string id, string attachmentName)
+        {
+            CheckOpenedConnection();
+
+            var attachment = GetAttachmentCore(id, attachmentName);
+            if (attachment != null)
+                return new AttachmentDetail()
+                {
+                    FileName = attachmentName,
+                    ContentType = attachment.ContentType
+                };
+            else
+                throw new AttachmentNotFoundNoSQLException();
+        }
+
         public override IEnumerable<string> GetAttachmentNames(string id)
         {
             CheckOpenedConnection();

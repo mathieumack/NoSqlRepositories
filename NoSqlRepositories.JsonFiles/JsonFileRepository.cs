@@ -44,6 +44,17 @@ namespace NoSqlRepositories.JsonFiles
             }
         }
 
+        /// <summary>
+        /// File path taht contains attachment details
+        /// </summary>
+        public string AttachmentsFilePath
+        {
+            get
+            {
+                return dbDirectoryPath + "/" + CollectionName + ".Attachments.json";
+            }
+        }
+
         public string DbFilePath
         {
             get
@@ -61,6 +72,7 @@ namespace NoSqlRepositories.JsonFiles
         }
 
         private IDictionary<string, T> localDb;
+        private IDictionary<string, AttachmentDetail> attachmentDetails;
         private DbConfiguration config;
 
         #endregion
@@ -331,6 +343,7 @@ namespace NoSqlRepositories.JsonFiles
 
             var count = localDb.Keys.Count;
             localDb = new ConcurrentDictionary<string, T>();
+            attachmentDetails = new ConcurrentDictionary<string, AttachmentDetail>();
             config.TruncateCollection();
             SaveJSONFile();
             return count;
@@ -396,6 +409,13 @@ namespace NoSqlRepositories.JsonFiles
 
                     if (this.localDb == null)
                         this.localDb = new ConcurrentDictionary<string, T>(); // Empty file
+
+                    this.attachmentDetails = new ConcurrentDictionary<string, AttachmentDetail>(); // Empty file
+                    if (File.Exists(AttachmentsFilePath))
+                    {
+                        content = File.ReadAllText(AttachmentsFilePath);
+                        this.attachmentDetails = JsonConvert.DeserializeObject<ConcurrentDictionary<string, AttachmentDetail>>(content, settings);
+                    }
                 }
                 catch
                 {
@@ -405,6 +425,7 @@ namespace NoSqlRepositories.JsonFiles
             else
             {
                 this.localDb = new ConcurrentDictionary<string, T>();
+                this.attachmentDetails = new ConcurrentDictionary<string, AttachmentDetail>();
             }
 
             LoadDbConfigFile();
@@ -427,6 +448,10 @@ namespace NoSqlRepositories.JsonFiles
                 Directory.CreateDirectory(dbDirectoryPath);
 
             File.WriteAllText(DbFilePath, content);
+            
+            content = JsonConvert.SerializeObject(this.attachmentDetails, Formatting.Indented, settings);
+
+            File.WriteAllText(AttachmentsFilePath, content);
 
             SavedDbConfig();
         }
@@ -495,6 +520,13 @@ namespace NoSqlRepositories.JsonFiles
             {
                 fileStream.CopyTo(file);
             }
+
+            attachmentDetails.Add((id + "-" + attachmentName).ToLower(),
+                new AttachmentDetail() {
+                DocumentId = id,
+                ContentType = contentType,
+                FileName = attachmentName
+            });
         }
 
         public override void RemoveAttachment(string id, string attachmentName)
@@ -511,6 +543,10 @@ namespace NoSqlRepositories.JsonFiles
                 throw new AttachmentNotFoundNoSQLException();
 
             File.Delete(attachmentFilePath);
+
+            var entryKey = (id + "-" + attachmentName).ToLower();
+            if (attachmentDetails.ContainsKey(entryKey))
+                attachmentDetails.Remove(entryKey);
         }
 
         public override Stream GetAttachment(string id, string attachmentName)
@@ -527,6 +563,26 @@ namespace NoSqlRepositories.JsonFiles
                 throw new AttachmentNotFoundNoSQLException();
 
             return File.OpenRead(attachmentFilePath);
+        }
+
+        public override AttachmentDetail GetAttachmentDetail(string id, string attachmentName)
+        {
+            CheckOpenedConnection();
+
+            var entityAttachmentDir = AttachmentsDirectoryPath + "/" + id;
+            var attachmentFilePath = entityAttachmentDir + "/" + attachmentName;
+
+            if (!Exist(id))
+                throw new KeyNotFoundNoSQLException();
+
+            if (!File.Exists(attachmentFilePath))
+                throw new AttachmentNotFoundNoSQLException();
+
+            var entryKey = (id + "-" + attachmentName).ToLower();
+            if (attachmentDetails.ContainsKey(entryKey))
+                return attachmentDetails[entryKey];
+            else
+                throw new AttachmentNotFoundNoSQLException();
         }
 
         /// <summary>

@@ -424,19 +424,26 @@ namespace NoSqlRepositories.Tests.Shared
 
                 // Try to get the list of attachments
                 var attachNames = entityRepo.GetAttachmentNames(entity1.Id);
-
                 Assert.AreEqual(2, attachNames.Count(), "Invalid number of attachments names found");
+
+                // Attachment detail 1 :
                 Assert.IsTrue(attachNames.Contains(attach1FileName), "First attachment not found in the list");
+                var attachmentDetail = entityRepo.GetAttachmentDetail(entity1.Id, attach1FileName);
+                Assert.AreEqual(attach1FileName, attachmentDetail.FileName);
+                Assert.AreEqual("image/jpg", attachmentDetail.ContentType);
+
+                // Attachment detail 2 :
                 Assert.IsTrue(attachNames.Contains(attach2FileName), "2nd attachment not found in the list");
+                attachmentDetail = entityRepo.GetAttachmentDetail(entity1.Id, attach2FileName);
+                Assert.AreEqual(attach2FileName, attachmentDetail.FileName);
+                Assert.AreEqual("application/pdf", attachmentDetail.ContentType);
 
                 entity1.Name = "NewName";
                 entityRepo.Update(entity1);
                 var attachNames2 = entityRepo.GetAttachmentNames(entity1.Id);
-                Assert.AreEqual(2, attachNames.Count(), "An update of an entity should not alter its attachments");
-                Assert.IsTrue(attachNames.Contains(attach1FileName), "An update of an entity should not alter its attachments");
-                Assert.IsTrue(attachNames.Contains(attach2FileName), "An update of an entity should not alter its attachments");
-
-
+                Assert.AreEqual(2, attachNames2.Count(), "An update of an entity should not alter its attachments");
+                Assert.IsTrue(attachNames2.Contains(attach1FileName), "An update of an entity should not alter its attachments");
+                Assert.IsTrue(attachNames2.Contains(attach2FileName), "An update of an entity should not alter its attachments");
             }
 
             //

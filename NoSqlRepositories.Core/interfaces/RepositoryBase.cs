@@ -47,6 +47,8 @@ namespace NoSqlRepositories.Core
 
         public abstract Stream GetAttachment(string id, string attachmentName);
 
+        public abstract AttachmentDetail GetAttachmentDetail(string id, string attachmentName);
+
         public abstract IEnumerable<string> GetAttachmentNames(string id);
 
         public abstract T GetById(string id);
