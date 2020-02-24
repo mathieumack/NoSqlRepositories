@@ -447,7 +447,7 @@ namespace NoSqlRepositories.CouchBaseLite
 
                 using (var mutableDocument = existingEntity.ToMutable())
                 {
-                    mutableDocument.SetBlob(attachmentName, null);
+                    mutableDocument.Remove(attachmentName);
                     database.Save(mutableDocument);
                 }
             }
