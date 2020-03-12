@@ -23,11 +23,7 @@ namespace NoSqlRepositories.Tests.CouchbaseLite
         public void TestInitialize()
         {
             var dbName = "NoSQLTestDb";
-
-            // Add Sqlite plugin register. Do it only for unit tests (https://github.com/CouchBaseLite/CouchBaseLite-lite-net/wiki/Error-Dictionary#cblcs0001)
-            //CouchBaseLite.Lite.Storage.SystemSQLite.Plugin.Register();
-            Couchbase.Lite.Support.NetDesktop.Activate();
-
+            
             var entityRepo = new CouchBaseLiteRepository<TestEntity>(Directory.GetCurrentDirectory(), dbName);
             var entityRepo2 = new CouchBaseLiteRepository<TestEntity>(Directory.GetCurrentDirectory(), dbName);
             //var collectionEntityRepo = new CouchBaseLiteRepository<CollectionTest>(Directory.GetCurrentDirectory(), dbName);
