@@ -117,6 +117,18 @@ namespace NoSqlRepositories.Tests.CouchbaseLite
             test.Count();
         }
 
+        [TestMethod]
+        public void CouchbaseLite_PreFilter()
+        {
+            test.Filter();
+        }
+
+        [TestMethod]
+        public void CouchbaseLite_FilterComplex()
+        {
+            test.FilterComplex();
+        }
+
         // Not supported for now
         //[TestMethod]
         public void CouchbaseLite_ConcurrentAccess()
