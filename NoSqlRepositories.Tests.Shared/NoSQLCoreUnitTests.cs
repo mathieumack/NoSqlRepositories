@@ -248,7 +248,7 @@ namespace NoSqlRepositories.Tests.Shared
                 entityRepo.InsertOne(entity1V2, InsertMode.erase_existing); // Erase
 
                 var entity1V2_fromRepo = entityRepo.GetById(entity1.Id);
-                Assert.AreEqual(entity1V2_fromRepo.Name, "Balan2", "The insert with erase_existing mode should erase the previous version of the entity");
+                Assert.AreEqual("Balan2", entity1V2_fromRepo.Name, "The insert with erase_existing mode should erase the previous version of the entity");
                 Assert.AreEqual(t1, entity1V2.SystemCreationDate, "SystemCreationDate should be the date of the erased entity version");
                 Assert.AreEqual(t2, entity1V2.SystemLastUpdateDate, "SystemLastUpdateDate should the date of the update of the entity version");
 
@@ -281,7 +281,7 @@ namespace NoSqlRepositories.Tests.Shared
             var entity1_repo = entityRepo.GetById(entity1.Id);
 
             Assert.IsNotNull(entity1_repo);
-            Assert.AreEqual(entity1_repo.Name, "NewName");
+            Assert.AreEqual("NewName", entity1_repo.Name);
             AssertHelper.AreJsonEqual(entity1, entity1_repo);
         }
 

@@ -82,8 +82,10 @@ namespace NoSqlRepositories.CouchBaseLite
             if (Directory.Exists(directoryPath))
                 Directory.CreateDirectory(directoryPath);
 
-            var databaseOptions = new DatabaseConfiguration();
-            databaseOptions.Directory = directoryPath;
+            var databaseOptions = new DatabaseConfiguration()
+            {
+                Directory = directoryPath
+            };
 
             this.database = new Database(dbName, databaseOptions);
 
@@ -238,7 +240,7 @@ namespace NoSqlRepositories.CouchBaseLite
             var createdDate = NoSQLRepoHelper.DateTimeUtcNow();
             var updateddate = NoSQLRepoHelper.DateTimeUtcNow();
 
-            MutableDocument mutabledocument = null;
+            MutableDocument mutabledocument;
 
             if (!string.IsNullOrEmpty(entity.Id))
             {

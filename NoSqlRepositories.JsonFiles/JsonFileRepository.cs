@@ -17,7 +17,7 @@ namespace NoSqlRepositories.JsonFiles
     {
         #region Members
 
-        private string dbName;
+        private readonly string dbName;
         public override string DatabaseName
         {
             get
@@ -306,6 +306,13 @@ namespace NoSqlRepositories.JsonFiles
             return 0;
         }
 
+        public override void InitCollection()
+        {
+            CheckOpenedConnection();
+
+            // Autoinit, nothing to do
+        }
+
         public override void InitCollection(IList<string> indexFieldSelectors)
         {
             // Nothing to do to initialize the collection
@@ -357,13 +364,6 @@ namespace NoSqlRepositories.JsonFiles
             LoadJSONFile();
         }
 
-        public override void InitCollection()
-        {
-            CheckOpenedConnection();
-
-            // Autoinit, nothing to do
-        }
-
         public override void UseDatabase(string dbName)
         {
             CheckOpenedConnection();
@@ -395,10 +395,9 @@ namespace NoSqlRepositories.JsonFiles
         {
             if (File.Exists(DbFilePath))
             {
-                string content = null;
                 try
                 {
-                    content = File.ReadAllText(DbFilePath);
+                    var content = File.ReadAllText(DbFilePath);
                     var settings = new JsonSerializerSettings()
                     {
                         TypeNameHandling = TypeNameHandling.Objects,
@@ -460,10 +459,9 @@ namespace NoSqlRepositories.JsonFiles
         {
             if (File.Exists(DbConfigFilePath))
             {
-                string content = null;
                 try
                 {
-                    content = File.ReadAllText(DbConfigFilePath);
+                    var content = File.ReadAllText(DbConfigFilePath);
                     var settings = new JsonSerializerSettings()
                     {
                         TypeNameHandling = TypeNameHandling.Objects,

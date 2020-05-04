@@ -23,7 +23,7 @@
   <ItemGroup>
     <PackageReference Include="Couchbase.Lite" Version="2.7.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Linq2CouchBaseLiteExpression" Version="2020.10503.6" />
+    <PackageReference Include="Linq2CouchBaseLiteExpression" Version="2020.10504.7" />
   </ItemGroup>
 
   <ItemGroup>

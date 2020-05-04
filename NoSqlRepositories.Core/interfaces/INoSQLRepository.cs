@@ -39,7 +39,6 @@ namespace NoSqlRepositories.Core
         /// Raise an error if the key is already used
         /// </summary>
         /// <param name="entity"></param>
-        /// <param name="insertMode"></param>
         /// <returns></returns>
         InsertResult InsertOne(T entity);
 
@@ -138,7 +137,7 @@ namespace NoSqlRepositories.Core
         /// Add an attachment to an entity
         /// </summary>
         /// <param name="id">id of entity</param>
-        /// <param name="filePathAttachment">file path of the file to attach</param>
+        /// <param name="fileStream">file path of the file to attach</param>
         /// <param name="contentType">type of the file to attach</param>
         /// <param name="attachmentName">Name of the file to attach. Unique identier of a file inside an entity.</param>
         void AddAttachment(string id, Stream fileStream, string contentType, string attachmentName);
