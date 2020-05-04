@@ -13,11 +13,6 @@ namespace NoSqlRepositories.CouchBaseLite
         #region POCO to Dictionnary
         // Source : https://gist.github.com/jarrettmeyer/798667/a87f9bcac2ec68541511f17da3c244c0e05bdc49
 
-        public static IDictionary<string, object> ToDictionary(this object source)
-        {
-            return source.ToDictionary<object>();
-        }
-
         public static IList<string> ListOfFields<T>()
         {
             var result = new List<string>();
@@ -28,7 +23,7 @@ namespace NoSqlRepositories.CouchBaseLite
             return result;
         }
 
-        public static IDictionary<string, object> ToDictionary<T>(this object source)
+        public static IDictionary<string, object> ToDictionary(this object source)
         {
             if (source == null) ThrowExceptionWhenSourceArgumentIsNull();
 
@@ -40,21 +35,7 @@ namespace NoSqlRepositories.CouchBaseLite
                 if (property.PropertyType.BaseType == typeof(System.Enum))
                     value = (int)value;
 
-                //Enum.ToObject(property.PropertyType, value);
-                // TODO : Add management of Extra elements in a next release
-                //if(property.Attributes.OfType<JsonExtensionDataAttribute>().Any() && value is Dictionary<string, object>)
-                //{
-                //    var dict = value as Dictionary<string, object>;
-                //    foreach(var key in dict.Keys)
-                //    {
-                //        if(!dictionary.ContainsKey(key))
-                //            dictionary.Add(key, dict[key]);
-                //    }
-                //}
-                //else
-                //{
-                    dictionary.Add(property.Name, value);
-                //}
+                dictionary.Add(property.Name, value);
             }
             return dictionary;
         }

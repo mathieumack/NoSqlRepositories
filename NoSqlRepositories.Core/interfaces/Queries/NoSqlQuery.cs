@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 
 namespace NoSqlRepositories.Core.Queries
 {
@@ -15,7 +16,7 @@ namespace NoSqlRepositories.Core.Queries
         /// If present, it's called on every row returned from the query, and if it returnsfalseNO
         /// the row is skipped.
         /// </summary>
-        public Func<T, bool> PostFilter { get; set; }
+        public Expression<Func<T, bool>> Filter { get; set; }
 
         /// <summary>
         /// Gets or sets the number of initial rows to skip. Default value is 0.

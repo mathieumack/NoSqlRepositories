@@ -148,12 +148,59 @@ namespace NoSqlRepositories.Tests.Shared
             Assert.AreEqual(2, query.Count(), "Query should contain three elements");
 
             // Now we will add a filter method :
-            queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(0, 0, (filterItem) =>
-            {
-                return filterItem.NumberOfChildenInt == 0;
-            });
+            queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(0, 0, (filterItem) => filterItem.NumberOfChildenInt == 0);
             query = entityRepo.DoQuery(queryOptions);
             Assert.AreEqual(1, query.Count(), "Query should contain two elements");
+        }
+
+        public void Filter()
+        {
+            entityRepo.TruncateCollection();
+
+            var entity1 = TestHelper.GetEntity1();
+            var entity2 = TestHelper.GetEntity2();
+            var entity3 = TestHelper.GetEntity3();
+            var entity4 = TestHelper.GetEntity4();
+
+            entityRepo.InsertMany(new List<TestEntity>() { entity1, entity2, entity3, entity4 });
+
+            // Now we will do some queries :
+            var queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(0, 0, null);
+
+            var query = entityRepo.DoQuery(queryOptions);
+            Assert.AreEqual(4, query.Count(), "Query should contain 4 elements");
+
+            // Now we will add a filter method :
+            queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(0, 0, null);
+            var nameValue = "Mack";
+            queryOptions.Filter = (e) => e.Name == nameValue;
+            query = entityRepo.DoQuery(queryOptions);
+            Assert.AreEqual(1, query.Count(), "Query should contain one elements");
+        }
+
+        public void FilterComplex()
+        {
+            entityRepo.TruncateCollection();
+
+            var entity1 = TestHelper.GetEntity1();
+            var entity2 = TestHelper.GetEntity2();
+            var entity3 = TestHelper.GetEntity3();
+            var entity4 = TestHelper.GetEntity4();
+
+            entityRepo.InsertMany(new List<TestEntity>() { entity1, entity2, entity3, entity4 });
+
+            // Now we will do some queries :
+            var queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(0, 0, null);
+
+            var query = entityRepo.DoQuery(queryOptions);
+            Assert.AreEqual(4, query.Count(), "Query should contain 4 elements");
+
+            // Now we will add a filter method :
+            queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(0, 0, null);
+            var nameValue = "Mack";
+            queryOptions.Filter = (e) => e.Name == nameValue && e.IsAMan == false;
+            query = entityRepo.DoQuery(queryOptions);
+            Assert.AreEqual(1, query.Count(), "Query should contain one elements");
         }
 
         public virtual void InsertEntity()
@@ -201,7 +248,7 @@ namespace NoSqlRepositories.Tests.Shared
                 entityRepo.InsertOne(entity1V2, InsertMode.erase_existing); // Erase
 
                 var entity1V2_fromRepo = entityRepo.GetById(entity1.Id);
-                Assert.AreEqual(entity1V2_fromRepo.Name, "Balan2", "The insert with erase_existing mode should erase the previous version of the entity");
+                Assert.AreEqual("Balan2", entity1V2_fromRepo.Name, "The insert with erase_existing mode should erase the previous version of the entity");
                 Assert.AreEqual(t1, entity1V2.SystemCreationDate, "SystemCreationDate should be the date of the erased entity version");
                 Assert.AreEqual(t2, entity1V2.SystemLastUpdateDate, "SystemLastUpdateDate should the date of the update of the entity version");
 
@@ -234,7 +281,7 @@ namespace NoSqlRepositories.Tests.Shared
             var entity1_repo = entityRepo.GetById(entity1.Id);
 
             Assert.IsNotNull(entity1_repo);
-            Assert.AreEqual(entity1_repo.Name, "NewName");
+            Assert.AreEqual("NewName", entity1_repo.Name);
             AssertHelper.AreJsonEqual(entity1, entity1_repo);
         }
 

@@ -1,5 +1,6 @@
 ﻿using Couchbase.Lite;
 using Couchbase.Lite.Query;
+using Linq2CouchBaseLiteExpression;
 using Newtonsoft.Json.Linq;
 using NoSqlRepositories.Core;
 using NoSqlRepositories.Core.Helpers;
@@ -9,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace NoSqlRepositories.CouchBaseLite
@@ -80,8 +82,10 @@ namespace NoSqlRepositories.CouchBaseLite
             if (Directory.Exists(directoryPath))
                 Directory.CreateDirectory(directoryPath);
 
-            var databaseOptions = new DatabaseConfiguration();
-            databaseOptions.Directory = directoryPath;
+            var databaseOptions = new DatabaseConfiguration()
+            {
+                Directory = directoryPath
+            };
 
             this.database = new Database(dbName, databaseOptions);
 
@@ -236,7 +240,7 @@ namespace NoSqlRepositories.CouchBaseLite
             var createdDate = NoSQLRepoHelper.DateTimeUtcNow();
             var updateddate = NoSQLRepoHelper.DateTimeUtcNow();
 
-            MutableDocument mutabledocument = null;
+            MutableDocument mutabledocument;
 
             if (!string.IsNullOrEmpty(entity.Id))
             {
@@ -502,10 +506,20 @@ namespace NoSqlRepositories.CouchBaseLite
         {
             CheckOpenedConnection();
 
+            IExpression whereExpression = Expression.Property("collection").EqualTo(Expression.String(CollectionName));
+
+            // Interpret Linq query to expression
+            if (queryFilters.Filter != null)
+            {
+                var wherePreFilterExpression = Linq2CouchbaseLiteExpression.GenerateFromExpression(queryFilters.Filter);
+                if (wherePreFilterExpression != null)
+                    whereExpression = whereExpression.And(wherePreFilterExpression);
+            }
+            
             var queryBuilder = QueryBuilder.Select(SelectResult.Expression(Meta.ID))
-                                        .From(DataSource.Database(database))
-                                        .Where(Expression.Property("collection").EqualTo(Expression.String(CollectionName)))
-                                        .Limit(queryFilters.Limit > 0 ? Expression.Int(queryFilters.Limit) : Expression.Int(int.MaxValue));
+                                            .From(DataSource.Database(database))
+                                            .Where(whereExpression)
+                                            .Limit(queryFilters.Limit > 0 ? Expression.Int(queryFilters.Limit) : Expression.Int(int.MaxValue));
 
             IList<string> ids = null;
             using (var query = queryBuilder)
@@ -514,9 +528,6 @@ namespace NoSqlRepositories.CouchBaseLite
             }
 
             var resultSet = ids.Select(e => GetById(e));
-
-            if (queryFilters.PostFilter != null)
-                return resultSet.Where(e => queryFilters.PostFilter(e));
 
             return resultSet;
         }

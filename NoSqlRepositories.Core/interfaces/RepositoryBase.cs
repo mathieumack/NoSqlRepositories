@@ -73,16 +73,12 @@ namespace NoSqlRepositories.Core
         {
             CheckOpenedConnection();
 
-            var result = new Byte[0];
-
             using (MemoryStream memoryStream = new MemoryStream())
             {
                 var attachmentStream = GetAttachment(id, attachmentName);
                 attachmentStream.CopyTo(memoryStream);
-                result = memoryStream.ToArray();
+                return memoryStream.ToArray();
             }
-
-            return result;
         }
 
         public string GetCollectionName()
