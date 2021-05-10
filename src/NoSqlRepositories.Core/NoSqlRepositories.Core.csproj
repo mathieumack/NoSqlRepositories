@@ -5,7 +5,7 @@
     <AssemblyName>NoSqlRepositories.Core</AssemblyName>
     <RootNamespace>NoSqlRepositories.Core</RootNamespace>
     <PackageId>NoSqlRepositories.Core</PackageId>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>MACK Mathieu</Authors>
     <Company>MACK Mathieu</Company>

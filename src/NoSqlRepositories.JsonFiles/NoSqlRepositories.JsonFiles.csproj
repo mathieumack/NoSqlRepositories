@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <ProjectGuid>{49A4AB0F-5E22-46A4-8436-9FAA3C5D87DE}</ProjectGuid>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <AssemblyName>NoSqlRepositories.JsonFiles</AssemblyName>
     <RootNamespace>NoSqlRepositories.JsonFiles</RootNamespace>
     <PackageId>NoSqlRepositories.JsonFiles</PackageId>
@@ -21,7 +21,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="System.Collections.Concurrent" Version="4.3.0" />
   </ItemGroup>
 
