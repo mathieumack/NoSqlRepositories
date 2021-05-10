@@ -18,11 +18,20 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>repository;nosql</PackageTags>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <CodeAnalysisRuleSet>..\.sonarlint\github-nosqlrepositoriescsharp.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\.sonarlint\github-nosqlrepositories\CSharp\SonarLint.xml" Link="SonarLint.xml" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="MongoDB.Driver" Version="2.12.3" />
     <PackageReference Include="MongoDB.Driver.GridFS" Version="2.12.3" />
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.22.0.31243">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>

@@ -218,35 +218,7 @@ namespace NoSqlRepositories.MongoDb
 
         public override void InitCollection()
         {
-            //try
-            //{
             collection = this.database.GetCollection<T>(TypeName);
-            //}
-            //catch (DocumentClientException de)
-            //{
-            //    // If the document collection does not exist, create a new collection
-            //    if (de.StatusCode == HttpStatusCode.NotFound)
-            //    {
-            //        DocumentCollection collectionInfo = new DocumentCollection();
-
-            //        collectionInfo.Id = TypeName;
-
-            //        // Optionally, you can configure the indexing policy of a collection. Here we configure collections for maximum query flexibility 
-            //        // including string range queries. 
-            //        collectionInfo.IndexingPolicy = new IndexingPolicy(new RangeIndex(DataType.String) { Precision = -1 });
-
-            //        // DocumentDB collections can be reserved with throughput specified in request units/second. 1 RU is a normalized request equivalent to the read
-            //        // of a 1KB document.  Here we create a collection with 400 RU/s. 
-            //        await this.client.CreateDocumentCollectionAsync(
-            //            UriFactory.CreateDatabaseUri(databaseName),
-            //            new DocumentCollection { Id = TypeName },
-            //            new RequestOptions { OfferThroughput = 400 });
-            //    }
-            //    else
-            //    {
-            //        throw;
-            //    }
-            //}
         }
 
         public override void InitCollection(IList<string> indexFieldSelectors)
