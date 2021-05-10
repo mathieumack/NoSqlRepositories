@@ -333,10 +333,7 @@ namespace NoSqlRepositories.Tests.Shared
 
             var entity_repo = entityExtraEltRepo.GetById(entity.Id);
 
-            //entity_repo.LookLikeEachOther(entity);
-
             AssertHelper.AreJsonEqual(entity, entity_repo);
-            //Assert.AreEqual<TestEntity>(entity1, entity1_repo);           
         }
 
         /// <summary>
@@ -351,8 +348,6 @@ namespace NoSqlRepositories.Tests.Shared
                 entity1.Birthday = new DateTime(1985, 12, 08, 0, 5, 30, DateTimeKind.Local);
                 entityRepo.InsertOne(entity1);
                 var entity1_repo = entityRepo.GetById(entity1.Id);
-
-                //Assert.AreEqual(DateTimeKind.Utc, entity1_repo.Birthday.Kind, "Returned DB value is not UTC");
 
                 Assert.AreEqual(entity1.Birthday, entity1_repo.Birthday.ToLocalTime(), "Returned DB value is not correct");
             }
@@ -404,32 +399,6 @@ namespace NoSqlRepositories.Tests.Shared
             Assert.IsTrue(results.Any(i => i.Name.Equals("Balan")));
             Assert.IsTrue(results.Any(i => i.Name.Equals("Mack")));
         }
-
-        //public virtual void Polymorphism()
-        //{
-        //    entityRepo.TruncateCollection();
-        //    collectionEntityRepo.TruncateCollection();
-
-        //    TestExtraEltEntity entity2 = TestHelper.GetEntity2();
-        //    entityRepo.InsertOne(entity2);
-        //    Assert.IsFalse(string.IsNullOrEmpty(entity2.Id));
-
-        //    var entity2_repo = entityRepo.GetById(entity2.Id);
-
-        //    //entity_repo.LookLikeEachOther(entity);
-
-        //    AssertHelper.AreJsonEqual(entity2, entity2_repo, ErrorMsg: "Get of a TestExtraEltEntity instance from a TestEntity repo should return TestExtraEltEntity");
-        //    //Assert.AreEqual<TestEntity>(entity1, entity1_repo);
-
-        //    var collectionTest = new CollectionTest();
-        //    collectionTest.PolymorphCollection.Add(entity2); // TestExtraEltEntity instance
-        //    collectionTest.PolymorphCollection.Add(TestHelper.GetEntity1()); // TestEntity instance
-
-        //    collectionEntityRepo.InsertOne(collectionTest);
-        //    var collectionTest_fromRepo = collectionEntityRepo.GetById(collectionTest.Id);
-
-        //    AssertHelper.AreJsonEqual(collectionTest, collectionTest_fromRepo, ErrorMsg: "Check if collection elements has the good type");
-        //}
 
         private string getFullpath(string filepath)
         {
@@ -494,20 +463,6 @@ namespace NoSqlRepositories.Tests.Shared
             }
 
             //
-            // Test add of the same file to a 2nd entity
-            //
-            {
-                //var entity2 = TestHelper.GetEntity2();
-                //entityRepo.InsertOne(entity2, InsertMode.erase_existing);
-                //Assert.IsFalse(string.IsNullOrEmpty(entity2.Id), "Id has been defined during insert");
-
-                //using (var fileStream = File.Open(getFullpath(attach1FilePath), FileMode.Open))
-                //{
-                //    entityRepo.AddAttachment(entity2.Id, fileStream, "image/jpg", attach1FileName);
-                //}
-            }
-
-            //
             // Test get an attachement
             //
             {
@@ -531,7 +486,10 @@ namespace NoSqlRepositories.Tests.Shared
                 AttachmentNotFoundNoSQLException notfoundEx = null;
                 try
                 {
-                    var fileRepoStream = entityRepo.GetAttachment(entity1.Id, attach1FileName);
+                    using (var fileRepoStream = entityRepo.GetAttachment(entity1.Id, attach1FileName))
+                    {
+                        // Nothing to do
+                    }
                 }
                 catch (AttachmentNotFoundNoSQLException ex)
                 {
@@ -736,7 +694,7 @@ namespace NoSqlRepositories.Tests.Shared
             // Get from Repo 2 an entity Inserted in Repo 1
             try
             {
-                var getEntity1Res = repo2.GetById("1");
+                repo2.GetById("1");
             }
             catch (KeyNotFoundNoSQLException)
             {
@@ -750,7 +708,7 @@ namespace NoSqlRepositories.Tests.Shared
             Exception exRes = null;
             try
             {
-                var getEntity1Res = repo1.GetById("1");
+                repo1.GetById("1");
                 Assert.Fail("Repo1 should raise KeyNotFoundNoSQLException");
             }
             catch (Exception ex)
@@ -879,7 +837,7 @@ namespace NoSqlRepositories.Tests.Shared
             byte[] buffer2 = new byte[16 * 1024];
 
             int read;
-            while ((read = input1.Read(buffer1, 0, buffer1.Length)) > 0)
+            while (input1.Read(buffer1, 0, buffer1.Length) > 0)
             {
                 input2.Read(buffer2, 0, buffer2.Length);
 

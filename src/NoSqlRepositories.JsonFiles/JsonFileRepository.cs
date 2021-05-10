@@ -97,6 +97,8 @@ namespace NoSqlRepositories.JsonFiles
         {
             SaveJSONFile();
             ConnectionOpened = false;
+
+            await Task.CompletedTask;
         }
 
         public override void ConnectAgain()

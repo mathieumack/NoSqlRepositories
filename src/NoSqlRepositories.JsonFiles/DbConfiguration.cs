@@ -5,7 +5,7 @@ namespace NoSqlRepositories.JsonFiles
 {
     internal class DbConfiguration
     {
-        private IDictionary<string, DateTime?> documentExpirations;
+        private readonly IDictionary<string, DateTime?> documentExpirations;
 
         public DbConfiguration()
         {

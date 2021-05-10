@@ -96,6 +96,8 @@ namespace NoSqlRepositories.CouchBaseLite
         {
             this.database.Close();
             ConnectionOpened = false;
+
+            await Task.CompletedTask;
         }
 
         public override void ConnectAgain()
@@ -106,7 +108,7 @@ namespace NoSqlRepositories.CouchBaseLite
         public override bool CompactDatabase()
         {
             CheckOpenedConnection();
-            this.database.Compact();
+            this.database.PerformMaintenance(MaintenanceType.Compact);
             return true;
         }
 

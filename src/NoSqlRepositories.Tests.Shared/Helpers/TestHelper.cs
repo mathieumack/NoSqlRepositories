@@ -33,10 +33,6 @@ namespace NoSqlRepositories.Tests.Shared.Helpers
                 PoidsDouble = 10.15,
                 NumberOfChildenInt = 0,
                 NumberOfChildenLong = 0,
-                //ExtraElements = new Dictionary<string, object> {
-                //    { "subfield1", "test" },
-                //    { "subfield2", 1 }
-                //},
                 Cities = new List<string> { "Grenoble", "Bordeaux" }
             };
         }
