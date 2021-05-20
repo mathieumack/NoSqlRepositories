@@ -93,6 +93,12 @@ namespace NoSqlRepositories.Tests.CouchbaseLite
         }
 
         [TestMethod]
+        public void CouchbaseLite_GetIds()
+        {
+            test.GetIds();
+        }
+
+        [TestMethod]
         public void CouchbaseLite_GetAll()
         {
             test.GetAll();
@@ -127,6 +133,12 @@ namespace NoSqlRepositories.Tests.CouchbaseLite
         public void CouchbaseLite_FilterComplex()
         {
             test.FilterComplex();
+        }
+
+        [TestMethod]
+        public void CouchbaseLite_FilterComplex_Contains()
+        {
+            test.FilterComplex_Contains();
         }
 
         // Not supported for now

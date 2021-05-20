@@ -203,6 +203,30 @@ namespace NoSqlRepositories.Tests.Shared
             Assert.AreEqual(1, query.Count(), "Query should contain one elements");
         }
 
+        public void FilterComplex_Contains()
+        {
+            entityRepo.TruncateCollection();
+
+            var entity1 = TestHelper.GetEntity1();
+            var entity2 = TestHelper.GetEntity2();
+            var entity3 = TestHelper.GetEntity3();
+            var entity4 = TestHelper.GetEntity4();
+
+            entityRepo.InsertMany(new List<TestEntity>() { entity1, entity2, entity3, entity4 });
+
+            // Now we will do some queries :
+            var queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(0, 0, null);
+
+            var query = entityRepo.DoQuery(queryOptions);
+            Assert.AreEqual(4, query.Count(), "Query should contain 4 elements");
+
+            // Now we will add a filter method :
+            queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(0, 0, null);
+            queryOptions.Filter = (e) => e.Name.Contains("Mac");
+            query = entityRepo.DoQuery(queryOptions);
+            Assert.AreEqual(1, query.Count(), "Query should contain one elements");
+        }
+
         public virtual void InsertEntity()
         {
             entityRepo.TruncateCollection();
@@ -595,7 +619,35 @@ namespace NoSqlRepositories.Tests.Shared
             entityRepo.ConnectAgain();
 
             entitylist = entityRepo.GetAll();
-            Assert.AreEqual(1, entitylist.Count(), "Invalide number. The expected result is " + entitylist.Count());
+            Assert.AreEqual(1, entitylist.Count(), "Invalid number. The expected result is " + entitylist.Count());
+        }
+
+        /// <summary>
+        /// Check GetIds command
+        /// </summary>
+        public virtual void GetIds()
+        {
+            entityRepo.TruncateCollection();
+
+            var entity1 = TestHelper.GetEntity1();
+            entityRepo.InsertOne(entity1);
+
+            var entity2 = TestHelper.GetEntity2();
+            entityRepo.InsertOne(entity2);
+
+            var entity3 = TestHelper.GetEntity3();
+            entityRepo.InsertOne(entity3);
+
+            var entity4 = TestHelper.GetEntity4();
+            entityRepo.InsertOne(entity4);
+
+            var entitylistIds = entityRepo.GetIds();
+            Assert.AreEqual(4, entitylistIds.Count(), "Invalid count of ids. The expected result is " + entitylistIds.Count());
+
+            foreach (var e in entitylistIds)
+            {
+                Assert.IsNotNull(e, "Entity id returned should not be null");
+            }
         }
 
         /// <summary>
@@ -829,24 +881,6 @@ namespace NoSqlRepositories.Tests.Shared
         #endregion
 
         #region Private
-
-        // Merged From linked CopyStream below and Jon Skeet's ReadFully example
-        private bool CompareStreams(Stream input1, Stream input2)
-        {
-            byte[] buffer1 = new byte[16 * 1024];
-            byte[] buffer2 = new byte[16 * 1024];
-
-            int read;
-            while (input1.Read(buffer1, 0, buffer1.Length) > 0)
-            {
-                input2.Read(buffer2, 0, buffer2.Length);
-
-                if (!buffer1.SequenceEqual(buffer2))
-                    return false;
-            }
-
-            return true;
-        }
 
         private void InsertEntities(int nbEntities, int firstId, INoSQLRepository<TestEntity> repo)
         {

@@ -21,6 +21,12 @@ namespace NoSqlRepositories.Core
         T GetById(string id);
 
         /// <summary>
+        /// Get all ids in database
+        /// </summary>
+        /// <returns>The list of unique identifiers</returns>
+        IEnumerable<string> GetIds();
+
+        /// <summary>
         /// Get the entity corresponding to the provided id. Return null if not found
         /// </summary>
         /// <param name="id"></param>

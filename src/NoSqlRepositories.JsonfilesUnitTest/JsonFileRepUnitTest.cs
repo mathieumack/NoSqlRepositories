@@ -25,11 +25,9 @@ namespace NoSqlRepositories.Tests.JsonFiles
             var dbName = "NoSQLTestDb";
 
             // Add Sqlite plugin register. Do it only for unit tests (https://github.com/CouchBaseLite/CouchBaseLite-lite-net/wiki/Error-Dictionary#cblcs0001)
-            //CouchBaseLite.Lite.Storage.SystemSQLite.Plugin.Register();
 
             var entityRepo = new JsonFileRepository<TestEntity>(Directory.GetCurrentDirectory(), dbName);
             var entityRepo2 = new JsonFileRepository<TestEntity>(Directory.GetCurrentDirectory(), dbName);
-            //var collectionEntityRepo = new JsonFileRepository<CollectionTest>(NoSQLCoreUnitTests.testContext.DeploymentDirectory, dbName);
             var entityExtraEltRepo = new JsonFileRepository<TestExtraEltEntity>(Directory.GetCurrentDirectory(), dbName);
             
             test = new NoSQLCoreUnitTests(entityRepo, entityRepo2, entityExtraEltRepo,
@@ -97,6 +95,12 @@ namespace NoSqlRepositories.Tests.JsonFiles
         }
 
         [TestMethod]
+        public void JsonFiles_GetIds()
+        {
+            test.GetIds();
+        }
+
+        [TestMethod]
         public void JsonFiles_GetAll()
         {
             test.GetAll();
@@ -113,6 +117,18 @@ namespace NoSqlRepositories.Tests.JsonFiles
         public void JsonFiles_Count()
         {
             test.Count();
+        }
+
+        [TestMethod]
+        public void JsonFiles_FilterComplex()
+        {
+            test.FilterComplex();
+        }
+
+        [TestMethod]
+        public void JsonFiles_FilterComplex_Contains()
+        {
+            test.FilterComplex_Contains();
         }
 
         // Not supported for now
