@@ -2,7 +2,7 @@
 <AnalysisInput xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Settings>
     <Setting>
-      <Key>sonar.cs.analyzeGeneratedCode</Key>
+      <Key>sonar.cs.analyzeGeneratedCode</Key> 
       <Value>false</Value>
     </Setting>
     <Setting>
