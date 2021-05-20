@@ -106,18 +106,25 @@ namespace NoSqlRepositories.Core
             return InsertOne(entity, InsertMode.error_if_key_exists);
         }
 
+        /// <inheritdoc/>
         public abstract InsertResult InsertOne(T entity, InsertMode insertMode);
 
+        /// <inheritdoc/>
         public abstract void RemoveAttachment(string id, string attachmentName);
 
+        /// <inheritdoc/>
         public abstract void SetCollectionName(string typeName);
 
+        /// <inheritdoc/>
         public abstract long TruncateCollection();
 
+        /// <inheritdoc/>
         public abstract T TryGetById(string id);
 
+        /// <inheritdoc/>
         public abstract IEnumerable<T> GetByIds(IList<string> ids);
 
+        /// <inheritdoc/>
         public UpdateResult Update(T entity)
         {
             CheckOpenedConnection();
@@ -125,16 +132,25 @@ namespace NoSqlRepositories.Core
             return Update(entity, UpdateMode.db_implementation);
         }
 
+        /// <inheritdoc/>
         public abstract UpdateResult Update(T entity, UpdateMode updateMode);
 
+        /// <inheritdoc/>
         public abstract void UseDatabase(string dbName);
 
+        /// <inheritdoc/>
         public abstract IEnumerable<string> GetKeyByField<TField>(string fieldName, List<TField> values);
 
+        /// <inheritdoc/>
         public abstract IEnumerable<string> GetKeyByField<TField>(string fieldName, TField value);
 
+        /// <inheritdoc/>
         public abstract int Count();
 
+        /// <inheritdoc/>
         public abstract IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters);
+
+        /// <inheritdoc/>
+        public abstract IEnumerable<string> GetIds();
     }
 }

@@ -101,6 +101,12 @@ namespace NoSqlRepositories.Tests.MongoDb
         }
 
         [TestMethod]
+        public void MongoDb_GetIds()
+        {
+            test.GetIds();
+        }
+
+        [TestMethod]
         public void MongoDb_GetAll()
         {
             test.GetAll();
@@ -111,6 +117,18 @@ namespace NoSqlRepositories.Tests.MongoDb
         public void MongoDb_GetTests()
         {
             test.GetTests();
+        }
+
+        [TestMethod]
+        public void MongoDb_FilterComplex()
+        {
+            test.FilterComplex();
+        }
+
+        [TestMethod]
+        public void MongoDb_FilterComplex_Contains()
+        {
+            test.FilterComplex_Contains();
         }
 
         // Not supported for now

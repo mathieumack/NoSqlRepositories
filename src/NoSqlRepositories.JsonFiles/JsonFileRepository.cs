@@ -636,6 +636,7 @@ namespace NoSqlRepositories.JsonFiles
 
         #region Queries
 
+        /// <inheritdoc/>
         public override IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters)
         {
             var query = localDb.Values.Select(e => e);
@@ -652,6 +653,14 @@ namespace NoSqlRepositories.JsonFiles
                 query = query.Take(queryFilters.Limit);
 
             return query;
+        }
+
+        /// <inheritdoc/>
+        public override IEnumerable<string> GetIds()
+        {
+            return localDb.Values.AsQueryable()
+                                .Where(e => !e.Deleted)
+                                .Select(e => e.Id);
         }
 
         #endregion
