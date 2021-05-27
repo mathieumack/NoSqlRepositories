@@ -118,6 +118,12 @@ namespace NoSqlRepositories.Tests.CouchbaseLite
         }
 
         [TestMethod]
+        public void CouchbaseLite_DoQueryPaging()
+        {
+            test.DoQuery_Paging();
+        }
+
+        [TestMethod]
         public void CouchbaseLite_DoQueryWithOrdering()
         {
             test.DoQueryWithOrdering();

@@ -57,6 +57,12 @@ namespace NoSqlRepositories.Tests.JsonFiles
         }
 
         [TestMethod]
+        public void JsonFiles_DoQueryPaging()
+        {
+            test.DoQuery_Paging();
+        }
+
+        [TestMethod]
         public void JsonFiles_DoQueryWithOrdering()
         {
             test.DoQueryWithOrdering();

@@ -523,12 +523,12 @@ namespace NoSqlRepositories.CouchBaseLite
                                             .Where(whereExpression)
                                             // add default ordering by creation date :
                                             .OrderBy(Ordering.Property("SystemCreationDate").Ascending())
-                                            .Limit(queryFilters.Limit > 0 ? Expression.Int(queryFilters.Limit) : Expression.Int(int.MaxValue));
+                                            .Limit(queryFilters.Limit > 0 ? Expression.Int(queryFilters.Limit + queryFilters.Skip) : Expression.Int(int.MaxValue));
 
             IList<string> ids = null;
             using (var query = queryBuilder)
             {
-                ids = query.Execute().Select(row => row.GetString("id")).ToList();
+                ids = query.Execute().Skip(queryFilters.Skip).Select(row => row.GetString("id")).ToList();
             }
 
             var resultSet = ids.Select(e => GetById(e));
