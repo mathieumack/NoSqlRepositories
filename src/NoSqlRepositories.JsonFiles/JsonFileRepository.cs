@@ -647,6 +647,9 @@ namespace NoSqlRepositories.JsonFiles
                 var filterFunction = queryFilters.Filter.Compile();
                 query = query.Where(e => filterFunction.Invoke(e));
             }
+
+            query = query.OrderBy(e => e.SystemCreationDate);
+
             if (queryFilters.Skip > 0)
                 query = query.Skip(queryFilters.Skip);
             if (queryFilters.Limit > 0)

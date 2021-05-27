@@ -521,6 +521,8 @@ namespace NoSqlRepositories.CouchBaseLite
             var queryBuilder = QueryBuilder.Select(SelectResult.Expression(Meta.ID))
                                             .From(DataSource.Database(database))
                                             .Where(whereExpression)
+                                            // add default ordering by creation date :
+                                            .OrderBy(Ordering.Property("SystemCreationDate").Ascending())
                                             .Limit(queryFilters.Limit > 0 ? Expression.Int(queryFilters.Limit) : Expression.Int(int.MaxValue));
 
             IList<string> ids = null;

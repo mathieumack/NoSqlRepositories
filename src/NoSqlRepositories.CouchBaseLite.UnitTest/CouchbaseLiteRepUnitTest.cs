@@ -118,6 +118,12 @@ namespace NoSqlRepositories.Tests.CouchbaseLite
         }
 
         [TestMethod]
+        public void CouchbaseLite_DoQueryWithOrdering()
+        {
+            test.DoQueryWithOrdering();
+        }
+
+        [TestMethod]
         public void CouchbaseLite_Count()
         {
             test.Count();

@@ -57,6 +57,12 @@ namespace NoSqlRepositories.Tests.JsonFiles
         }
 
         [TestMethod]
+        public void JsonFiles_DoQueryWithOrdering()
+        {
+            test.DoQueryWithOrdering();
+        }
+
+        [TestMethod]
         public void JsonFiles_CompactDatabase()
         {
             test.CompactDatabase();

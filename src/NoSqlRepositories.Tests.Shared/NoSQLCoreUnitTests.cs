@@ -153,6 +153,32 @@ namespace NoSqlRepositories.Tests.Shared
             Assert.AreEqual(1, query.Count(), "Query should contain two elements");
         }
 
+        public void DoQueryWithOrdering()
+        {
+            entityRepo.TruncateCollection();
+
+            NoSQLRepoHelper.DateTimeUtcNow = (() => new DateTimeOffset(DateTime.UtcNow));
+
+            var entity1 = TestHelper.GetEntity1();
+            var entity3 = TestHelper.GetEntity3();
+            var entity4 = TestHelper.GetEntity4();
+
+            entityRepo.InsertOne(entity1);
+            entityRepo.InsertOne(entity3);
+            entityRepo.InsertOne(entity4);
+
+            // Now we will do some queries :
+            var queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(3, 0, null);
+            var query = entityRepo.DoQuery(queryOptions);
+            Assert.AreEqual(3, query.Count(), "Query should contain three elements");
+
+            var elements = query.ToList();
+
+            Assert.AreEqual(entity1.Name, elements[0].Name);
+            Assert.AreEqual(entity3.Name, elements[1].Name);
+            Assert.AreEqual(entity4.Name, elements[2].Name);
+        }
+
         public void Filter()
         {
             entityRepo.TruncateCollection();
