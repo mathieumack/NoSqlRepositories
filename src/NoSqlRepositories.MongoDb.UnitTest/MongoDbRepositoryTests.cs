@@ -8,6 +8,7 @@ using NoSqlRepositories.Core;
 using MongoDB.Bson.Serialization.IdGenerators;
 using System.IO;
 using Mongo2Go;
+using NoSqlRepositories.UnitTest.Shared.Extensions;
 
 namespace NoSqlRepositories.Tests.MongoDb
 {
@@ -141,6 +142,18 @@ namespace NoSqlRepositories.Tests.MongoDb
         public void MongoDb_FilterComplex_Contains_v2()
         {
             test.FilterComplexv2_Contains();
+        }
+
+        [TestMethod]
+        public void MongoDb_OrderBy()
+        {
+            test.OrderBy();
+        }
+
+        [TestMethod]
+        public void MongoDb_OrderByDescending()
+        {
+            test.OrderByDescending();
         }
 
         // Not supported for now

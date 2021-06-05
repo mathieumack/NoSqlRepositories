@@ -3,6 +3,7 @@ using NoSqlRepositories.JsonFiles;
 using NoSqlRepositories.Tests.Shared;
 using NoSqlRepositories.Tests.Shared.Entities;
 using System.IO;
+using NoSqlRepositories.UnitTest.Shared.Extensions;
 
 namespace NoSqlRepositories.Tests.JsonFiles
 {
@@ -69,21 +70,33 @@ namespace NoSqlRepositories.Tests.JsonFiles
         }
 
         [TestMethod]
-        public void JsonFiles_DoQueryv2()
+        public void JsonFiles_OrderBy()
         {
-            test.DoQueryv2();
+            test.OrderBy();
         }
 
         [TestMethod]
-        public void JsonFiles_DoQueryv2_Paging()
+        public void JsonFiles_OrderByDescending()
         {
-            test.DoQueryv2_Paging();
+            test.OrderByDescending();
         }
 
         [TestMethod]
-        public void JsonFiles_DoQueryv2_WithOrdering()
+        public void JsonFiles_Query()
         {
-            test.DoQueryv2_WithOrdering();
+            test.Query();
+        }
+
+        [TestMethod]
+        public void JsonFiles_Query_Paging()
+        {
+            test.Query_Paging();
+        }
+
+        [TestMethod]
+        public void JsonFiles_Query_WithOrdering()
+        {
+            test.Query_WithOrdering();
         }
 
         [TestMethod]

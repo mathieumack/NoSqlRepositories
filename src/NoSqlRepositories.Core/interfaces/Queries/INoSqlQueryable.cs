@@ -33,6 +33,20 @@ namespace NoSqlRepositories.Core.Queries
         INoSqlQueryable<T> Where(Expression<Func<T, bool>> filter);
 
         /// <summary>
+        /// Order data regarding a specific field on an entity
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        INoSqlQueryable<T> OrderBy<TKey>(Expression<Func<T, TKey>> filter);
+
+        /// <summary>
+        /// Order data descending regarding a specific field on an entity
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        INoSqlQueryable<T> OrderByDescending<TKey>(Expression<Func<T, TKey>> filter);
+
+        /// <summary>
         /// Return the total number of elements
         /// </summary>
         /// <returns></returns>

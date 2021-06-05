@@ -22,13 +22,6 @@ namespace NoSqlRepositories.Shared.Queries
         /// </summary>
         protected int Limit { get; set; }
 
-        /// <summary>
-        /// Gets or sets an optional predicate that filters the resulting query rows.
-        /// If present, it's called on every row returned from the query, and if it returnsfalseNO
-        /// the row is skipped.
-        /// </summary>
-        protected Expression<Func<T, bool>> Filter { get; set; }
-
         /// <inheritdoc/>
         public INoSqlQueryable<T> Take(int takeCount)
         {
@@ -48,18 +41,18 @@ namespace NoSqlRepositories.Shared.Queries
         }
 
         /// <inheritdoc/>
-        public INoSqlQueryable<T> Where(Expression<Func<T, bool>> filter)
-        {
-            this.Filter = filter;
-
-            // Used in order to be able to create Fluent
-            return this;
-        }
+        public abstract INoSqlQueryable<T> Where(Expression<Func<T, bool>> filter);
 
         /// <inheritdoc/>
         public abstract int Count();
 
         /// <inheritdoc/>
         public abstract IEnumerable<T> Select();
+
+        /// <inheritdoc/>
+        public abstract INoSqlQueryable<T> OrderBy<TKey>(Expression<Func<T, TKey>> filter);
+
+        /// <inheritdoc/>
+        public abstract INoSqlQueryable<T> OrderByDescending<TKey>(Expression<Func<T, TKey>> filter);
     }
 }
