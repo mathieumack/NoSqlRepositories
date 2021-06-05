@@ -12,9 +12,9 @@ namespace NoSqlRepositories.CouchBaseLite.Queries
     internal class CouchBaseLiteNoSqlQueryable<T> : NoSqlQueryable<T> where T : class, IBaseEntity, new()
     {
         private readonly CouchBaseLiteRepository<T> repository;
+        private readonly List<IOrdering> ordering = new List<IOrdering>();
         private bool ordered;
         private IExpression whereExpression;
-        private List<IOrdering> ordering = new List<IOrdering>();
 
         public CouchBaseLiteNoSqlQueryable(CouchBaseLiteRepository<T> repository)
         {

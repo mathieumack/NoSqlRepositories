@@ -28,7 +28,7 @@
   <ItemGroup>
     <PackageReference Include="Couchbase.Lite" Version="2.8.4" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Linq2CouchBaseLiteExpression" Version="2021.10605.1-alpha" />
+    <PackageReference Include="Linq2CouchBaseLiteExpression" Version="2021.10606.2" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="8.22.0.31243">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
