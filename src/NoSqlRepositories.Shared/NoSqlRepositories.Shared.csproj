@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <ProjectGuid>{50A4AB0F-5E12-47A4-8436-9FAA3C5D87DE}</ProjectGuid>
+	  <AssemblyName>NoSqlRepositories.Shared</AssemblyName>
+	  <RootNamespace>NoSqlRepositories.Shared</RootNamespace>
+	  <PackageId>NoSqlRepositories.Shared</PackageId>
+	  <TargetFramework>netstandard2.1</TargetFramework>
+	  <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NoSqlRepositories.Core\NoSqlRepositories.Core.csproj" />
+  </ItemGroup>
+
+</Project>

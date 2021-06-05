@@ -126,7 +126,25 @@ namespace NoSqlRepositories.Tests.CouchbaseLite
         [TestMethod]
         public void CouchbaseLite_DoQueryWithOrdering()
         {
-            test.DoQueryWithOrdering();
+            test.DoQueryv2_WithOrdering();
+        }
+
+        [TestMethod]
+        public void CouchbaseLite_DoQueryv2()
+        {
+            test.DoQueryv2();
+        }
+
+        [TestMethod]
+        public void CouchbaseLite_DoQueryv2_Paging()
+        {
+            test.DoQueryv2_Paging();
+        }
+
+        [TestMethod]
+        public void CouchbaseLite_DoQueryv2_WithOrdering()
+        {
+            test.DoQueryv2_WithOrdering();
         }
 
         [TestMethod]

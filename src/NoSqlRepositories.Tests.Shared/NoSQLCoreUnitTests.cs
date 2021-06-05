@@ -132,6 +132,8 @@ namespace NoSqlRepositories.Tests.Shared
             Assert.AreEqual(4, entityRepo.Count(), "Repo should contain four elements");
         }
 
+        #region Queries
+
         public void DoQuery()
         {
             entityRepo.TruncateCollection();
@@ -182,7 +184,7 @@ namespace NoSqlRepositories.Tests.Shared
             NoSQLRepoHelper.DateTimeUtcNow = (() => now);
         }
 
-        public void DoQueryWithOrdering()
+        public void DoQuery_WithOrdering()
         {
             entityRepo.TruncateCollection();
 
@@ -230,9 +232,10 @@ namespace NoSqlRepositories.Tests.Shared
             Assert.AreEqual(4, query.Count(), "Query should contain 4 elements");
 
             // Now we will add a filter method :
-            queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(0, 0, null);
             var nameValue = "Mack";
+            queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(0, 0, null);
             queryOptions.Filter = (e) => e.Name == nameValue;
+
             query = entityRepo.DoQuery(queryOptions);
             Assert.AreEqual(1, query.Count(), "Query should contain one elements");
         }
@@ -255,9 +258,10 @@ namespace NoSqlRepositories.Tests.Shared
             Assert.AreEqual(4, query.Count(), "Query should contain 4 elements");
 
             // Now we will add a filter method :
-            queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(0, 0, null);
             var nameValue = "Mack";
+            queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(0, 0, null);
             queryOptions.Filter = (e) => e.Name == nameValue && e.IsAMan == false;
+
             query = entityRepo.DoQuery(queryOptions);
             Assert.AreEqual(1, query.Count(), "Query should contain one elements");
         }
@@ -282,9 +286,163 @@ namespace NoSqlRepositories.Tests.Shared
             // Now we will add a filter method :
             queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(0, 0, null);
             queryOptions.Filter = (e) => e.Name.Contains("Mac");
+
             query = entityRepo.DoQuery(queryOptions);
             Assert.AreEqual(1, query.Count(), "Query should contain one elements");
         }
+
+        public void DoQueryv2()
+        {
+            entityRepo.TruncateCollection();
+
+            var entity1 = TestHelper.GetEntity1();
+            var entity3 = TestHelper.GetEntity3();
+            var entity4 = TestHelper.GetEntity4();
+
+            entityRepo.InsertMany(new List<TestEntity>() { entity1, entity3, entity4 });
+
+            // Now we will do some queries :
+            var query = entityRepo.Query()
+                                    .Take(2)
+                                    .Skip(0);
+            Assert.AreEqual(2, query.Count(), "Query should contain three elements");
+
+            // Now we will add a filter method :
+            query = entityRepo.Query()
+                                    .Where((filterItem) => filterItem.NumberOfChildenInt == 0);
+            Assert.AreEqual(1, query.Count(), "Query should contain two elements");
+        }
+
+        public void DoQueryv2_Paging()
+        {
+            entityRepo.TruncateCollection();
+
+            NoSQLRepoHelper.DateTimeUtcNow = (() => new DateTimeOffset(DateTime.UtcNow));
+
+            var entity1 = TestHelper.GetEntity1();
+            var entity2 = TestHelper.GetEntity2();
+            var entity3 = TestHelper.GetEntity3();
+            var entity4 = TestHelper.GetEntity4();
+
+            // add height entries
+            entityRepo.InsertMany(new List<TestEntity>() { entity1, entity2, entity3, entity4 });
+
+            // Now we will do some queries :
+            var query = entityRepo.Query()
+                                    .Take(2)
+                                    .Skip(2);
+            Assert.AreEqual(2, query.Count(), "Query should contain two element");
+
+            // Now we will add a filter method :
+            var elements = query.Select().ToList();
+            Assert.AreEqual(entity3.Name, elements[0].Name);
+            Assert.AreEqual(entity4.Name, elements[1].Name);
+
+            // Reset DateTimeUtcNow function
+            var now = new DateTime(2016, 01, 01, 0, 0, 0, DateTimeKind.Utc);
+            NoSQLRepoHelper.DateTimeUtcNow = (() => now);
+        }
+
+        public void DoQueryv2_WithOrdering()
+        {
+            entityRepo.TruncateCollection();
+
+            NoSQLRepoHelper.DateTimeUtcNow = (() => new DateTimeOffset(DateTime.UtcNow));
+
+            var entity1 = TestHelper.GetEntity1();
+            var entity3 = TestHelper.GetEntity3();
+            var entity4 = TestHelper.GetEntity4();
+
+            entityRepo.InsertOne(entity1);
+            entityRepo.InsertOne(entity3);
+            entityRepo.InsertOne(entity4);
+
+            // Now we will do some queries :
+            var query = entityRepo.Query()
+                                    .Take(3)
+                                    .Skip(0);
+            Assert.AreEqual(3, query.Count(), "Query should contain three elements");
+
+            var elements = query.Select().ToList();
+
+            Assert.AreEqual(entity1.Name, elements[0].Name);
+            Assert.AreEqual(entity3.Name, elements[1].Name);
+            Assert.AreEqual(entity4.Name, elements[2].Name);
+
+            // Reset DateTimeUtcNow function
+            var now = new DateTime(2016, 01, 01, 0, 0, 0, DateTimeKind.Utc);
+            NoSQLRepoHelper.DateTimeUtcNow = (() => now);
+        }
+
+        public void Filterv2()
+        {
+            entityRepo.TruncateCollection();
+
+            var entity1 = TestHelper.GetEntity1();
+            var entity2 = TestHelper.GetEntity2();
+            var entity3 = TestHelper.GetEntity3();
+            var entity4 = TestHelper.GetEntity4();
+
+            entityRepo.InsertMany(new List<TestEntity>() { entity1, entity2, entity3, entity4 });
+
+            // Now we will do some queries :
+            var query = entityRepo.Query();
+            Assert.AreEqual(4, query.Count(), "Query should contain 4 elements");
+
+            // Now we will add a filter method :
+            var nameValue = "Mack";
+            query = entityRepo.Query()
+                                .Where(e => e.Name == nameValue);
+            
+            Assert.AreEqual(1, query.Count(), "Query should contain one elements");
+        }
+
+        public void FilterComplexv2()
+        {
+            entityRepo.TruncateCollection();
+
+            var entity1 = TestHelper.GetEntity1();
+            var entity2 = TestHelper.GetEntity2();
+            var entity3 = TestHelper.GetEntity3();
+            var entity4 = TestHelper.GetEntity4();
+
+            entityRepo.InsertMany(new List<TestEntity>() { entity1, entity2, entity3, entity4 });
+
+            // Now we will do some queries :
+            var query = entityRepo.Query();
+            Assert.AreEqual(4, query.Count(), "Query should contain 4 elements");
+
+            // Now we will add a filter method :
+            var nameValue = "Mack";
+            query = entityRepo.Query()
+                                .Where(e => e.Name == nameValue && e.IsAMan == false);
+
+            Assert.AreEqual(1, query.Count(), "Query should contain one elements");
+        }
+
+        public void FilterComplexv2_Contains()
+        {
+            entityRepo.TruncateCollection();
+
+            var entity1 = TestHelper.GetEntity1();
+            var entity2 = TestHelper.GetEntity2();
+            var entity3 = TestHelper.GetEntity3();
+            var entity4 = TestHelper.GetEntity4();
+
+            entityRepo.InsertMany(new List<TestEntity>() { entity1, entity2, entity3, entity4 });
+
+            // Now we will do some queries :
+            var query = entityRepo.Query();
+            Assert.AreEqual(4, query.Count(), "Query should contain 4 elements");
+
+            // Now we will add a filter method :
+            query = entityRepo.Query()
+                                .Where(e => e.Name.Contains("Mac"));
+
+            Assert.AreEqual(1, query.Count(), "Query should contain one elements");
+        }
+
+        #endregion
 
         public virtual void InsertEntity()
         {

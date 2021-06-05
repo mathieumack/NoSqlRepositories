@@ -76,7 +76,14 @@ namespace NoSqlRepositories.Core
         /// Create a new query on database.
         /// </summary>
         /// <returns></returns>
+        [Obsolete("Please use Query() now. DoQuery will be removed in a next release")]
         IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters);
+
+        /// <summary>
+        /// Start to query data
+        /// </summary>
+        /// <returns></returns>
+        INoSqlQueryable<T> Query();
 
         /// <summary>
         /// Test if the entity key exists in the repository

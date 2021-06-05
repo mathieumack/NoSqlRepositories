@@ -11,6 +11,8 @@ using MongoDB.Driver.GridFS;
 using System.Linq;
 using NoSqlRepositories.Core.Queries;
 using System.Threading.Tasks;
+using NoSqlRepositories.Shared;
+using NoSqlRepositories.MongoDb.Queries;
 
 namespace NoSqlRepositories.MongoDb
 {
@@ -24,6 +26,14 @@ namespace NoSqlRepositories.MongoDb
         protected IMongoClient client;
         protected IMongoDatabase database;
         protected IMongoCollection<T> collection;
+
+        internal IMongoCollection<T> Collection
+        {
+            get
+            {
+                return collection;
+            }
+        }
 
         public string TypeName { get; set; }
 
@@ -417,12 +427,15 @@ namespace NoSqlRepositories.MongoDb
         /// <inheritdoc/>
         public override IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters)
         {
-            var queryable = collection.AsQueryable();
+            IQueryable<T> queryable = collection.AsQueryable();
             
             if (queryFilters.Filter != null)
-                return queryable.Where(queryFilters.Filter).Select(e => e);
-            
-            return queryable.Select(e => e);
+                queryable = queryable.Where(queryFilters.Filter);
+
+            // Default order :
+            var orderedQueryable = queryable.OrderBy(e => e.SystemCreationDate);
+
+            return orderedQueryable.Select(e => e);
         }
 
         /// <inheritdoc/>
@@ -431,6 +444,12 @@ namespace NoSqlRepositories.MongoDb
             return collection.AsQueryable()
                             .Where(e => !e.Deleted)
                             .Select(e => e.Id);
+        }
+
+        /// <inheritdoc/>
+        public override INoSqlQueryable<T> Query()
+        {
+            return new MongoDbNoSqlQueryable<T>(this);
         }
 
         #endregion

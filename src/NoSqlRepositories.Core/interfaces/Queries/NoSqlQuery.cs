@@ -3,8 +3,9 @@ using System.Linq.Expressions;
 
 namespace NoSqlRepositories.Core.Queries
 {
+    [Obsolete("Will be remove in a next release. No you can use the extension .Query(...) from the INosqlRepository directly")]
     public class NoSqlQuery<T> where T : class, IBaseEntity, new()
-    {        
+    {
         /// <summary>
         /// Gets or sets the maximum number of rows to return. 
         /// The default value is int.MaxValue, meaning 'unlimited'.

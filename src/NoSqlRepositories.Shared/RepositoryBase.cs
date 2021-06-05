@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using NoSqlRepositories.Core;
 using NoSqlRepositories.Core.Queries;
+using NoSqlRepositories.Shared.Queries;
 
-namespace NoSqlRepositories.Core
+namespace NoSqlRepositories.Shared
 {
     public abstract class RepositoryBase<T> : INoSQLRepository<T> where T : class, IBaseEntity, new()
     {
@@ -152,5 +154,8 @@ namespace NoSqlRepositories.Core
 
         /// <inheritdoc/>
         public abstract IEnumerable<string> GetIds();
+
+        /// <inheritdoc/>
+        public abstract INoSqlQueryable<T> Query();
     }
 }

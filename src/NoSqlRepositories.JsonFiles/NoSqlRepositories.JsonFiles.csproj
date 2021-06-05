@@ -36,6 +36,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NoSqlRepositories.Core\NoSqlRepositories.Core.csproj" />
+    <ProjectReference Include="..\NoSqlRepositories.Shared\NoSqlRepositories.Shared.csproj" />
   </ItemGroup>
 
 </Project>

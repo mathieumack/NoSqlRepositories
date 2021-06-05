@@ -131,6 +131,18 @@ namespace NoSqlRepositories.Tests.MongoDb
             test.FilterComplex_Contains();
         }
 
+        [TestMethod]
+        public void MongoDb_FilterComplex_v2()
+        {
+            test.FilterComplexv2();
+        }
+
+        [TestMethod]
+        public void MongoDb_FilterComplex_Contains_v2()
+        {
+            test.FilterComplexv2_Contains();
+        }
+
         // Not supported for now
         //[TestMethod]
         public void MongoDb_ConcurrentAccess()
