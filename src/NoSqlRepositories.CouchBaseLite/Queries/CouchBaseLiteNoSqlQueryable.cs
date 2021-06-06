@@ -42,7 +42,7 @@ namespace NoSqlRepositories.CouchBaseLite.Queries
         {
             ordered = true;
 
-            var orderingExpression = Linq2CouchbaseLiteOrderingExpression.GenerateFromExpression(filter, true);
+            var orderingExpression = Linq2CouchbaseLiteOrderingExpression.GenerateOrderByFromExpression(filter, true);
             if (orderingExpression != null)
                 ordering.Add(orderingExpression);
 
@@ -53,7 +53,7 @@ namespace NoSqlRepositories.CouchBaseLite.Queries
         {
             ordered = true;
 
-            var orderingExpression = Linq2CouchbaseLiteOrderingExpression.GenerateFromExpression(filter, false);
+            var orderingExpression = Linq2CouchbaseLiteOrderingExpression.GenerateOrderByFromExpression(filter, false);
             if (orderingExpression != null)
                 ordering.Add(orderingExpression);
 
