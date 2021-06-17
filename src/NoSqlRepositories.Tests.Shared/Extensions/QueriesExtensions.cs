@@ -79,15 +79,16 @@ namespace NoSqlRepositories.UnitTest.Shared.Extensions
 
             // Now we will do some queries :
             var query = test.entityRepo.Query()
-                                    .Take(3)
-                                    .Skip(0);
+                                        .Take(3)
+                                        .OrderBy(e => e.Name)
+                                        .Skip(0);
             Assert.AreEqual(3, query.Count(), "Query should contain three elements");
 
             var elements = query.Select().ToList();
 
             Assert.AreEqual(entity1.Name, elements[0].Name);
-            Assert.AreEqual(entity3.Name, elements[1].Name);
-            Assert.AreEqual(entity4.Name, elements[2].Name);
+            Assert.AreEqual(entity4.Name, elements[1].Name);
+            Assert.AreEqual(entity3.Name, elements[2].Name);
 
             // Reset DateTimeUtcNow function
             var now = new DateTime(2016, 01, 01, 0, 0, 0, DateTimeKind.Utc);
