@@ -26,8 +26,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MongoDB.Driver" Version="2.12.3" />
-    <PackageReference Include="MongoDB.Driver.GridFS" Version="2.12.3" />
+    <PackageReference Include="MongoDB.Driver" Version="2.12.4" />
+    <PackageReference Include="MongoDB.Driver.GridFS" Version="2.12.4" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="8.22.0.31243">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -36,6 +36,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NoSqlRepositories.Core\NoSqlRepositories.Core.csproj" />
+    <ProjectReference Include="..\NoSqlRepositories.Shared\NoSqlRepositories.Shared.csproj" />
   </ItemGroup>
 
 </Project>

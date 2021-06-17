@@ -4,6 +4,8 @@ using NoSqlRepositories.Core.Helpers;
 using NoSqlRepositories.Core.NoSQLException;
 using NoSqlRepositories.Core.Queries;
 using NoSqlRepositories.JsonFiles.Helpers;
+using NoSqlRepositories.JsonFiles.Queries;
+using NoSqlRepositories.Shared;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -68,6 +70,14 @@ namespace NoSqlRepositories.JsonFiles
             get
             {
                 return dbDirectoryPath + "/" + CollectionName + ".config.json";
+            }
+        }
+
+        internal IDictionary<string, T> LocalDb 
+        {
+            get
+            {
+                return localDb;
             }
         }
 
@@ -647,6 +657,9 @@ namespace NoSqlRepositories.JsonFiles
                 var filterFunction = queryFilters.Filter.Compile();
                 query = query.Where(e => filterFunction.Invoke(e));
             }
+
+            query = query.OrderBy(e => e.SystemCreationDate);
+
             if (queryFilters.Skip > 0)
                 query = query.Skip(queryFilters.Skip);
             if (queryFilters.Limit > 0)
@@ -661,6 +674,12 @@ namespace NoSqlRepositories.JsonFiles
             return localDb.Values.AsQueryable()
                                 .Where(e => !e.Deleted)
                                 .Select(e => e.Id);
+        }
+
+        /// <inheritdoc/>
+        public override INoSqlQueryable<T> Query()
+        {
+            return new JsonNoSqlQueryable<T>(this);
         }
 
         #endregion

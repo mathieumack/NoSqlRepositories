@@ -22,9 +22,9 @@ namespace NoSqlRepositories.Tests.Shared
         protected string baseFilePath;
         protected string dbName;
 
-        protected INoSQLRepository<TestEntity> entityRepo;
-        protected INoSQLRepository<TestEntity> entityRepo2;
-        protected INoSQLRepository<TestExtraEltEntity> entityExtraEltRepo;
+        public INoSQLRepository<TestEntity> entityRepo;
+        public INoSQLRepository<TestEntity> entityRepo2;
+        public INoSQLRepository<TestExtraEltEntity> entityExtraEltRepo;
 
         public static TestContext testContext;
 
@@ -132,26 +132,7 @@ namespace NoSqlRepositories.Tests.Shared
             Assert.AreEqual(4, entityRepo.Count(), "Repo should contain four elements");
         }
 
-        public void DoQuery()
-        {
-            entityRepo.TruncateCollection();
-
-            var entity1 = TestHelper.GetEntity1();
-            var entity3 = TestHelper.GetEntity3();
-            var entity4 = TestHelper.GetEntity4();
-
-            entityRepo.InsertMany(new List<TestEntity>() { entity1, entity3, entity4 });
-
-            // Now we will do some queries :
-            var queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(2, 0, null);
-            var query = entityRepo.DoQuery(queryOptions);
-            Assert.AreEqual(2, query.Count(), "Query should contain three elements");
-
-            // Now we will add a filter method :
-            queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(0, 0, (filterItem) => filterItem.NumberOfChildenInt == 0);
-            query = entityRepo.DoQuery(queryOptions);
-            Assert.AreEqual(1, query.Count(), "Query should contain two elements");
-        }
+        #region Queries
 
         public void Filter()
         {
@@ -171,9 +152,10 @@ namespace NoSqlRepositories.Tests.Shared
             Assert.AreEqual(4, query.Count(), "Query should contain 4 elements");
 
             // Now we will add a filter method :
-            queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(0, 0, null);
             var nameValue = "Mack";
+            queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(0, 0, null);
             queryOptions.Filter = (e) => e.Name == nameValue;
+
             query = entityRepo.DoQuery(queryOptions);
             Assert.AreEqual(1, query.Count(), "Query should contain one elements");
         }
@@ -196,9 +178,10 @@ namespace NoSqlRepositories.Tests.Shared
             Assert.AreEqual(4, query.Count(), "Query should contain 4 elements");
 
             // Now we will add a filter method :
-            queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(0, 0, null);
             var nameValue = "Mack";
+            queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(0, 0, null);
             queryOptions.Filter = (e) => e.Name == nameValue && e.IsAMan == false;
+
             query = entityRepo.DoQuery(queryOptions);
             Assert.AreEqual(1, query.Count(), "Query should contain one elements");
         }
@@ -223,9 +206,80 @@ namespace NoSqlRepositories.Tests.Shared
             // Now we will add a filter method :
             queryOptions = QueryCreator.CreateQueryOptions<TestEntity>(0, 0, null);
             queryOptions.Filter = (e) => e.Name.Contains("Mac");
+
             query = entityRepo.DoQuery(queryOptions);
             Assert.AreEqual(1, query.Count(), "Query should contain one elements");
         }
+
+        public void Filterv2()
+        {
+            entityRepo.TruncateCollection();
+
+            var entity1 = TestHelper.GetEntity1();
+            var entity2 = TestHelper.GetEntity2();
+            var entity3 = TestHelper.GetEntity3();
+            var entity4 = TestHelper.GetEntity4();
+
+            entityRepo.InsertMany(new List<TestEntity>() { entity1, entity2, entity3, entity4 });
+
+            // Now we will do some queries :
+            var query = entityRepo.Query();
+            Assert.AreEqual(4, query.Count(), "Query should contain 4 elements");
+
+            // Now we will add a filter method :
+            var nameValue = "Mack";
+            query = entityRepo.Query()
+                                .Where(e => e.Name == nameValue);
+            
+            Assert.AreEqual(1, query.Count(), "Query should contain one elements");
+        }
+
+        public void FilterComplexv2()
+        {
+            entityRepo.TruncateCollection();
+
+            var entity1 = TestHelper.GetEntity1();
+            var entity2 = TestHelper.GetEntity2();
+            var entity3 = TestHelper.GetEntity3();
+            var entity4 = TestHelper.GetEntity4();
+
+            entityRepo.InsertMany(new List<TestEntity>() { entity1, entity2, entity3, entity4 });
+
+            // Now we will do some queries :
+            var query = entityRepo.Query();
+            Assert.AreEqual(4, query.Count(), "Query should contain 4 elements");
+
+            // Now we will add a filter method :
+            var nameValue = "Mack";
+            query = entityRepo.Query()
+                                .Where(e => e.Name == nameValue && e.IsAMan == false);
+
+            Assert.AreEqual(1, query.Count(), "Query should contain one elements");
+        }
+
+        public void FilterComplexv2_Contains()
+        {
+            entityRepo.TruncateCollection();
+
+            var entity1 = TestHelper.GetEntity1();
+            var entity2 = TestHelper.GetEntity2();
+            var entity3 = TestHelper.GetEntity3();
+            var entity4 = TestHelper.GetEntity4();
+
+            entityRepo.InsertMany(new List<TestEntity>() { entity1, entity2, entity3, entity4 });
+
+            // Now we will do some queries :
+            var query = entityRepo.Query();
+            Assert.AreEqual(4, query.Count(), "Query should contain 4 elements");
+
+            // Now we will add a filter method :
+            query = entityRepo.Query()
+                                .Where(e => e.Name.Contains("Mac"));
+
+            Assert.AreEqual(1, query.Count(), "Query should contain one elements");
+        }
+
+        #endregion
 
         public virtual void InsertEntity()
         {

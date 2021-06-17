@@ -3,6 +3,7 @@ using NoSqlRepositories.CouchBaseLite;
 using NoSqlRepositories.Tests.Shared;
 using NoSqlRepositories.Tests.Shared.Entities;
 using System.IO;
+using NoSqlRepositories.UnitTest.Shared.Extensions;
 
 namespace NoSqlRepositories.Tests.CouchbaseLite
 {
@@ -115,6 +116,48 @@ namespace NoSqlRepositories.Tests.CouchbaseLite
         public void CouchbaseLite_DoQuery()
         {
             test.DoQuery();
+        }
+
+        [TestMethod]
+        public void CouchbaseLite_DoQueryPaging()
+        {
+            test.DoQuery_Paging();
+        }
+
+        [TestMethod]
+        public void CouchbaseLite_DoQueryWithOrdering()
+        {
+            test.Query_WithOrdering();
+        }
+
+        [TestMethod]
+        public void CouchbaseLite_DoQueryv2()
+        {
+            test.Query();
+        }
+
+        [TestMethod]
+        public void CouchbaseLite_DoQueryv2_Paging()
+        {
+            test.Query_Paging();
+        }
+
+        [TestMethod]
+        public void CouchbaseLite_DoQueryv2_WithOrdering()
+        {
+            test.Query_WithOrdering();
+        }
+
+        [TestMethod]
+        public void CouchbaseLite_OrderBy()
+        {
+            test.OrderBy();
+        }
+
+        [TestMethod]
+        public void CouchbaseLite_OrderByDescending()
+        {
+            test.OrderByDescending();
         }
 
         [TestMethod]

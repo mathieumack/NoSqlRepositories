@@ -6,6 +6,8 @@ using NoSqlRepositories.Core;
 using NoSqlRepositories.Core.Helpers;
 using NoSqlRepositories.Core.NoSQLException;
 using NoSqlRepositories.Core.Queries;
+using NoSqlRepositories.CouchBaseLite.Queries;
+using NoSqlRepositories.Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -39,7 +41,14 @@ namespace NoSqlRepositories.CouchBaseLite
             }
         }
 
-        protected Database database;
+        private Database database;
+        internal Database Database
+        {
+            get
+            {
+                return this.database;
+            }
+        }
 
         /// <summary>
         /// Empty constructor used for SqlCipher constructor
@@ -513,20 +522,28 @@ namespace NoSqlRepositories.CouchBaseLite
             // Interpret Linq query to expression
             if (queryFilters.Filter != null)
             {
-                var wherePreFilterExpression = Linq2CouchbaseLiteExpression.GenerateFromExpression(queryFilters.Filter);
+                var wherePreFilterExpression = Linq2CouchbaseLiteQueryExpression.GenerateFromExpression(queryFilters.Filter);
                 if (wherePreFilterExpression != null)
                     whereExpression = whereExpression.And(wherePreFilterExpression);
             }
-            
+
+            IOrdering orderByExpression = Ordering.Property("SystemCreationDate").Ascending();
+            //if (queryFilters.OrderBy != null)
+            //{
+            //    orderByExpression = Linq2CouchbaseLiteOrderingExpression.GenerateFromExpression(queryFilters.OrderBy);
+            //}
+
             var queryBuilder = QueryBuilder.Select(SelectResult.Expression(Meta.ID))
                                             .From(DataSource.Database(database))
                                             .Where(whereExpression)
-                                            .Limit(queryFilters.Limit > 0 ? Expression.Int(queryFilters.Limit) : Expression.Int(int.MaxValue));
+                                            // add default ordering by creation date :
+                                            .OrderBy(orderByExpression)
+                                            .Limit(queryFilters.Limit > 0 ? Expression.Int(queryFilters.Limit + queryFilters.Skip) : Expression.Int(int.MaxValue));
 
             IList<string> ids = null;
             using (var query = queryBuilder)
             {
-                ids = query.Execute().Select(row => row.GetString("id")).ToList();
+                ids = query.Execute().Skip(queryFilters.Skip).Select(row => row.GetString("id")).ToList();
             }
 
             var resultSet = ids.Select(e => GetById(e));
@@ -635,6 +652,12 @@ namespace NoSqlRepositories.CouchBaseLite
             {
                 return query.Execute().Select(row => row.GetString("id")).ToList();
             }
+        }
+
+        /// <inheritdoc/>
+        public override INoSqlQueryable<T> Query()
+        {
+            return new CouchBaseLiteNoSqlQueryable<T>(this);
         }
     }
 }
