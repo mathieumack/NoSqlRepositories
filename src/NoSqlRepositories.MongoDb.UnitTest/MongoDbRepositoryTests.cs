@@ -151,6 +151,12 @@ namespace NoSqlRepositories.Tests.MongoDb
         }
 
         [TestMethod]
+        public void MongoDb_DoQueryWithOrdering()
+        {
+            test.Query_WithOrdering();
+        }
+
+        [TestMethod]
         public void MongoDb_OrderByDescending()
         {
             test.OrderByDescending();
