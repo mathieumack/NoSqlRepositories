@@ -103,12 +103,12 @@ namespace NoSqlRepositories.JsonFiles
 
         #region INoSQLRepository
 
-        public override async Task Close()
+        public override Task Close()
         {
             SaveJSONFile();
             ConnectionOpened = false;
 
-            await Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
         public override void ConnectAgain()

@@ -5,6 +5,7 @@ using NoSqlRepositories.Core.Helpers;
 using NoSqlRepositories.Core.NoSQLException;
 using NoSqlRepositories.Core.Queries;
 using NoSqlRepositories.LiteDb.Helpers;
+using NoSqlRepositories.Shared;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -86,11 +87,14 @@ namespace NoSqlRepositories.LiteDb
 
         #region INoSQLRepository
 
-        public override async Task Close()
+        public override Task Close()
         {
             if (localDb != null)
                 localDb.Dispose();
+
             ConnectionOpened = false;
+
+            return Task.CompletedTask;
         }
 
         public override void ConnectAgain()
@@ -356,8 +360,12 @@ namespace NoSqlRepositories.LiteDb
 
             if (this.localDb != null)
             {
-                var count = localDb.GetCollection<T>(CollectionName).Count(Query.EQ("Deleted", false));
+                var count = localDb.GetCollection<T>(CollectionName).Count();
                 localDb.DropCollection(CollectionName);
+
+                // Remove also all attachments :
+
+
                 return (long)count;
             }
 
@@ -485,25 +493,30 @@ namespace NoSqlRepositories.LiteDb
 
         public override IEnumerable<T> DoQuery(NoSqlQuery<T> queryFilters)
         {
+            throw new NotImplementedException("This method is obsolete. Please use the Query() call instead");
+        }
+
+        public override AttachmentDetail GetAttachmentDetail(string id, string attachmentName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<string> GetIds()
+        {
             CheckOpenedConnection();
 
-            //var queryBuilder = QueryBuilder.Select(SelectResult.Expression(Meta.ID))
-            //                            .From(DataSource.Database(database))
-            //                            .Where(Expression.Property("collection").EqualTo(Expression.String(CollectionName)))
-            //                            .Limit(queryFilters.Limit > 0 ? Expression.Int(queryFilters.Limit) : Expression.Int(int.MaxValue));
+            if (this.localDb != null)
+            {
+                return collection.Find(e => !e.Deleted && !IsExpired(e.Id))
+                    .Select(e => e.Id);
+            }
 
-            //IList<string> ids = null;
-            //using (var query = queryBuilder)
-            //{
-            //    ids = query.Execute().Select(row => row.GetString("id")).ToList();
-            //}
+            return new List<string>();
+        }
 
-            //var resultSet = ids.Select(e => GetById(e));
-
-            //if (queryFilters.PostFilter != null)
-            //    return resultSet.Where(e => queryFilters.PostFilter(e));
-
-            return null;
+        public override INoSqlQueryable<T> Query()
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

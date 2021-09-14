@@ -2,6 +2,7 @@
 using NoSqlRepositories.LiteDb;
 using NoSqlRepositories.Tests.Shared;
 using NoSqlRepositories.Tests.Shared.Entities;
+using NoSqlRepositories.UnitTest.Shared.Extensions;
 using System.IO;
 
 namespace NoSqlRepositories.Tests.LiteDb
@@ -43,17 +44,11 @@ namespace NoSqlRepositories.Tests.LiteDb
             test.DatabaseName();
         }
 
-        [TestMethod]
-        public void LiteDb_ExpireAt()
-        {
-            test.ExpireAt();
-        }
-
-        [TestMethod]
-        public void LiteDb_DoQuery()
-        {
-            test.DoQuery();
-        }
+        //[TestMethod]
+        //public void LiteDb_ExpireAt()
+        //{
+        //    test.ExpireAt();
+        //}
 
         [TestMethod]
         public void LiteDb_CompactDatabase()
@@ -81,16 +76,24 @@ namespace NoSqlRepositories.Tests.LiteDb
             test.TimeZoneTest();
         }
 
+        //Polymorphisme is not correctly managed yet
         [TestMethod]
         public void LiteDb_InsertExtraEltEntity()
         {
             test.InsertExtraEltEntity();
         }
-        
+
+
         [TestMethod]
         public void LiteDb_Attachments()
         {
             test.Attachments();
+        }
+
+        [TestMethod]
+        public void LiteDb_GetIds()
+        {
+            test.GetIds();
         }
 
         [TestMethod]
@@ -107,9 +110,75 @@ namespace NoSqlRepositories.Tests.LiteDb
         }
 
         [TestMethod]
+        public void LiteDb_DoQuery()
+        {
+            test.DoQuery();
+        }
+
+        [TestMethod]
+        public void LiteDb_DoQueryPaging()
+        {
+            test.DoQuery_Paging();
+        }
+
+        [TestMethod]
+        public void LiteDb_DoQueryWithOrdering()
+        {
+            test.Query_WithOrdering();
+        }
+
+        [TestMethod]
+        public void LiteDb_DoQueryv2()
+        {
+            test.Query();
+        }
+
+        [TestMethod]
+        public void LiteDb_DoQueryv2_Paging()
+        {
+            test.Query_Paging();
+        }
+
+        [TestMethod]
+        public void LiteDb_DoQueryv2_WithOrdering()
+        {
+            test.Query_WithOrdering();
+        }
+
+        [TestMethod]
+        public void LiteDb_OrderBy()
+        {
+            test.OrderBy();
+        }
+
+        [TestMethod]
+        public void LiteDb_OrderByDescending()
+        {
+            test.OrderByDescending();
+        }
+
+        [TestMethod]
         public void LiteDb_Count()
         {
             test.Count();
+        }
+
+        [TestMethod]
+        public void LiteDb_PreFilter()
+        {
+            test.Filter();
+        }
+
+        [TestMethod]
+        public void LiteDb_FilterComplex()
+        {
+            test.FilterComplex();
+        }
+
+        [TestMethod]
+        public void LiteDb_FilterComplex_Contains()
+        {
+            test.FilterComplex_Contains();
         }
 
         // Not supported for now
@@ -126,6 +195,6 @@ namespace NoSqlRepositories.Tests.LiteDb
             test.ViewTests();
         }
 
-        #endregion  
+        #endregion
     }
 }
