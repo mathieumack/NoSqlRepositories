@@ -4,6 +4,7 @@ using NoSqlRepositories.Tests.Shared;
 using NoSqlRepositories.Tests.Shared.Entities;
 using System.IO;
 using NoSqlRepositories.UnitTest.Shared.Extensions;
+using System;
 
 namespace NoSqlRepositories.Tests.JsonFiles
 {
@@ -23,7 +24,7 @@ namespace NoSqlRepositories.Tests.JsonFiles
         [TestInitialize]
         public void TestInitialize()
         {
-            var dbName = "NoSQLTestDb";
+            var dbName = $"testDb{this.GetType().Name}{Guid.NewGuid()}".Replace("-", "");
 
             // Add Sqlite plugin register. Do it only for unit tests (https://github.com/CouchBaseLite/CouchBaseLite-lite-net/wiki/Error-Dictionary#cblcs0001)
 
@@ -33,6 +34,12 @@ namespace NoSqlRepositories.Tests.JsonFiles
             
             test = new NoSQLCoreUnitTests(entityRepo, entityRepo2, entityExtraEltRepo,
                 Directory.GetCurrentDirectory(), dbName);
+        }
+
+        [TestCleanup]
+        public void TestCleanup()
+        {
+            test.CleanUp();
         }
 
         #endregion

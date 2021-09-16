@@ -9,6 +9,7 @@ using MongoDB.Bson.Serialization.IdGenerators;
 using System.IO;
 using Mongo2Go;
 using NoSqlRepositories.UnitTest.Shared.Extensions;
+using System;
 
 namespace NoSqlRepositories.Tests.MongoDb
 {
@@ -53,7 +54,7 @@ namespace NoSqlRepositories.Tests.MongoDb
         [TestInitialize]
         public void TestInitialize()
         {
-            var databaseName = "UnitTstsNoSqlRepo";
+            var databaseName = $"testDb{this.GetType().Name}{Guid.NewGuid()}".Replace("-", "");
 
             entityRepo = new MongoDbRepository<TestEntity>(runner.ConnectionString, databaseName);
             entityRepo2 = new MongoDbRepository<TestEntity>(runner.ConnectionString, databaseName);

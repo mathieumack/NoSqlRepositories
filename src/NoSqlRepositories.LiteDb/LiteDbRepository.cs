@@ -7,7 +7,6 @@ using NoSqlRepositories.Core.Queries;
 using NoSqlRepositories.LiteDb.Helpers;
 using NoSqlRepositories.Shared;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -38,8 +37,8 @@ namespace NoSqlRepositories.LiteDb
 
         private string dbPath;
         private LiteDatabase localDb;
-        private LiteCollection<T> collection;
-        private LiteCollection<ExpirationEntry> expiredCollection;
+        private ILiteCollection<T> collection;
+        private ILiteCollection<ExpirationEntry> expiredCollection;
 
         #endregion
 
@@ -72,7 +71,7 @@ namespace NoSqlRepositories.LiteDb
             if (Directory.Exists(directoryPath))
                 Directory.CreateDirectory(directoryPath);
 
-            var dbPath = Path.Combine(directoryPath, dbName + ".db");
+            dbPath = Path.Combine(directoryPath, dbName + ".db");
             localDb = new LiteDatabase(dbPath);
             collection = localDb.GetCollection<T>();
             collection.EnsureIndex("Id");
@@ -260,8 +259,10 @@ namespace NoSqlRepositories.LiteDb
 
                 if (physical)
                 {
-                    expiredCollection.Delete(e => e.Id.Equals(id));
-                    return collection.Delete(e => e.Id.Equals(id));
+                    expiredCollection.Delete(new BsonValue(id));
+                    if (collection.Delete(new BsonValue(id)))
+                        return 1;
+                    return 0;
                 }
                 else
                 {
@@ -349,7 +350,7 @@ namespace NoSqlRepositories.LiteDb
                 {
                     Delete(deleted.Id, true);
                 }
-                localDb.Shrink();
+                localDb.Rebuild();
             }
             return true;
         }
@@ -436,7 +437,7 @@ namespace NoSqlRepositories.LiteDb
         {
             CheckOpenedConnection();
 
-            string fileIdentifier = id + "_" + CollectionName + "_" + attachmentName;
+            string fileIdentifier = $"$/{CollectionName}/{id}/{attachmentName}";
 
             var fileInfo = localDb.FileStorage.FindById(fileIdentifier);
             if(fileInfo == null)
@@ -470,9 +471,10 @@ namespace NoSqlRepositories.LiteDb
         {
             CheckOpenedConnection();
 
-            string fileNamePrefix = id + "_" + CollectionName + "_";
+            string fileNamePrefix = $"$/{CollectionName}/{id}";
 
-            return localDb.FileStorage.Find(fileNamePrefix).Select(e => e.Id.Replace(fileNamePrefix, ""));
+            return localDb.FileStorage.Find(fileNamePrefix)
+                                        .Select(e => e.Id.Replace(fileNamePrefix, ""));
         }
 
         public override IEnumerable<string> GetKeyByField<TField>(string fieldName, List<TField> values)

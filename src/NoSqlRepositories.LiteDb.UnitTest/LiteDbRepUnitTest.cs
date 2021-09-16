@@ -3,6 +3,7 @@ using NoSqlRepositories.LiteDb;
 using NoSqlRepositories.Tests.Shared;
 using NoSqlRepositories.Tests.Shared.Entities;
 using NoSqlRepositories.UnitTest.Shared.Extensions;
+using System;
 using System.IO;
 
 namespace NoSqlRepositories.Tests.LiteDb
@@ -23,15 +24,19 @@ namespace NoSqlRepositories.Tests.LiteDb
         [TestInitialize]
         public void TestInitialize()
         {
-            var dbName = "NoSQLTestDb";
+            var dbName = $"testDb{this.GetType().Name}{Guid.NewGuid()}".Replace("-", "");
 
             var entityRepo = new LiteDbRepository<TestEntity>(Directory.GetCurrentDirectory(), dbName);
-            var entityRepo2 = new LiteDbRepository<TestEntity>(Directory.GetCurrentDirectory(), dbName);
-            //var collectionEntityRepo = new JsonFileRepository<CollectionTest>(NoSQLCoreUnitTests.testContext.DeploymentDirectory, dbName);
-            var entityExtraEltRepo = new LiteDbRepository<TestExtraEltEntity>(Directory.GetCurrentDirectory(), dbName);
+            //var entityRepo2 = new LiteDbRepository<TestEntity>(Directory.GetCurrentDirectory(), dbName);
+            //var entityExtraEltRepo = new LiteDbRepository<TestExtraEltEntity>(Directory.GetCurrentDirectory(), dbName);
             
-            test = new NoSQLCoreUnitTests(entityRepo, entityRepo2, entityExtraEltRepo,
-                Directory.GetCurrentDirectory(), dbName);
+            test = new NoSQLCoreUnitTests(entityRepo, null, null, Directory.GetCurrentDirectory(), dbName);
+        }
+
+        [TestCleanup]
+        public void TestCleanup()
+        {
+            test.CleanUp();
         }
 
         #endregion
@@ -110,6 +115,7 @@ namespace NoSqlRepositories.Tests.LiteDb
         }
 
         [TestMethod]
+        [ExpectedException(typeof(NotImplementedException))]
         public void LiteDb_DoQuery()
         {
             test.DoQuery();

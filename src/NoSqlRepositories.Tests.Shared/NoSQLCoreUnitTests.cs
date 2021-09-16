@@ -40,8 +40,10 @@ namespace NoSqlRepositories.Tests.Shared
             this.entityRepo2 = entityRepo2;
             this.entityExtraEltRepo = entityExtraEltRepo;
 
-            this.entityRepo.TruncateCollection();
-            this.entityExtraEltRepo.TruncateCollection();
+            if (this.entityRepo != null)
+                this.entityRepo.TruncateCollection();
+            if(this.entityExtraEltRepo != null)
+                this.entityExtraEltRepo.TruncateCollection();
 
             this.baseFilePath = baseFilePath;
             this.dbName = dbName;
@@ -54,6 +56,16 @@ namespace NoSqlRepositories.Tests.Shared
             NoSQLRepoHelper.DateTimeUtcNow = (() => now);
 
             NoSQLCoreUnitTests.testContext = testContext;
+        }
+
+        public void CleanUp()
+        {
+            if (this.entityRepo != null)
+                this.entityRepo.DropCollection();
+            if (this.entityRepo2 != null)
+                this.entityRepo2.DropCollection();
+            if (this.entityExtraEltRepo != null)
+                this.entityExtraEltRepo.DropCollection();
         }
 
         #region Test methods
@@ -727,7 +739,7 @@ namespace NoSqlRepositories.Tests.Shared
             entityRepo.Delete(entity3.Id);
 
             var entitylist = entityRepo.GetAll();
-            Assert.AreEqual(3, entitylist.Count(), "Invalide number. The expected result is " + entitylist.Count());
+            Assert.AreEqual(3, entitylist.Count(), "Invalid number. The expected result is " + entitylist.Count());
 
             foreach (var e in entitylist)
             {

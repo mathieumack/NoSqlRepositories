@@ -4,6 +4,7 @@ using NoSqlRepositories.Tests.Shared;
 using NoSqlRepositories.Tests.Shared.Entities;
 using System.IO;
 using NoSqlRepositories.UnitTest.Shared.Extensions;
+using System;
 
 namespace NoSqlRepositories.Tests.CouchbaseLite
 {
@@ -23,7 +24,7 @@ namespace NoSqlRepositories.Tests.CouchbaseLite
         [TestInitialize]
         public void TestInitialize()
         {
-            var dbName = "NoSQLTestDb";
+            var dbName = $"testDb{this.GetType().Name}{Guid.NewGuid()}".Replace("-", "");
 
             // Add Sqlite plugin register. Do it only for unit tests (https://github.com/CouchBaseLite/CouchBaseLite-lite-net/wiki/Error-Dictionary#cblcs0001)
             //CouchBaseLite.Lite.Storage.SystemSQLite.Plugin.Register();
@@ -35,6 +36,12 @@ namespace NoSqlRepositories.Tests.CouchbaseLite
             var entityExtraEltRepo = new CouchBaseLiteRepository<TestExtraEltEntity>(Directory.GetCurrentDirectory(), dbName);
             
             test = new NoSQLCoreUnitTests(entityRepo, entityRepo2, entityExtraEltRepo, Directory.GetCurrentDirectory(), dbName);
+        }
+
+        [TestCleanup]
+        public void TestCleanup()
+        {
+            test.CleanUp();
         }
 
         #endregion
