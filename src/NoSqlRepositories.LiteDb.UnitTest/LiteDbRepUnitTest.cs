@@ -24,7 +24,7 @@ namespace NoSqlRepositories.Tests.LiteDb
         [TestInitialize]
         public void TestInitialize()
         {
-            var dbName = $"testDb{this.GetType().Name}{Guid.NewGuid()}".Replace("-", "");
+            var dbName = "testDb";
 
             var entityRepo = new LiteDbRepository<TestEntity>(Directory.GetCurrentDirectory(), dbName);
             //var entityRepo2 = new LiteDbRepository<TestEntity>(Directory.GetCurrentDirectory(), dbName);
